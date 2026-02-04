@@ -631,6 +631,40 @@ export const apiDocsHtml = `
     </section>
 
     <section class="section">
+      <h2>Arbitration Context</h2>
+      
+      <div class="endpoint-group">
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/api/context/dispute</span>
+            <span class="endpoint-desc">Market context for arbitration services</span>
+          </div>
+        </div>
+      </div>
+
+      <p>Provides objective market data for AI arbitrators handling disputes. Useful for determining if market conditions (flash crash, black swan) should factor into contract disputes.</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span>Response Example</span>
+        </div>
+        <div class="code-content">
+<pre>{
+  <span class="highlight-key">"volatilityLevel"</span>: <span class="highlight-string">"high"</span>,
+  <span class="highlight-key">"marketRegime"</span>: <span class="highlight-string">"crisis"</span>,
+  <span class="highlight-key">"recentEvents"</span>: [<span class="highlight-string">"Extreme Fear (F&G: 14)"</span>, <span class="highlight-string">"High VIX (28.5)"</span>],
+  <span class="highlight-key">"recommendation"</span>: {
+    <span class="highlight-key">"action"</span>: <span class="highlight-string">"extend_deadline"</span>,
+    <span class="highlight-key">"confidence"</span>: <span class="highlight-number">85</span>,
+    <span class="highlight-key">"reasoning"</span>: <span class="highlight-string">"Elevated volatility - consider extending deadlines"</span>
+  }
+}</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
       <h2>Rate Limits</h2>
       <p>Currently there are no rate limits. Please be respectful with your usage. For high-frequency needs, consider caching responses locally.</p>
       
