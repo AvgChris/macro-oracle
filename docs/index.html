@@ -3,14 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Macro Oracle | One-Stop Macro Intelligence for Crypto Agents</title>
+    <title>Macro Oracle | The One-Stop Macro Intelligence API for Crypto Agents</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-primary: #0a0a0f;
             --bg-secondary: #12121a;
@@ -18,26 +13,16 @@
             --text-primary: #ffffff;
             --text-secondary: #a0a0b0;
             --accent: #00d4aa;
-            --accent-dim: #00a88a;
             --warning: #ffa500;
             --danger: #ff4757;
-            --blue: #3b82f6;
-            --purple: #8b5cf6;
         }
-        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         header {
             padding: 20px 0;
             border-bottom: 1px solid #222;
@@ -46,36 +31,15 @@
             background: var(--bg-primary);
             z-index: 100;
         }
-        
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-        
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            margin-left: 30px;
-            transition: color 0.2s;
-        }
-        
-        .nav-links a:hover {
-            color: var(--accent);
-        }
-        
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; margin-left: 30px; }
+        .nav-links a:hover { color: var(--accent); }
         .hero {
             padding: 80px 0;
             text-align: center;
             background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
         }
-        
         .hero h1 {
             font-size: 3.5rem;
             margin-bottom: 20px;
@@ -83,14 +47,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
-        .hero p {
-            font-size: 1.3rem;
-            color: var(--text-secondary);
-            max-width: 800px;
-            margin: 0 auto 40px;
-        }
-        
+        .hero p { font-size: 1.3rem; color: var(--text-secondary); max-width: 800px; margin: 0 auto 40px; }
         .badge {
             display: inline-block;
             background: var(--danger);
@@ -99,57 +56,38 @@
             border-radius: 20px;
             font-size: 0.9rem;
             margin-bottom: 20px;
-            animation: pulse 2s infinite;
         }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        .cta-buttons {
+        .stats-banner {
             display: flex;
-            gap: 15px;
             justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
             flex-wrap: wrap;
         }
-        
+        .stat { text-align: center; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--accent); }
+        .stat-label { color: var(--text-secondary); font-size: 0.9rem; }
+        .cta-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
         .btn {
             padding: 15px 30px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s;
         }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-        
-        .btn-primary {
-            background: var(--accent);
-            color: var(--bg-primary);
-        }
-        
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid #333;
-        }
-        
-        /* Data Sources */
-        .data-sources {
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: var(--accent); color: var(--bg-primary); }
+        .btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid #333; }
+        .sources {
             background: var(--bg-secondary);
             padding: 60px 0;
         }
-        
+        .section-title { text-align: center; font-size: 2rem; margin-bottom: 40px; }
         .sources-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
         }
-        
         .source-card {
             background: var(--bg-card);
             padding: 20px;
@@ -157,229 +95,71 @@
             text-align: center;
             border: 1px solid #333;
         }
-        
-        .source-card .icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .source-card h4 {
-            color: var(--accent);
-            margin-bottom: 5px;
-        }
-        
-        .source-card p {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-        
-        /* Live Demo */
-        .live-demo {
-            padding: 60px 0;
-        }
-        
-        .demo-grid {
+        .source-card .icon { font-size: 1.8rem; margin-bottom: 8px; }
+        .source-card h4 { color: var(--accent); margin-bottom: 5px; font-size: 0.95rem; }
+        .source-card p { color: var(--text-secondary); font-size: 0.8rem; }
+        .endpoints { padding: 60px 0; }
+        .endpoint-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
-        
+        .endpoint-group {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+        .endpoint-group h3 { color: var(--accent); margin-bottom: 15px; font-size: 1.1rem; }
+        .endpoint {
+            background: var(--bg-secondary);
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .method {
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.7rem;
+        }
+        .demo { background: var(--bg-secondary); padding: 60px 0; }
         .demo-card {
             background: var(--bg-card);
             border-radius: 12px;
             padding: 25px;
             border: 1px solid #333;
+            max-width: 700px;
+            margin: 0 auto;
         }
-        
-        .demo-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .demo-header h3 {
-            font-size: 1rem;
-            color: var(--text-secondary);
-        }
-        
-        .live-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--accent);
-            font-size: 0.85rem;
-        }
-        
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: blink 1s infinite;
-        }
-        
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        
         pre {
             background: #0d0d12;
-            padding: 15px;
+            padding: 20px;
             border-radius: 8px;
             overflow-x: auto;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
-        
-        code {
-            color: var(--accent);
-        }
-        
         .json-key { color: #ff79c6; }
         .json-string { color: #f1fa8c; }
         .json-number { color: #bd93f9; }
-        
-        /* Features */
-        .features {
-            background: var(--bg-secondary);
-            padding: 80px 0;
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 50px;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-        
-        .feature-card {
-            background: var(--bg-card);
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid #333;
-        }
-        
-        .feature-icon {
-            font-size: 1.8rem;
-            margin-bottom: 12px;
-        }
-        
-        .feature-card h3 {
-            margin-bottom: 8px;
-            color: var(--accent);
-            font-size: 1.1rem;
-        }
-        
-        .feature-card p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        
-        /* Endpoints */
-        .endpoints {
-            padding: 80px 0;
-        }
-        
-        .endpoint-group {
-            margin-bottom: 35px;
-        }
-        
-        .endpoint-group h3 {
-            color: var(--accent);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-        
-        .endpoint {
-            background: var(--bg-card);
-            padding: 12px 18px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid #333;
-        }
-        
-        .method {
-            background: var(--accent);
-            color: var(--bg-primary);
-            padding: 4px 10px;
-            border-radius: 5px;
-            font-weight: 700;
-            font-size: 0.75rem;
-        }
-        
-        .endpoint-path {
-            font-family: monospace;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-        }
-        
-        .endpoint-desc {
-            color: var(--text-secondary);
-            margin-left: auto;
-            font-size: 0.85rem;
-        }
-        
-        /* Stats */
-        .stats {
-            background: var(--bg-secondary);
-            padding: 60px 0;
-            text-align: center;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 20px;
-        }
-        
-        .stat-item h2 {
-            font-size: 2.2rem;
-            color: var(--accent);
-        }
-        
-        .stat-item p {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-        
-        /* Integration */
-        .integration {
-            padding: 80px 0;
-        }
-        
-        .integration pre {
-            max-width: 700px;
-            margin: 30px auto;
-        }
-        
-        /* Footer */
         footer {
             padding: 40px 0;
             border-top: 1px solid #222;
             text-align: center;
             color: var(--text-secondary);
         }
-        
-        footer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-        
+        footer a { color: var(--accent); text-decoration: none; }
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.2rem; }
-            .stats-grid { grid-template-columns: repeat(3, 1fr); }
-            .endpoint { flex-direction: column; align-items: flex-start; gap: 8px; }
-            .endpoint-desc { margin-left: 0; }
-            .demo-grid { grid-template-columns: 1fr; }
+            .stats-banner { gap: 20px; }
+            .stat-value { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -388,8 +168,7 @@
         <nav class="container">
             <div class="logo">🎩 Macro Oracle</div>
             <div class="nav-links">
-                <a href="#sources">Data Sources</a>
-                <a href="#features">Features</a>
+                <a href="#sources">Sources</a>
                 <a href="#endpoints">API</a>
                 <a href="https://github.com/AvgChris/macro-oracle" target="_blank">GitHub</a>
             </div>
@@ -400,176 +179,82 @@
         <div class="container">
             <div class="badge">🔴 LIVE — Colosseum Agent Hackathon 2026</div>
             <h1>Macro Oracle</h1>
-            <p>The one-stop macro intelligence layer for crypto agents. Fed data, TradFi markets, stablecoin flows, derivatives, and news sentiment — all in one API.</p>
+            <p>The one-stop macro intelligence API for crypto agents. Fed data, TradFi, derivatives, stablecoins, whales, predictions, and more — all free, all in one place.</p>
+            
+            <div class="stats-banner">
+                <div class="stat">
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">Data Sources</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">30+</div>
+                    <div class="stat-label">API Endpoints</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">$0</div>
+                    <div class="stat-label">Cost/Month</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">24/7</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+            </div>
+            
             <div class="cta-buttons">
-                <a href="https://macro-oracle-production.up.railway.app/api/dashboard" class="btn btn-primary" target="_blank">Try Dashboard API →</a>
+                <a href="https://macro-oracle-production.up.railway.app/api/dashboard" class="btn btn-primary" target="_blank">Try Live API →</a>
                 <a href="https://github.com/AvgChris/macro-oracle" class="btn btn-secondary" target="_blank">View Source</a>
             </div>
         </div>
     </section>
 
-    <section class="data-sources" id="sources">
+    <section class="sources" id="sources">
         <div class="container">
-            <h2 class="section-title">Data Sources</h2>
+            <h2 class="section-title">9 Free Data Sources</h2>
             <div class="sources-grid">
                 <div class="source-card">
                     <div class="icon">🏦</div>
                     <h4>FRED</h4>
-                    <p>Fed Funds, CPI, Yields, Unemployment</p>
+                    <p>Fed Funds, CPI, Treasury Yields</p>
                 </div>
                 <div class="source-card">
                     <div class="icon">📈</div>
                     <h4>Yahoo Finance</h4>
-                    <p>S&P 500, Nasdaq, VIX, Gold, Oil</p>
+                    <p>S&P 500, Nasdaq, VIX, Gold</p>
+                </div>
+                <div class="source-card">
+                    <div class="icon">📊</div>
+                    <h4>OKX</h4>
+                    <p>Funding Rates, Open Interest</p>
                 </div>
                 <div class="source-card">
                     <div class="icon">💵</div>
                     <h4>DeFiLlama</h4>
-                    <p>USDT, USDC, DAI Supply Flows</p>
+                    <p>Stablecoin Supply & Flows</p>
                 </div>
                 <div class="source-card">
-                    <div class="icon">🦎</div>
-                    <h4>CoinGecko</h4>
-                    <p>BTC, ETH, SOL Prices</p>
+                    <div class="icon">🎰</div>
+                    <h4>Polymarket</h4>
+                    <p>Prediction Market Odds</p>
                 </div>
                 <div class="source-card">
-                    <div class="icon">😱</div>
-                    <h4>Fear & Greed</h4>
-                    <p>Crypto Sentiment Index</p>
+                    <div class="icon">🐋</div>
+                    <h4>Blockchain.info</h4>
+                    <p>Whale Transactions</p>
+                </div>
+                <div class="source-card">
+                    <div class="icon">⛓️</div>
+                    <h4>Blockchain.info</h4>
+                    <p>On-Chain Metrics</p>
                 </div>
                 <div class="source-card">
                     <div class="icon">📰</div>
                     <h4>CoinDesk</h4>
-                    <p>News Headlines & Sentiment</p>
+                    <p>News Sentiment</p>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="live-demo" id="demo">
-        <div class="container">
-            <h2 class="section-title">Live Examples</h2>
-            <div class="demo-grid">
-                <div class="demo-card">
-                    <div class="demo-header">
-                        <h3>GET /api/fred</h3>
-                        <div class="live-indicator">
-                            <div class="live-dot"></div>
-                            <span>Official Fed Data</span>
-                        </div>
-                    </div>
-                    <pre><code>{
-  <span class="json-key">"fedFunds"</span>: {<span class="json-key">"rate"</span>: <span class="json-number">3.64</span>, <span class="json-key">"trend"</span>: <span class="json-string">"stable"</span>},
-  <span class="json-key">"treasury"</span>: {
-    <span class="json-key">"yield10y"</span>: <span class="json-number">4.29</span>, 
-    <span class="json-key">"yield2y"</span>: <span class="json-number">3.57</span>,
-    <span class="json-key">"inverted"</span>: <span class="json-number">false</span>
-  },
-  <span class="json-key">"summary"</span>: {
-    <span class="json-key">"monetaryPolicy"</span>: <span class="json-string">"neutral"</span>,
-    <span class="json-key">"yieldCurve"</span>: <span class="json-string">"normal"</span>
-  }
-}</code></pre>
-                </div>
-                <div class="demo-card">
-                    <div class="demo-header">
-                        <h3>GET /api/stablecoins</h3>
-                        <div class="live-indicator">
-                            <div class="live-dot"></div>
-                            <span>Liquidity Flows</span>
-                        </div>
-                    </div>
-                    <pre><code>{
-  <span class="json-key">"totalSupply"</span>: <span class="json-number">261833</span>,
-  <span class="json-key">"totalChange7d"</span>: <span class="json-number">-1484</span>,
-  <span class="json-key">"flowDirection"</span>: <span class="json-string">"outflow"</span>,
-  <span class="json-key">"cryptoImplication"</span>: {
-    <span class="json-key">"direction"</span>: <span class="json-string">"bearish"</span>,
-    <span class="json-key">"confidence"</span>: <span class="json-number">50</span>
-  }
-}</code></pre>
-                </div>
-                <div class="demo-card">
-                    <div class="demo-header">
-                        <h3>GET /api/tradfi</h3>
-                        <div class="live-indicator">
-                            <div class="live-dot"></div>
-                            <span>TradFi Markets</span>
-                        </div>
-                    </div>
-                    <pre><code>{
-  <span class="json-key">"equities"</span>: {
-    <span class="json-key">"sp500"</span>: {<span class="json-key">"price"</span>: <span class="json-number">6917</span>},
-    <span class="json-key">"nasdaq"</span>: {<span class="json-key">"price"</span>: <span class="json-number">23255</span>}
-  },
-  <span class="json-key">"vix"</span>: {<span class="json-key">"value"</span>: <span class="json-number">17.68</span>, <span class="json-key">"level"</span>: <span class="json-string">"normal"</span>},
-  <span class="json-key">"riskAppetite"</span>: <span class="json-string">"neutral"</span>
-}</code></pre>
-                </div>
-                <div class="demo-card">
-                    <div class="demo-header">
-                        <h3>GET /api/signal</h3>
-                        <div class="live-indicator">
-                            <div class="live-dot"></div>
-                            <span>Macro Signal</span>
-                        </div>
-                    </div>
-                    <pre><code>{
-  <span class="json-key">"sentiment"</span>: <span class="json-string">"risk_off"</span>,
-  <span class="json-key">"cryptoImpact"</span>: {
-    <span class="json-key">"direction"</span>: <span class="json-string">"bearish"</span>,
-    <span class="json-key">"confidence"</span>: <span class="json-number">72</span>,
-    <span class="json-key">"reasoning"</span>: <span class="json-string">"DXY strong, stablecoin outflow"</span>
-  }
-}</code></pre>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="features" id="features">
-        <div class="container">
-            <h2 class="section-title">Features</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🏦</div>
-                    <h3>FRED Integration</h3>
-                    <p>Official Fed data: rates, CPI, treasury yields, unemployment with trend analysis.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <h3>TradFi Markets</h3>
-                    <p>S&P 500, Nasdaq, VIX, Gold, Oil, DXY — with risk appetite scoring.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💵</div>
-                    <h3>Stablecoin Flows</h3>
-                    <p>USDT, USDC, DAI supply tracking. Inflow/outflow as liquidity indicator.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📰</div>
-                    <h3>News Sentiment</h3>
-                    <p>Real-time crypto headlines with bullish/bearish sentiment scoring.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📅</div>
-                    <h3>Economic Calendar</h3>
-                    <p>Fed meetings, CPI, NFP, GDP with impact ratings and countdown timers.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💹</div>
-                    <h3>DXY Regime Analysis</h3>
-                    <p>Dollar strength regimes and -0.72 correlation with BTC.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Derivatives Data</h3>
-                    <p>Funding rates, open interest, liquidations from futures markets.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Actionable Signals</h3>
-                    <p>Direction, confidence, magnitude — with reasoning you can trust.</p>
+                <div class="source-card">
+                    <div class="icon">🦎</div>
+                    <h4>CoinGecko</h4>
+                    <p>Crypto Prices</p>
                 </div>
             </div>
         </div>
@@ -578,179 +263,78 @@
     <section class="endpoints" id="endpoints">
         <div class="container">
             <h2 class="section-title">API Reference</h2>
-            
-            <div class="endpoint-group">
-                <h3>🎯 Core Intelligence</h3>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/signal</span>
-                    <span class="endpoint-desc">Current macro signal</span>
+            <div class="endpoint-grid">
+                <div class="endpoint-group">
+                    <h3>🎯 Core Intelligence</h3>
+                    <div class="endpoint"><span class="method">GET</span>/api/signal</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/dashboard</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/summary</div>
                 </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/dashboard</span>
-                    <span class="endpoint-desc">Everything in one call</span>
+                <div class="endpoint-group">
+                    <h3>🏦 Fed Data (FRED)</h3>
+                    <div class="endpoint"><span class="method">GET</span>/api/fred</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/fred/rate</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/fred/treasury</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/fedwatch</div>
                 </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/summary</span>
-                    <span class="endpoint-desc">Market summary</span>
+                <div class="endpoint-group">
+                    <h3>📈 TradFi Markets</h3>
+                    <div class="endpoint"><span class="method">GET</span>/api/tradfi</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/tradfi/vix</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/tradfi/gold</div>
                 </div>
-            </div>
-            
-            <div class="endpoint-group">
-                <h3>🏦 FRED (Federal Reserve)</h3>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/fred</span>
-                    <span class="endpoint-desc">Full Fed snapshot</span>
+                <div class="endpoint-group">
+                    <h3>📊 Derivatives (OKX)</h3>
+                    <div class="endpoint"><span class="method">GET</span>/api/derivatives</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/derivatives/funding</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/derivatives/oi</div>
                 </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/fred/rate</span>
-                    <span class="endpoint-desc">Fed Funds Rate</span>
+                <div class="endpoint-group">
+                    <h3>💵 Stablecoins</h3>
+                    <div class="endpoint"><span class="method">GET</span>/api/stablecoins</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/feeds</div>
                 </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/fred/cpi</span>
-                    <span class="endpoint-desc">CPI / Inflation</span>
+                <div class="endpoint-group">
+                    <h3>🎰 Predictions</h3>
+                    <div class="endpoint"><span class="method">GET</span>/api/predictions</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/predictions/markets</div>
                 </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/fred/treasury</span>
-                    <span class="endpoint-desc">Treasury Yields</span>
+                <div class="endpoint-group">
+                    <h3>🐋 Whales & On-Chain</h3>
+                    <div class="endpoint"><span class="method">GET</span>/api/whales</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/onchain</div>
                 </div>
-            </div>
-            
-            <div class="endpoint-group">
-                <h3>📈 TradFi Markets</h3>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/tradfi</span>
-                    <span class="endpoint-desc">Full TradFi snapshot</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/tradfi/vix</span>
-                    <span class="endpoint-desc">VIX / Fear gauge</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/tradfi/gold</span>
-                    <span class="endpoint-desc">Gold / Safe haven</span>
-                </div>
-            </div>
-            
-            <div class="endpoint-group">
-                <h3>💵 Stablecoins & Liquidity</h3>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/stablecoins</span>
-                    <span class="endpoint-desc">Supply & flows</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/feeds</span>
-                    <span class="endpoint-desc">Crypto prices + Fear/Greed</span>
-                </div>
-            </div>
-            
-            <div class="endpoint-group">
-                <h3>📰 News & Sentiment</h3>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/news</span>
-                    <span class="endpoint-desc">Headlines + sentiment</span>
-                </div>
-            </div>
-            
-            <div class="endpoint-group">
-                <h3>📊 Derivatives</h3>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/derivatives</span>
-                    <span class="endpoint-desc">Funding, OI, Liquidations</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/derivatives/funding</span>
-                    <span class="endpoint-desc">Funding rates</span>
-                </div>
-            </div>
-            
-            <div class="endpoint-group">
-                <h3>📅 Economic Calendar</h3>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/calendar</span>
-                    <span class="endpoint-desc">Upcoming events</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="endpoint-path">/api/calendar/next-critical</span>
-                    <span class="endpoint-desc">Next high-impact event</span>
+                <div class="endpoint-group">
+                    <h3>📅 Calendar & News</h3>
+                    <div class="endpoint"><span class="method">GET</span>/api/calendar</div>
+                    <div class="endpoint"><span class="method">GET</span>/api/news</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="stats">
+    <section class="demo">
         <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <h2>6</h2>
-                    <p>Data Sources</p>
-                </div>
-                <div class="stat-item">
-                    <h2>25+</h2>
-                    <p>API Endpoints</p>
-                </div>
-                <div class="stat-item">
-                    <h2>-0.72</h2>
-                    <p>DXY-BTC Corr</p>
-                </div>
-                <div class="stat-item">
-                    <h2>1min</h2>
-                    <p>Refresh Rate</p>
-                </div>
-                <div class="stat-item">
-                    <h2>$261B</h2>
-                    <p>Stables Tracked</p>
-                </div>
-                <div class="stat-item">
-                    <h2>24/7</h2>
-                    <p>Uptime</p>
-                </div>
-            </div>
-        </div>
-    </section>
+            <h2 class="section-title">Live Example</h2>
+            <div class="demo-card">
+                <pre><code>curl https://macro-oracle-production.up.railway.app/api/signal
 
-    <section class="integration">
-        <div class="container">
-            <h2 class="section-title">Integration Example</h2>
-            <pre><code><span class="json-key">// Check macro context before trading</span>
-const macro = await fetch('https://macro-oracle-production.up.railway.app/api/signal')
-  .then(r => r.json());
-
-if (macro.cryptoImpact.direction === 'bearish' && macro.cryptoImpact.confidence > 70) {
-  console.log('Macro headwinds — reducing position size');
-  positionSize *= 0.5;
-}
-
-<span class="json-key">// Check for upcoming volatility</span>
-const calendar = await fetch('https://macro-oracle-production.up.railway.app/api/calendar/next-critical')
-  .then(r => r.json());
-
-if (calendar.countdown < 2 * 60 * 60 * 1000) {
-  console.log(`${calendar.event.name} in 2h — waiting`);
-  return;
+{
+  <span class="json-key">"sentiment"</span>: <span class="json-string">"risk_off"</span>,
+  <span class="json-key">"cryptoImpact"</span>: {
+    <span class="json-key">"direction"</span>: <span class="json-string">"bearish"</span>,
+    <span class="json-key">"confidence"</span>: <span class="json-number">72</span>,
+    <span class="json-key">"reasoning"</span>: <span class="json-string">"DXY strong, stablecoin outflow -$1.5B"</span>
+  },
+  <span class="json-key">"nextEvent"</span>: <span class="json-string">"NFP Feb 7"</span>
 }</code></pre>
+            </div>
         </div>
     </section>
 
     <footer>
         <div class="container">
-            <p>Built by <strong>Mistah 🎩</strong> for the <a href="https://colosseum.com/agent-hackathon">Colosseum Agent Hackathon 2026</a></p>
+            <p>Built by <strong>Mistah 🎩</strong> for <a href="https://colosseum.com/agent-hackathon">Colosseum Agent Hackathon 2026</a></p>
             <p style="margin-top: 10px;">
                 <a href="https://github.com/AvgChris/macro-oracle">GitHub</a> · 
                 <a href="https://macro-oracle-production.up.railway.app">API</a> · 
