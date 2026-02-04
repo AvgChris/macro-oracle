@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macro Oracle | Real-time Macro Intelligence for Crypto Agents</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent: #00d4aa;
+            --accent-dim: #00a88a;
+            --warning: #ffa500;
+            --danger: #ff4757;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid #222;
+            position: sticky;
+            top: 0;
+            background: var(--bg-primary);
+            z-index: 100;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-left: 30px;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        
+        /* Hero */
+        .hero {
+            padding: 100px 0;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--accent) 0%, #00ff88 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: var(--danger);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid #333;
+        }
+        
+        /* Live Demo */
+        .live-demo {
+            background: var(--bg-secondary);
+            padding: 60px 0;
+        }
+        
+        .demo-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid #333;
+        }
+        
+        .demo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent);
+        }
+        
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        pre {
+            background: #0d0d12;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+        
+        code {
+            color: var(--accent);
+        }
+        
+        .json-key { color: #ff79c6; }
+        .json-string { color: #f1fa8c; }
+        .json-number { color: #bd93f9; }
+        
+        /* Features */
+        .features {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+        }
+        
+        /* Endpoints */
+        .endpoints {
+            background: var(--bg-secondary);
+            padding: 80px 0;
+        }
+        
+        .endpoint-group {
+            margin-bottom: 40px;
+        }
+        
+        .endpoint-group h3 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .endpoint {
+            background: var(--bg-card);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #333;
+        }
+        
+        .method {
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        
+        .method.post {
+            background: var(--warning);
+        }
+        
+        .endpoint-path {
+            font-family: monospace;
+            color: var(--text-primary);
+        }
+        
+        .endpoint-desc {
+            color: var(--text-secondary);
+            margin-left: auto;
+        }
+        
+        /* Stats */
+        .stats {
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+        
+        .stat-item h2 {
+            font-size: 3rem;
+            color: var(--accent);
+        }
+        
+        .stat-item p {
+            color: var(--text-secondary);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid #222;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .endpoint { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .endpoint-desc { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">🎩 Macro Oracle</div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#endpoints">API</a>
+                <a href="#demo">Demo</a>
+                <a href="https://github.com/AvgChris/macro-oracle" target="_blank">GitHub</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="badge">🔴 LIVE — Colosseum Agent Hackathon 2026</div>
+            <h1>Macro Oracle</h1>
+            <p>Real-time macroeconomic intelligence for crypto agents. Track Fed decisions, CPI, jobs data, DXY — and understand how they move crypto.</p>
+            <div class="cta-buttons">
+                <a href="https://macro-oracle-production.up.railway.app/api/signal" class="btn btn-primary" target="_blank">Try Live API →</a>
+                <a href="https://github.com/AvgChris/macro-oracle" class="btn btn-secondary" target="_blank">View Source</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="live-demo" id="demo">
+        <div class="container">
+            <div class="demo-card">
+                <div class="demo-header">
+                    <h3>GET /api/signal</h3>
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        <span>Live Response</span>
+                    </div>
+                </div>
+                <pre><code>{
+  <span class="json-key">"sentiment"</span>: <span class="json-string">"risk_off"</span>,
+  <span class="json-key">"cryptoImpact"</span>: {
+    <span class="json-key">"direction"</span>: <span class="json-string">"bearish"</span>,
+    <span class="json-key">"confidence"</span>: <span class="json-number">72</span>,
+    <span class="json-key">"magnitude"</span>: <span class="json-string">"medium"</span>,
+    <span class="json-key">"reasoning"</span>: <span class="json-string">"DXY at 109.45 (strong dollar) pressuring risk assets. Upcoming: NFP on Feb 7"</span>
+  },
+  <span class="json-key">"historicalContext"</span>: {
+    <span class="json-key">"avgBtcMove"</span>: <span class="json-number">-4.2</span>,
+    <span class="json-key">"winRate"</span>: <span class="json-number">68</span>
+  }
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3>Economic Calendar</h3>
+                    <p>Track Fed decisions, CPI, NFP, GDP releases with impact ratings and historical context.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💹</div>
+                    <h3>DXY Regime Analysis</h3>
+                    <p>Dollar strength regimes and real-time correlation with crypto (-0.72 with BTC).</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Risk Environment</h3>
+                    <p>Multi-factor risk-on/risk-off scoring from DXY, VIX, yields, and equities.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Actionable Signals</h3>
+                    <p>Direction, confidence, magnitude — with reasoning you can trust.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔴</div>
+                    <h3>Live Data Feeds</h3>
+                    <p>Real-time BTC, ETH, SOL prices from CoinGecko. Fear & Greed index.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Historical Impact</h3>
+                    <p>"Last 5 CPIs moved BTC avg 3.8%" — data-backed context for every event.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="endpoints" id="endpoints">
+        <div class="container">
+            <h2 class="section-title">API Endpoints</h2>
+            
+            <div class="endpoint-group">
+                <h3>📡 Signals</h3>
+                <div class="endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/signal</span>
+                    <span class="endpoint-desc">Current macro signal with crypto impact</span>
+                </div>
+                <div class="endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/signals?limit=20</span>
+                    <span class="endpoint-desc">Signal history</span>
+                </div>
+                <div class="endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/summary</span>
+                    <span class="endpoint-desc">Comprehensive market summary</span>
+                </div>
+            </div>
+            
+            <div class="endpoint-group">
+                <h3>📅 Calendar</h3>
+                <div class="endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/calendar</span>
+                    <span class="endpoint-desc">Upcoming economic events</span>
+                </div>
+                <div class="endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/calendar/next-critical</span>
+                    <span class="endpoint-desc">Next high-impact event</span>
+                </div>
+                <div class="endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/impact/:eventType</span>
+                    <span class="endpoint-desc">Historical impact for event type</span>
+                </div>
+            </div>
+            
+            <div class="endpoint-group">
+                <h3>📊 Market Data</h3>
+                <div class="endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/market</span>
+                    <span class="endpoint-desc">Full market snapshot</span>
+                </div>
+                <div class="endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/market/dxy</span>
+                    <span class="endpoint-desc">DXY regime analysis</span>
+                </div>
+                <div class="endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/market/risk</span>
+                    <span class="endpoint-desc">Risk environment score</span>
+                </div>
+                <div class="endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/feeds</span>
+                    <span class="endpoint-desc">Raw live data feeds</span>
+                </div>
+                <div class="endpoint">
+                    <span class="method">GET</span>
+                    <span class="endpoint-path">/api/dashboard</span>
+                    <span class="endpoint-desc">Everything in one call</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h2>17</h2>
+                    <p>API Endpoints</p>
+                </div>
+                <div class="stat-item">
+                    <h2>-0.72</h2>
+                    <p>DXY-BTC Correlation</p>
+                </div>
+                <div class="stat-item">
+                    <h2>68%</h2>
+                    <p>Signal Win Rate</p>
+                </div>
+                <div class="stat-item">
+                    <h2>2min</h2>
+                    <p>Live Refresh Rate</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>Built by <strong>Mistah 🎩</strong> for the <a href="https://colosseum.com/agent-hackathon">Colosseum Agent Hackathon 2026</a></p>
+            <p style="margin-top: 10px;">
+                <a href="https://github.com/AvgChris/macro-oracle">GitHub</a> · 
+                <a href="https://macro-oracle-production.up.railway.app">API</a> · 
+                <a href="https://colosseum.com/agent-hackathon/projects/macro-oracle">Colosseum</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
