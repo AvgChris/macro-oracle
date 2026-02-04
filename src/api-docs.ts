@@ -10,21 +10,21 @@ export const apiDocsHtml = `
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #12121a;
-      --bg-card: #1a1a24;
-      --bg-card-hover: #222230;
-      --purple-primary: #ab9ff2;
-      --purple-secondary: #8b7fd9;
-      --purple-glow: rgba(171, 159, 242, 0.15);
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0b0;
-      --text-muted: #6b6b7b;
-      --border-color: #2a2a3a;
-      --success: #4ade80;
-      --warning: #fbbf24;
-      --danger: #f87171;
-      --info: #60a5fa;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fc;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f3f4f8;
+      --purple-primary: #7c3aed;
+      --purple-secondary: #8b5cf6;
+      --purple-glow: rgba(124, 58, 237, 0.08);
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a68;
+      --text-muted: #8888a0;
+      --border-color: #e5e7eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -48,7 +48,7 @@ export const apiDocsHtml = `
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
-      background: rgba(10, 10, 15, 0.95);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       z-index: 100;
     }
@@ -134,7 +134,7 @@ export const apiDocsHtml = `
     }
 
     .base-url {
-      background: var(--bg-card);
+      background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 20px 24px;
@@ -184,6 +184,7 @@ export const apiDocsHtml = `
       border-radius: 12px;
       margin-bottom: 12px;
       overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
     }
 
     .endpoint-header {
@@ -225,10 +226,11 @@ export const apiDocsHtml = `
     }
 
     .code-block {
-      background: var(--bg-secondary);
+      background: #1e1e2e;
       border-radius: 12px;
       overflow: hidden;
       margin: 16px 0;
+      border: 1px solid #2a2a3a;
     }
 
     .code-header {
@@ -236,12 +238,12 @@ export const apiDocsHtml = `
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
-      background: rgba(0,0,0,0.3);
-      border-bottom: 1px solid var(--border-color);
+      background: #16161e;
+      border-bottom: 1px solid #2a2a3a;
     }
 
     .code-header span {
-      color: var(--text-muted);
+      color: #888;
       font-size: 13px;
     }
 
@@ -255,13 +257,13 @@ export const apiDocsHtml = `
       font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
       line-height: 1.6;
-      color: var(--text-secondary);
+      color: #a0a0b0;
     }
 
-    .highlight-string { color: var(--success); }
-    .highlight-number { color: var(--warning); }
-    .highlight-key { color: var(--purple-primary); }
-    .highlight-comment { color: var(--text-muted); }
+    .highlight-string { color: #a5d6a7; }
+    .highlight-number { color: #ffcb6b; }
+    .highlight-key { color: #c792ea; }
+    .highlight-comment { color: #6b6b7b; }
 
     .param-table {
       width: 100%;
