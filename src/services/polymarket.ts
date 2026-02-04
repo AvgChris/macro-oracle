@@ -228,12 +228,20 @@ export async function fetchPolymarketSnapshot(): Promise<PolymarketSnapshot> {
 
   let cryptoSentiment = 'Neutral';
   if (markets.crypto.length > 0) {
-    // Check if any bullish crypto markets
-    const bullishCount = markets.crypto.filter(m => 
+    // Check probability of "above" markets - high Yes probability = bullish
+    const aboveMarkets = markets.crypto.filter(m => 
       m.question.toLowerCase().includes('above') || 
       m.question.toLowerCase().includes('higher')
-    ).length;
-    cryptoSentiment = bullishCount > markets.crypto.length / 2 ? 'Bullish' : 'Mixed';
+    );
+    
+    if (aboveMarkets.length > 0) {
+      const avgYesProb = aboveMarkets.reduce((sum, m) => {
+        const yesOutcome = m.outcomes.find(o => o.name === 'Yes');
+        return sum + (yesOutcome?.probability || 50);
+      }, 0) / aboveMarkets.length;
+      
+      cryptoSentiment = avgYesProb > 60 ? 'Bullish' : avgYesProb < 30 ? 'Bearish' : 'Mixed';
+    }
   }
 
   let politicalRisk = 'Low';
@@ -254,6 +262,19 @@ export async function fetchPolymarketSnapshot(): Promise<PolymarketSnapshot> {
     direction = 'bearish';
     confidence = 55;
     reasoning = 'Markets not expecting cuts → headwind for crypto';
+  }
+  
+  // Override with crypto sentiment if Fed sentiment unknown
+  if (fedSentiment === 'Unknown') {
+    if (cryptoSentiment === 'Bearish') {
+      direction = 'bearish';
+      confidence = 50;
+      reasoning = 'Prediction markets expect crypto prices to stay low';
+    } else if (cryptoSentiment === 'Bullish') {
+      direction = 'bullish';
+      confidence = 50;
+      reasoning = 'Prediction markets expect crypto prices to rise';
+    }
   }
 
   return {
