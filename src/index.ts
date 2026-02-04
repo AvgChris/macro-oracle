@@ -67,6 +67,19 @@ app.get('/', (req, res) => {
         cpi: 'GET /api/fred/cpi',
         treasury: 'GET /api/fred/treasury',
         unemployment: 'GET /api/fred/unemployment'
+      },
+      tradfi: {
+        snapshot: 'GET /api/tradfi',
+        equities: 'GET /api/tradfi/equities',
+        vix: 'GET /api/tradfi/vix',
+        gold: 'GET /api/tradfi/gold'
+      },
+      stablecoins: {
+        snapshot: 'GET /api/stablecoins'
+      },
+      news: {
+        snapshot: 'GET /api/news',
+        sentiment: 'GET /api/news/sentiment'
       }
     },
     features: [
@@ -80,7 +93,10 @@ app.get('/', (req, res) => {
       '🆕 Fed Funds Rate with trend analysis',
       '🆕 CPI with year-over-year inflation',
       '🆕 Treasury yields and yield curve inversion detection',
-      '🆕 Unemployment rate tracking'
+      '🆕 Unemployment rate tracking',
+      '🆕 TradFi data (S&P 500, Nasdaq, VIX, Gold, Oil, DXY)',
+      '🆕 Stablecoin supply tracking (USDT, USDC, DAI flows)',
+      '🆕 Crypto news sentiment analysis'
     ]
   });
 });

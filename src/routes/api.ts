@@ -34,6 +34,19 @@ import {
   fetchUnemployment,
   analyzeCryptoImpact
 } from '../services/fred.js';
+import {
+  fetchTradFiSnapshot,
+  fetchEquities,
+  fetchVix,
+  fetchGold
+} from '../services/yahoo.js';
+import {
+  fetchStablecoinSnapshot
+} from '../services/stablecoins.js';
+import {
+  fetchFullNewsSnapshot,
+  fetchNewsSentiment
+} from '../services/news.js';
 import { OracleStatus } from '../types.js';
 
 const router = Router();
@@ -298,6 +311,82 @@ router.get('/fred/unemployment', async (req: Request, res: Response) => {
     res.json(data || { error: 'Unable to fetch unemployment data' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch unemployment data' });
+  }
+});
+
+// === TRADFI DATA ENDPOINTS (Yahoo Finance) ===
+
+// Full TradFi snapshot
+router.get('/tradfi', async (req: Request, res: Response) => {
+  try {
+    const snapshot = await fetchTradFiSnapshot();
+    res.json(snapshot);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch TradFi data' });
+  }
+});
+
+// Equities (S&P 500, Nasdaq)
+router.get('/tradfi/equities', async (req: Request, res: Response) => {
+  try {
+    const data = await fetchEquities();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch equity data' });
+  }
+});
+
+// VIX
+router.get('/tradfi/vix', async (req: Request, res: Response) => {
+  try {
+    const data = await fetchVix();
+    res.json(data || { error: 'Unable to fetch VIX data' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch VIX data' });
+  }
+});
+
+// Gold
+router.get('/tradfi/gold', async (req: Request, res: Response) => {
+  try {
+    const data = await fetchGold();
+    res.json(data || { error: 'Unable to fetch gold data' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch gold data' });
+  }
+});
+
+// === STABLECOIN DATA ENDPOINTS (DeFiLlama) ===
+
+// Stablecoin supply snapshot
+router.get('/stablecoins', async (req: Request, res: Response) => {
+  try {
+    const snapshot = await fetchStablecoinSnapshot();
+    res.json(snapshot || { error: 'Unable to fetch stablecoin data' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch stablecoin data' });
+  }
+});
+
+// === NEWS/SENTIMENT ENDPOINTS ===
+
+// Full news snapshot
+router.get('/news', async (req: Request, res: Response) => {
+  try {
+    const snapshot = await fetchFullNewsSnapshot();
+    res.json(snapshot);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch news data' });
+  }
+});
+
+// News sentiment only
+router.get('/news/sentiment', async (req: Request, res: Response) => {
+  try {
+    const sentiment = await fetchNewsSentiment();
+    res.json(sentiment);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch news sentiment' });
   }
 });
 
