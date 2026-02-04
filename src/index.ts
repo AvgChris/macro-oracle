@@ -30,12 +30,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static docs
-app.use('/docs', express.static(join(__dirname, '../docs')));
+// Serve static docs (resolve from process.cwd() for Railway compatibility)
+const docsPath = join(process.cwd(), 'docs');
+app.use('/docs', express.static(docsPath));
 
 // Root serves the beautiful docs page
 app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, '../docs/index.html'));
+  res.sendFile(join(docsPath, 'index.html'));
 });
 
 // API info endpoint (for agents that want JSON)
