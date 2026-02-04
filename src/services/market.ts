@@ -2,20 +2,55 @@
 // Fetches and caches market data for correlation analysis
 
 import { MarketSnapshot, CorrelationData } from '../types.js';
+import { fetchCryptoPrices, fetchDxyProxy, fetchFearGreedIndex } from './feeds.js';
 
-// Simulated current market data
-// In production, this would fetch from CoinGecko, Yahoo Finance, TradingView, etc.
-let currentSnapshot: MarketSnapshot = {
+// Default/fallback values
+const DEFAULT_SNAPSHOT: MarketSnapshot = {
   timestamp: Date.now(),
-  dxy: 109.45,        // Dollar index elevated
-  us10y: 4.52,        // 10Y yield
-  spx: 5890,          // S&P 500
-  vix: 22.5,          // Elevated volatility
-  gold: 2865,         // Gold price
-  btc: 76350,         // BTC price
-  eth: 2680,          // ETH price
-  totalCryptoMcap: 2.45e12  // $2.45T
+  dxy: 109.45,
+  us10y: 4.52,
+  spx: 5890,
+  vix: 22.5,
+  gold: 2865,
+  btc: 76350,
+  eth: 2680,
+  totalCryptoMcap: 2.45e12
 };
+
+// Current snapshot (updated by live feeds)
+let currentSnapshot: MarketSnapshot = { ...DEFAULT_SNAPSHOT };
+let lastLiveUpdate: number = 0;
+
+// Update snapshot with live data
+export async function refreshLiveData(): Promise<void> {
+  try {
+    const [crypto, dxy] = await Promise.all([
+      fetchCryptoPrices(),
+      fetchDxyProxy()
+    ]);
+
+    if (crypto) {
+      currentSnapshot.btc = crypto.btc;
+      currentSnapshot.eth = crypto.eth;
+      currentSnapshot.totalCryptoMcap = crypto.totalMcap;
+    }
+
+    if (dxy) {
+      currentSnapshot.dxy = dxy;
+    }
+
+    currentSnapshot.timestamp = Date.now();
+    lastLiveUpdate = Date.now();
+    
+    console.log('Market data refreshed:', {
+      btc: currentSnapshot.btc,
+      eth: currentSnapshot.eth,
+      dxy: currentSnapshot.dxy
+    });
+  } catch (error) {
+    console.error('Failed to refresh live data:', error);
+  }
+}
 
 // Historical correlation data (pre-computed from historical analysis)
 const CORRELATIONS: CorrelationData[] = [

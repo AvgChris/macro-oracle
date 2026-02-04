@@ -15,8 +15,10 @@ import {
   getCorrelation,
   getDxyRegime, 
   getRiskEnvironment, 
-  getCryptoMarketState 
+  getCryptoMarketState,
+  refreshLiveData
 } from '../services/market.js';
+import { fetchAllMarketData } from '../services/feeds.js';
 import { 
   generateCurrentSignal, 
   generateEventSignal, 
@@ -33,6 +35,31 @@ let signalsGenerated = 0;
 // Health check
 router.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: Date.now() });
+});
+
+// Force refresh live data
+router.post('/refresh', async (req: Request, res: Response) => {
+  try {
+    await refreshLiveData();
+    const data = await fetchAllMarketData();
+    res.json({ 
+      status: 'refreshed', 
+      timestamp: Date.now(),
+      liveData: data
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to refresh data' });
+  }
+});
+
+// Get raw live feed data
+router.get('/feeds', async (req: Request, res: Response) => {
+  try {
+    const data = await fetchAllMarketData();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch feeds' });
+  }
 });
 
 // Oracle status

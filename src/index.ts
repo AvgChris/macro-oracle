@@ -3,9 +3,17 @@
 
 import express from 'express';
 import apiRoutes from './routes/api.js';
+import { startLiveFeeds } from './services/feeds.js';
+import { refreshLiveData } from './services/market.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Start live data feeds (refresh every 2 minutes)
+startLiveFeeds(120000);
+
+// Initial data fetch
+refreshLiveData().catch(console.error);
 
 // Middleware
 app.use(express.json());
