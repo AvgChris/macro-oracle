@@ -47,6 +47,12 @@ import {
   fetchFullNewsSnapshot,
   fetchNewsSentiment
 } from '../services/news.js';
+import {
+  fetchDerivativesSnapshot,
+  fetchFundingSnapshot,
+  fetchOISnapshot,
+  fetchLiquidationSnapshot
+} from '../services/coinglass.js';
 import { OracleStatus } from '../types.js';
 
 const router = Router();
@@ -387,6 +393,48 @@ router.get('/news/sentiment', async (req: Request, res: Response) => {
     res.json(sentiment);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch news sentiment' });
+  }
+});
+
+// === DERIVATIVES DATA ENDPOINTS (Coinglass/Binance) ===
+
+// Full derivatives snapshot
+router.get('/derivatives', async (req: Request, res: Response) => {
+  try {
+    const snapshot = await fetchDerivativesSnapshot();
+    res.json(snapshot);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch derivatives data' });
+  }
+});
+
+// Funding rates
+router.get('/derivatives/funding', async (req: Request, res: Response) => {
+  try {
+    const data = await fetchFundingSnapshot();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch funding rates' });
+  }
+});
+
+// Open Interest
+router.get('/derivatives/oi', async (req: Request, res: Response) => {
+  try {
+    const data = await fetchOISnapshot();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch open interest' });
+  }
+});
+
+// Liquidations
+router.get('/derivatives/liquidations', async (req: Request, res: Response) => {
+  try {
+    const data = await fetchLiquidationSnapshot();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch liquidation data' });
   }
 });
 

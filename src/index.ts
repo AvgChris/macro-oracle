@@ -80,6 +80,12 @@ app.get('/', (req, res) => {
       news: {
         snapshot: 'GET /api/news',
         sentiment: 'GET /api/news/sentiment'
+      },
+      derivatives: {
+        snapshot: 'GET /api/derivatives',
+        funding: 'GET /api/derivatives/funding',
+        openInterest: 'GET /api/derivatives/oi',
+        liquidations: 'GET /api/derivatives/liquidations'
       }
     },
     features: [
@@ -96,7 +102,8 @@ app.get('/', (req, res) => {
       '🆕 Unemployment rate tracking',
       '🆕 TradFi data (S&P 500, Nasdaq, VIX, Gold, Oil, DXY)',
       '🆕 Stablecoin supply tracking (USDT, USDC, DAI flows)',
-      '🆕 Crypto news sentiment analysis'
+      '🆕 Crypto news sentiment analysis',
+      '🆕 Derivatives data (funding rates, open interest, liquidations)'
     ]
   });
 });
