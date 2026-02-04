@@ -53,15 +53,19 @@ async function fetchFundingRates(symbol: string): Promise<FundingRate[]> {
   try {
     const bybitRes = await axios.get('https://api.bybit.com/v5/market/funding/history', {
       params: { category: 'linear', symbol: `${symbol}USDT`, limit: 1 },
-      timeout: 5000
+      timeout: 8000,
+      headers: { 'User-Agent': 'MacroOracle/1.0' }
     });
+    
+    console.log(`Bybit funding response for ${symbol}:`, JSON.stringify(bybitRes.data).slice(0, 200));
     
     if (bybitRes.data?.result?.list?.[0]) {
       const rate = parseFloat(bybitRes.data.result.list[0].fundingRate) * 100;
       rates.push({ symbol, rate, predictedRate: rate, exchange: 'Bybit' });
+      console.log(`Bybit ${symbol} funding rate: ${rate}%`);
     }
-  } catch (error) {
-    console.error(`Bybit funding failed for ${symbol}:`, error);
+  } catch (error: any) {
+    console.error(`Bybit funding failed for ${symbol}:`, error.message);
   }
 
   // Try Binance as backup

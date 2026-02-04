@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
   res.json({
     name: 'Macro Oracle',
-    version: '0.1.0',
+    version: "0.2.0",
     description: 'Real-time macroeconomic intelligence for crypto agents',
     author: 'Mistah 🎩',
     hackathon: 'Colosseum Agent Hackathon 2026',
