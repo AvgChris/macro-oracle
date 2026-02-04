@@ -274,7 +274,7 @@ router.get('/dashboard/json', (req: Request, res: Response) => {
     calendar: { upcoming: getUpcomingEvents(5) },
     signal: getLatestSignal() || generateCurrentSignal(),
     fred: {
-      fedFunds: { rate: 4.5 },
+      fedFunds: { rate: 3.625 },  // 3.5-3.75% range midpoint (Feb 2026)
       cpi: { value: 2.9 },
       treasury: { yield10y: market.us10y || 4.2 },
       unemployment: { rate: 4.1 }
