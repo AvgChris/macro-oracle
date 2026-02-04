@@ -47,24 +47,42 @@ async function fetchFundingRates(symbol: string): Promise<FundingRate[]> {
   const cached = getCached<FundingRate[]>(cacheKey);
   if (cached) return cached;
 
+  const rates: FundingRate[] = [];
+
+  // Try Bybit (reliable, no geo-restrictions)
   try {
-    // Use Binance as primary (more reliable)
-    const res = await axios.get('https://fapi.binance.com/fapi/v1/fundingRate', {
+    const bybitRes = await axios.get('https://api.bybit.com/v5/market/funding/history', {
+      params: { category: 'linear', symbol: `${symbol}USDT`, limit: 1 },
+      timeout: 5000
+    });
+    
+    if (bybitRes.data?.result?.list?.[0]) {
+      const rate = parseFloat(bybitRes.data.result.list[0].fundingRate) * 100;
+      rates.push({ symbol, rate, predictedRate: rate, exchange: 'Bybit' });
+    }
+  } catch (error) {
+    console.error(`Bybit funding failed for ${symbol}:`, error);
+  }
+
+  // Try Binance as backup
+  try {
+    const binanceRes = await axios.get('https://fapi.binance.com/fapi/v1/fundingRate', {
       params: { symbol: `${symbol}USDT`, limit: 1 },
       timeout: 5000
     });
     
-    if (res.data && res.data[0]) {
-      const rate = parseFloat(res.data[0].fundingRate) * 100; // Convert to percentage
-      const rates = [{ symbol, rate, predictedRate: rate, exchange: 'Binance' }];
-      setCache(cacheKey, rates);
-      return rates;
+    if (binanceRes.data && binanceRes.data[0]) {
+      const rate = parseFloat(binanceRes.data[0].fundingRate) * 100;
+      rates.push({ symbol, rate, predictedRate: rate, exchange: 'Binance' });
     }
-    return [];
   } catch (error) {
-    console.error(`Failed to fetch funding rates for ${symbol}:`, error);
-    return [];
+    console.error(`Binance funding failed for ${symbol}:`, error);
   }
+
+  if (rates.length > 0) {
+    setCache(cacheKey, rates);
+  }
+  return rates;
 }
 
 export async function fetchFundingSnapshot(): Promise<FundingSnapshot> {
@@ -131,15 +149,47 @@ async function fetchOpenInterest(symbol: string): Promise<OpenInterestData | nul
   const cached = getCached<OpenInterestData>(cacheKey);
   if (cached) return cached;
 
+  // Try Bybit first (more reliable)
   try {
-    // Try Binance futures OI
+    const res = await axios.get('https://api.bybit.com/v5/market/open-interest', {
+      params: { category: 'linear', symbol: `${symbol}USDT`, intervalTime: '1h', limit: 1 },
+      timeout: 5000
+    });
+
+    if (res.data?.result?.list?.[0]) {
+      const oiValue = parseFloat(res.data.result.list[0].openInterest);
+      
+      // Get price for USD conversion
+      const priceRes = await axios.get('https://api.bybit.com/v5/market/tickers', {
+        params: { category: 'linear', symbol: `${symbol}USDT` },
+        timeout: 5000
+      });
+      
+      const price = parseFloat(priceRes.data?.result?.list?.[0]?.lastPrice || '0');
+      const oiUsd = oiValue * price;
+
+      const data: OpenInterestData = {
+        symbol,
+        openInterest: Math.round(oiUsd),
+        change24h: 0,
+        change7d: 0
+      };
+      
+      setCache(cacheKey, data);
+      return data;
+    }
+  } catch (error) {
+    console.error(`Bybit OI failed for ${symbol}:`, error);
+  }
+
+  // Fallback to Binance
+  try {
     const res = await axios.get('https://fapi.binance.com/fapi/v1/openInterest', {
       params: { symbol: `${symbol}USDT` },
       timeout: 5000
     });
 
     if (res.data && res.data.openInterest) {
-      // Get current price for USD value
       const priceRes = await axios.get('https://fapi.binance.com/fapi/v1/ticker/price', {
         params: { symbol: `${symbol}USDT` },
         timeout: 5000
@@ -152,18 +202,18 @@ async function fetchOpenInterest(symbol: string): Promise<OpenInterestData | nul
       const data: OpenInterestData = {
         symbol,
         openInterest: Math.round(oiUsd),
-        change24h: 0, // Would need historical data
+        change24h: 0,
         change7d: 0
       };
       
       setCache(cacheKey, data);
       return data;
     }
-    return null;
   } catch (error) {
-    console.error(`Failed to fetch OI for ${symbol}:`, error);
-    return null;
+    console.error(`Binance OI failed for ${symbol}:`, error);
   }
+
+  return null;
 }
 
 export async function fetchOISnapshot(): Promise<OISnapshot> {
