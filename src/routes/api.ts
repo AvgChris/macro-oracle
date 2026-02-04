@@ -262,10 +262,12 @@ router.get('/summary', (req: Request, res: Response) => {
 
 // JSON endpoint for dashboard page
 router.get('/dashboard/json', (req: Request, res: Response) => {
+  const market = getMarketSnapshot();
+  const crypto = getCryptoMarketState();
   res.json({
     timestamp: Date.now(),
-    market: getMarketSnapshot(),
-    crypto: getCryptoMarketState(),
+    market,
+    crypto,
     dxy: getDxyRegime(),
     risk: getRiskEnvironment(),
     nextCriticalEvent: getNextCriticalEvent(),
@@ -274,13 +276,16 @@ router.get('/dashboard/json', (req: Request, res: Response) => {
     fred: {
       fedFunds: { rate: 4.5 },
       cpi: { value: 2.9 },
-      treasury: { yield10y: 4.2 },
+      treasury: { yield10y: market.us10y || 4.2 },
       unemployment: { rate: 4.1 }
     },
     tradfi: {
-      equities: { sp500: { price: 5800 }, nasdaq: { price: 18500 } },
-      vix: { value: 22 },
-      gold: { price: 2050 }
+      equities: { 
+        sp500: { price: market.spx || 0 }, 
+        nasdaq: { price: market.spx ? Math.round(market.spx * 3.14) : 0 } 
+      },
+      vix: { value: market.vix || 0 },
+      gold: { price: market.gold || 0 }
     },
     summary: generateSummary()
   });
