@@ -2,14 +2,10 @@
 // Built by Mistah 🎩 for the Colosseum Agent Hackathon
 
 import express from 'express';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
 import apiRoutes from './routes/api.js';
 import { startLiveFeeds } from './services/feeds.js';
 import { refreshLiveData } from './services/market.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { landingPageHtml } from './landing.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -30,13 +26,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static docs (docs folder is copied to dist/ during build)
-const docsPath = join(__dirname, 'docs');
-app.use('/docs', express.static(docsPath));
-
-// Root serves the beautiful docs page
+// Root serves the beautiful docs landing page
 app.get('/', (req, res) => {
-  res.sendFile(join(docsPath, 'index.html'));
+  res.type('html').send(landingPageHtml);
 });
 
 // API info endpoint (for agents that want JSON)
