@@ -2,9 +2,14 @@
 // Built by Mistah 🎩 for the Colosseum Agent Hackathon
 
 import express from 'express';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import apiRoutes from './routes/api.js';
 import { startLiveFeeds } from './services/feeds.js';
 import { refreshLiveData } from './services/market.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,8 +30,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Root endpoint
+// Serve static docs
+app.use('/docs', express.static(join(__dirname, '../docs')));
+
+// Root serves the beautiful docs page
 app.get('/', (req, res) => {
+  res.sendFile(join(__dirname, '../docs/index.html'));
+});
+
+// API info endpoint (for agents that want JSON)
+app.get('/api', (req, res) => {
   res.json({
     name: 'Macro Oracle',
     version: "0.2.0",
@@ -123,6 +136,11 @@ app.get('/', (req, res) => {
 
 // API routes
 app.use('/api', apiRoutes);
+
+// Fallback: redirect unknown routes to docs
+app.get('*', (req, res) => {
+  res.redirect('/');
+});
 
 // Start server
 app.listen(PORT, () => {
