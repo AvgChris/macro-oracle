@@ -57,6 +57,9 @@ import {
   fetchPolymarketSnapshot,
   fetchMacroMarkets
 } from '../services/polymarket.js';
+import { fetchWhaleSnapshot } from '../services/whales.js';
+import { fetchOnChainSnapshot } from '../services/onchain.js';
+import { fetchFedWatchSnapshot } from '../services/fedwatch.js';
 import { OracleStatus } from '../types.js';
 
 const router = Router();
@@ -401,6 +404,42 @@ router.get('/news/sentiment', async (req: Request, res: Response) => {
 });
 
 // === DERIVATIVES DATA ENDPOINTS (Coinglass/Binance) ===
+
+// === WHALE TRACKING ENDPOINTS ===
+
+// Whale transaction snapshot
+router.get('/whales', async (req: Request, res: Response) => {
+  try {
+    const snapshot = await fetchWhaleSnapshot();
+    res.json(snapshot);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch whale data' });
+  }
+});
+
+// === ON-CHAIN METRICS ENDPOINTS ===
+
+// Bitcoin on-chain snapshot
+router.get('/onchain', async (req: Request, res: Response) => {
+  try {
+    const snapshot = await fetchOnChainSnapshot();
+    res.json(snapshot);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch on-chain data' });
+  }
+});
+
+// === FEDWATCH ENDPOINTS ===
+
+// Fed rate probabilities
+router.get('/fedwatch', async (req: Request, res: Response) => {
+  try {
+    const snapshot = await fetchFedWatchSnapshot();
+    res.json(snapshot);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch FedWatch data' });
+  }
+});
 
 // === PREDICTION MARKET ENDPOINTS (Polymarket) ===
 

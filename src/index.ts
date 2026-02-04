@@ -90,6 +90,15 @@ app.get('/', (req, res) => {
       predictions: {
         snapshot: 'GET /api/predictions',
         markets: 'GET /api/predictions/markets'
+      },
+      whales: {
+        snapshot: 'GET /api/whales'
+      },
+      onchain: {
+        snapshot: 'GET /api/onchain'
+      },
+      fedwatch: {
+        snapshot: 'GET /api/fedwatch'
       }
     },
     features: [
