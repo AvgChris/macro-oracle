@@ -53,6 +53,10 @@ import {
   fetchOISnapshot,
   fetchLiquidationSnapshot
 } from '../services/coinglass.js';
+import {
+  fetchPolymarketSnapshot,
+  fetchMacroMarkets
+} from '../services/polymarket.js';
 import { OracleStatus } from '../types.js';
 
 const router = Router();
@@ -397,6 +401,28 @@ router.get('/news/sentiment', async (req: Request, res: Response) => {
 });
 
 // === DERIVATIVES DATA ENDPOINTS (Coinglass/Binance) ===
+
+// === PREDICTION MARKET ENDPOINTS (Polymarket) ===
+
+// Full Polymarket snapshot
+router.get('/predictions', async (req: Request, res: Response) => {
+  try {
+    const snapshot = await fetchPolymarketSnapshot();
+    res.json(snapshot);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch prediction market data' });
+  }
+});
+
+// Macro-relevant markets only
+router.get('/predictions/markets', async (req: Request, res: Response) => {
+  try {
+    const markets = await fetchMacroMarkets();
+    res.json(markets);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch markets' });
+  }
+});
 
 // Debug endpoint for testing OKX API
 router.get('/derivatives/debug', async (req: Request, res: Response) => {

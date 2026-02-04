@@ -86,6 +86,10 @@ app.get('/', (req, res) => {
         funding: 'GET /api/derivatives/funding',
         openInterest: 'GET /api/derivatives/oi',
         liquidations: 'GET /api/derivatives/liquidations'
+      },
+      predictions: {
+        snapshot: 'GET /api/predictions',
+        markets: 'GET /api/predictions/markets'
       }
     },
     features: [
