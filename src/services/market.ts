@@ -7,14 +7,14 @@ import { fetchCryptoPrices, fetchDxyProxy, fetchFearGreedIndex } from './feeds.j
 // Default/fallback values
 const DEFAULT_SNAPSHOT: MarketSnapshot = {
   timestamp: Date.now(),
-  dxy: 109.45,
+  dxy: 105,
   us10y: 4.52,
   spx: 5890,
   vix: 22.5,
-  gold: 2865,
-  btc: 76350,
-  eth: 2680,
-  totalCryptoMcap: 2.45e12
+  gold: 4960,  // Updated Feb 2026
+  btc: 74000,
+  eth: 2150,
+  totalCryptoMcap: 2.5e12
 };
 
 // Current snapshot (updated by live feeds)
