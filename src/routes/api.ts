@@ -26,6 +26,14 @@ import {
   getLatestSignal,
   generateSummary 
 } from '../services/signals.js';
+import {
+  fetchFredSnapshot,
+  fetchFedFundsRate,
+  fetchCpi,
+  fetchTreasuryYields,
+  fetchUnemployment,
+  analyzeCryptoImpact
+} from '../services/fred.js';
 import { OracleStatus } from '../types.js';
 
 const router = Router();
@@ -235,6 +243,62 @@ router.get('/impact/:eventType', (req: Request, res: Response) => {
     eventType: req.params.eventType,
     ...impact
   });
+});
+
+// === FRED DATA ENDPOINTS (Official Fed Data) ===
+
+// Full FRED macro snapshot
+router.get('/fred', async (req: Request, res: Response) => {
+  try {
+    const snapshot = await fetchFredSnapshot();
+    const impact = analyzeCryptoImpact(snapshot);
+    res.json({
+      ...snapshot,
+      cryptoImpact: impact
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch FRED data' });
+  }
+});
+
+// Federal Funds Rate
+router.get('/fred/rate', async (req: Request, res: Response) => {
+  try {
+    const data = await fetchFedFundsRate();
+    res.json(data || { error: 'Unable to fetch Fed Funds rate' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch Fed Funds rate' });
+  }
+});
+
+// CPI / Inflation
+router.get('/fred/cpi', async (req: Request, res: Response) => {
+  try {
+    const data = await fetchCpi();
+    res.json(data || { error: 'Unable to fetch CPI data' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch CPI data' });
+  }
+});
+
+// Treasury Yields
+router.get('/fred/treasury', async (req: Request, res: Response) => {
+  try {
+    const data = await fetchTreasuryYields();
+    res.json(data || { error: 'Unable to fetch Treasury yields' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch Treasury yields' });
+  }
+});
+
+// Unemployment
+router.get('/fred/unemployment', async (req: Request, res: Response) => {
+  try {
+    const data = await fetchUnemployment();
+    res.json(data || { error: 'Unable to fetch unemployment data' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch unemployment data' });
+  }
 });
 
 export default router;

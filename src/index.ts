@@ -60,6 +60,13 @@ app.get('/', (req, res) => {
         summary: 'GET /api/summary',
         dashboard: 'GET /api/dashboard',
         impact: 'GET /api/impact/:eventType'
+      },
+      fred: {
+        snapshot: 'GET /api/fred',
+        fedFundsRate: 'GET /api/fred/rate',
+        cpi: 'GET /api/fred/cpi',
+        treasury: 'GET /api/fred/treasury',
+        unemployment: 'GET /api/fred/unemployment'
       }
     },
     features: [
@@ -68,7 +75,12 @@ app.get('/', (req, res) => {
       'Risk environment scoring',
       'Historical impact data for event types',
       'Actionable signals with confidence scores',
-      'Real-time market snapshots'
+      'Real-time market snapshots',
+      '🆕 FRED API integration (official Fed data)',
+      '🆕 Fed Funds Rate with trend analysis',
+      '🆕 CPI with year-over-year inflation',
+      '🆕 Treasury yields and yield curve inversion detection',
+      '🆕 Unemployment rate tracking'
     ]
   });
 });
