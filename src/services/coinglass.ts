@@ -48,41 +48,21 @@ async function fetchFundingRates(symbol: string): Promise<FundingRate[]> {
   if (cached) return cached;
 
   try {
-    // Using Coinglass public endpoint
-    const res = await axios.get(`${COINGLASS_API}/funding`, {
-      params: { symbol },
-      timeout: 10000,
-      headers: { 'User-Agent': 'MacroOracle/1.0' }
+    // Use Binance as primary (more reliable)
+    const res = await axios.get('https://fapi.binance.com/fapi/v1/fundingRate', {
+      params: { symbol: `${symbol}USDT`, limit: 1 },
+      timeout: 5000
     });
-
-    if (res.data.success && res.data.data) {
-      const rates: FundingRate[] = res.data.data.map((item: any) => ({
-        symbol: item.symbol,
-        rate: parseFloat(item.rate) || 0,
-        predictedRate: parseFloat(item.predictedRate) || 0,
-        exchange: item.exchangeName
-      }));
+    
+    if (res.data && res.data[0]) {
+      const rate = parseFloat(res.data[0].fundingRate) * 100; // Convert to percentage
+      const rates = [{ symbol, rate, predictedRate: rate, exchange: 'Binance' }];
       setCache(cacheKey, rates);
       return rates;
     }
     return [];
   } catch (error) {
-    // Fallback: use alternative free endpoint
-    try {
-      const res = await axios.get('https://fapi.binance.com/fapi/v1/fundingRate', {
-        params: { symbol: `${symbol}USDT`, limit: 1 },
-        timeout: 5000
-      });
-      
-      if (res.data && res.data[0]) {
-        const rate = parseFloat(res.data[0].fundingRate) * 100;
-        const rates = [{ symbol, rate, predictedRate: rate, exchange: 'Binance' }];
-        setCache(cacheKey, rates);
-        return rates;
-      }
-    } catch (e) {
-      console.error(`Failed to fetch funding rates for ${symbol}:`, e);
-    }
+    console.error(`Failed to fetch funding rates for ${symbol}:`, error);
     return [];
   }
 }
