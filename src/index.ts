@@ -6,6 +6,7 @@ import apiRoutes from './routes/api.js';
 import { startLiveFeeds } from './services/feeds.js';
 import { refreshLiveData } from './services/market.js';
 import { landingPageHtml } from './landing.js';
+import { apiDocsHtml } from './api-docs.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,8 +32,13 @@ app.get('/', (req, res) => {
   res.type('html').send(landingPageHtml);
 });
 
-// API info endpoint (for agents that want JSON)
+// API docs page (beautiful HTML documentation)
 app.get('/api', (req, res) => {
+  res.type('html').send(apiDocsHtml);
+});
+
+// API info endpoint (JSON for programmatic access)
+app.get('/api/info', (req, res) => {
   res.json({
     name: 'Macro Oracle',
     version: "0.2.0",
