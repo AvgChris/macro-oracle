@@ -312,6 +312,84 @@ router.get('/dashboard', (req: Request, res: Response) => {
   res.redirect('/dashboard');
 });
 
+// Dispute context endpoint (for arbitration services like PayGuard)
+router.get('/context/dispute', (req: Request, res: Response) => {
+  const market = getMarketSnapshot();
+  const risk = getRiskEnvironment();
+  
+  // Determine volatility level
+  let volatilityLevel: 'low' | 'normal' | 'elevated' | 'high' | 'extreme' = 'normal';
+  const vix = market.vix || 20;
+  if (vix < 15) volatilityLevel = 'low';
+  else if (vix < 20) volatilityLevel = 'normal';
+  else if (vix < 25) volatilityLevel = 'elevated';
+  else if (vix < 35) volatilityLevel = 'high';
+  else volatilityLevel = 'extreme';
+  
+  // Use risk environment for fear/greed approximation
+  const fearGreed = risk.score < 30 ? 20 : risk.score < 50 ? 40 : risk.score < 70 ? 60 : 80;
+  
+  // Determine market regime
+  let marketRegime: 'normal' | 'volatile' | 'crisis' | 'black_swan' = 'normal';
+  if (vix > 35 || fearGreed < 15) marketRegime = 'black_swan';
+  else if (vix > 25 || fearGreed < 25) marketRegime = 'crisis';
+  else if (vix > 20 || fearGreed < 35) marketRegime = 'volatile';
+  
+  // Recent events
+  const recentEvents: string[] = [];
+  if (fearGreed < 20) recentEvents.push(`Extreme Fear (F&G: ${fearGreed})`);
+  if (vix > 25) recentEvents.push(`High VIX (${vix.toFixed(1)})`);
+  if (market.dxy && market.dxy > 106) recentEvents.push('Strong Dollar pressure');
+  
+  // Get upcoming critical event
+  const nextEvent = getNextCriticalEvent();
+  if (nextEvent) {
+    const countdown = new Date(nextEvent.date).getTime() - Date.now();
+    if (countdown > 0 && countdown < 24 * 60 * 60 * 1000) {
+      recentEvents.push(`${nextEvent.name} in ${Math.round(countdown / 3600000)}h`);
+    }
+  }
+  
+  // Recommended action for arbitration
+  let recommendedAction: 'proceed_normal' | 'extend_deadline' | 'pause_arbitration' | 'factor_volatility' = 'proceed_normal';
+  let confidence = 70;
+  
+  if (marketRegime === 'black_swan') {
+    recommendedAction = 'pause_arbitration';
+    confidence = 90;
+  } else if (marketRegime === 'crisis') {
+    recommendedAction = 'extend_deadline';
+    confidence = 85;
+  } else if (marketRegime === 'volatile') {
+    recommendedAction = 'factor_volatility';
+    confidence = 75;
+  }
+  
+  res.json({
+    timestamp: Date.now(),
+    volatilityLevel,
+    marketRegime,
+    recentEvents,
+    metrics: {
+      vix: vix.toFixed(1),
+      fearGreed,
+      dxy: market.dxy,
+      btcPrice: market.btc
+    },
+    recommendation: {
+      action: recommendedAction,
+      confidence,
+      reasoning: marketRegime === 'black_swan' 
+        ? 'Extreme market conditions - disputes may be affected by force majeure'
+        : marketRegime === 'crisis'
+        ? 'Elevated volatility - consider extending deadlines for performance-based contracts'
+        : marketRegime === 'volatile'
+        ? 'Above-normal volatility - factor market conditions into evaluation'
+        : 'Normal market conditions - proceed with standard arbitration'
+    }
+  });
+});
+
 // Historical impact for event type
 router.get('/impact/:eventType', (req: Request, res: Response) => {
   const impact = getHistoricalImpact(req.params.eventType as any);
