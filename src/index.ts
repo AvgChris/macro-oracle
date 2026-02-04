@@ -130,8 +130,8 @@ app.get('/api', (req, res) => {
 // API routes
 app.use('/api', apiRoutes);
 
-// Fallback: redirect unknown routes to docs
-app.get('*', (req, res) => {
+// Fallback: redirect unknown routes to docs (Express 5 syntax)
+app.get('/{*path}', (req, res) => {
   res.redirect('/');
 });
 

@@ -1,6 +1,7 @@
 {
   "name": "macro-oracle",
   "version": "0.1.0",
+  "type": "module",
   "description": "Real-time macroeconomic intelligence for crypto agents",
   "main": "dist/index.js",
   "engines": {
