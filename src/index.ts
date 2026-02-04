@@ -30,8 +30,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static docs (resolve from process.cwd() for Railway compatibility)
-const docsPath = join(process.cwd(), 'docs');
+// Serve static docs (docs folder is copied to dist/ during build)
+const docsPath = join(__dirname, 'docs');
 app.use('/docs', express.static(docsPath));
 
 // Root serves the beautiful docs page
