@@ -398,6 +398,21 @@ router.get('/news/sentiment', async (req: Request, res: Response) => {
 
 // === DERIVATIVES DATA ENDPOINTS (Coinglass/Binance) ===
 
+// Debug endpoint for testing Bybit API
+router.get('/derivatives/debug', async (req: Request, res: Response) => {
+  const axios = (await import('axios')).default;
+  try {
+    const bybitRes = await axios.get('https://api.bybit.com/v5/market/funding/history', {
+      params: { category: 'linear', symbol: 'BTCUSDT', limit: 1 },
+      timeout: 10000,
+      headers: { 'User-Agent': 'MacroOracle/1.0' }
+    });
+    res.json({ success: true, data: bybitRes.data });
+  } catch (error: any) {
+    res.json({ success: false, error: error.message, code: error.code });
+  }
+});
+
 // Full derivatives snapshot
 router.get('/derivatives', async (req: Request, res: Response) => {
   try {
