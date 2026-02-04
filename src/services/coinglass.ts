@@ -49,38 +49,23 @@ async function fetchFundingRates(symbol: string): Promise<FundingRate[]> {
 
   const rates: FundingRate[] = [];
 
-  // Try Bybit (reliable, no geo-restrictions)
+  // Try OKX (works from Railway IPs)
   try {
-    const bybitRes = await axios.get('https://api.bybit.com/v5/market/funding/history', {
-      params: { category: 'linear', symbol: `${symbol}USDT`, limit: 1 },
+    const okxRes = await axios.get('https://www.okx.com/api/v5/public/funding-rate', {
+      params: { instId: `${symbol}-USDT-SWAP` },
       timeout: 8000,
       headers: { 'User-Agent': 'MacroOracle/1.0' }
     });
     
-    console.log(`Bybit funding response for ${symbol}:`, JSON.stringify(bybitRes.data).slice(0, 200));
-    
-    if (bybitRes.data?.result?.list?.[0]) {
-      const rate = parseFloat(bybitRes.data.result.list[0].fundingRate) * 100;
-      rates.push({ symbol, rate, predictedRate: rate, exchange: 'Bybit' });
-      console.log(`Bybit ${symbol} funding rate: ${rate}%`);
+    if (okxRes.data?.code === '0' && okxRes.data?.data?.[0]) {
+      const fundingData = okxRes.data.data[0];
+      const rate = parseFloat(fundingData.fundingRate) * 100;
+      const nextRate = fundingData.nextFundingRate ? parseFloat(fundingData.nextFundingRate) * 100 : rate;
+      rates.push({ symbol, rate, predictedRate: nextRate, exchange: 'OKX' });
+      console.log(`OKX ${symbol} funding rate: ${rate}%`);
     }
   } catch (error: any) {
-    console.error(`Bybit funding failed for ${symbol}:`, error.message);
-  }
-
-  // Try Binance as backup
-  try {
-    const binanceRes = await axios.get('https://fapi.binance.com/fapi/v1/fundingRate', {
-      params: { symbol: `${symbol}USDT`, limit: 1 },
-      timeout: 5000
-    });
-    
-    if (binanceRes.data && binanceRes.data[0]) {
-      const rate = parseFloat(binanceRes.data[0].fundingRate) * 100;
-      rates.push({ symbol, rate, predictedRate: rate, exchange: 'Binance' });
-    }
-  } catch (error) {
-    console.error(`Binance funding failed for ${symbol}:`, error);
+    console.error(`OKX funding failed for ${symbol}:`, error.message);
   }
 
   if (rates.length > 0) {
@@ -153,54 +138,24 @@ async function fetchOpenInterest(symbol: string): Promise<OpenInterestData | nul
   const cached = getCached<OpenInterestData>(cacheKey);
   if (cached) return cached;
 
-  // Try Bybit first (more reliable)
+  // Try OKX (works from Railway IPs)
   try {
-    const res = await axios.get('https://api.bybit.com/v5/market/open-interest', {
-      params: { category: 'linear', symbol: `${symbol}USDT`, intervalTime: '1h', limit: 1 },
-      timeout: 5000
-    });
+    const [oiRes, tickerRes] = await Promise.all([
+      axios.get('https://www.okx.com/api/v5/public/open-interest', {
+        params: { instType: 'SWAP', instId: `${symbol}-USDT-SWAP` },
+        timeout: 8000,
+        headers: { 'User-Agent': 'MacroOracle/1.0' }
+      }),
+      axios.get('https://www.okx.com/api/v5/market/ticker', {
+        params: { instId: `${symbol}-USDT-SWAP` },
+        timeout: 8000,
+        headers: { 'User-Agent': 'MacroOracle/1.0' }
+      })
+    ]);
 
-    if (res.data?.result?.list?.[0]) {
-      const oiValue = parseFloat(res.data.result.list[0].openInterest);
-      
-      // Get price for USD conversion
-      const priceRes = await axios.get('https://api.bybit.com/v5/market/tickers', {
-        params: { category: 'linear', symbol: `${symbol}USDT` },
-        timeout: 5000
-      });
-      
-      const price = parseFloat(priceRes.data?.result?.list?.[0]?.lastPrice || '0');
-      const oiUsd = oiValue * price;
-
-      const data: OpenInterestData = {
-        symbol,
-        openInterest: Math.round(oiUsd),
-        change24h: 0,
-        change7d: 0
-      };
-      
-      setCache(cacheKey, data);
-      return data;
-    }
-  } catch (error) {
-    console.error(`Bybit OI failed for ${symbol}:`, error);
-  }
-
-  // Fallback to Binance
-  try {
-    const res = await axios.get('https://fapi.binance.com/fapi/v1/openInterest', {
-      params: { symbol: `${symbol}USDT` },
-      timeout: 5000
-    });
-
-    if (res.data && res.data.openInterest) {
-      const priceRes = await axios.get('https://fapi.binance.com/fapi/v1/ticker/price', {
-        params: { symbol: `${symbol}USDT` },
-        timeout: 5000
-      });
-      
-      const oi = parseFloat(res.data.openInterest);
-      const price = parseFloat(priceRes.data.price);
+    if (oiRes.data?.code === '0' && oiRes.data?.data?.[0]) {
+      const oi = parseFloat(oiRes.data.data[0].oi);
+      const price = parseFloat(tickerRes.data?.data?.[0]?.last || '0');
       const oiUsd = oi * price;
 
       const data: OpenInterestData = {
@@ -211,10 +166,11 @@ async function fetchOpenInterest(symbol: string): Promise<OpenInterestData | nul
       };
       
       setCache(cacheKey, data);
+      console.log(`OKX ${symbol} OI: $${Math.round(oiUsd / 1e9)}B`);
       return data;
     }
-  } catch (error) {
-    console.error(`Binance OI failed for ${symbol}:`, error);
+  } catch (error: any) {
+    console.error(`OKX OI failed for ${symbol}:`, error.message);
   }
 
   return null;
