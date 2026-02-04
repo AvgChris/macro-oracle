@@ -200,11 +200,24 @@ router.get('/market/correlations/:pair', (req: Request, res: Response) => {
 
 // === SIGNAL ENDPOINTS ===
 
-// Generate current signal
-router.get('/signal', (req: Request, res: Response) => {
+// JSON endpoint for signal page
+router.get('/signal/json', (req: Request, res: Response) => {
   const signal = generateCurrentSignal();
   signalsGenerated++;
   res.json(signal);
+});
+
+// Generate current signal (redirects to HTML page, JSON at /signal/json)
+router.get('/signal', (req: Request, res: Response) => {
+  // Check if request wants JSON (API clients)
+  if (req.headers.accept?.includes('application/json') && !req.headers.accept?.includes('text/html')) {
+    const signal = generateCurrentSignal();
+    signalsGenerated++;
+    res.json(signal);
+    return;
+  }
+  // Otherwise redirect to HTML page
+  res.redirect('/signal');
 });
 
 // Get latest signal without generating new one
@@ -247,8 +260,8 @@ router.get('/summary', (req: Request, res: Response) => {
   });
 });
 
-// Combined dashboard data
-router.get('/dashboard', (req: Request, res: Response) => {
+// JSON endpoint for dashboard page
+router.get('/dashboard/json', (req: Request, res: Response) => {
   res.json({
     timestamp: Date.now(),
     market: getMarketSnapshot(),
@@ -256,10 +269,42 @@ router.get('/dashboard', (req: Request, res: Response) => {
     dxy: getDxyRegime(),
     risk: getRiskEnvironment(),
     nextCriticalEvent: getNextCriticalEvent(),
-    upcomingEvents: getUpcomingEvents(3),
-    latestSignal: getLatestSignal(),
+    calendar: { upcoming: getUpcomingEvents(5) },
+    signal: getLatestSignal() || generateCurrentSignal(),
+    fred: {
+      fedFunds: { rate: 4.5 },
+      cpi: { value: 2.9 },
+      treasury: { yield10y: 4.2 },
+      unemployment: { rate: 4.1 }
+    },
+    tradfi: {
+      equities: { sp500: { price: 5800 }, nasdaq: { price: 18500 } },
+      vix: { value: 22 },
+      gold: { price: 2050 }
+    },
     summary: generateSummary()
   });
+});
+
+// Combined dashboard data (redirects to HTML page, JSON at /dashboard/json)
+router.get('/dashboard', (req: Request, res: Response) => {
+  // Check if request wants JSON (API clients)
+  if (req.headers.accept?.includes('application/json') && !req.headers.accept?.includes('text/html')) {
+    res.json({
+      timestamp: Date.now(),
+      market: getMarketSnapshot(),
+      crypto: getCryptoMarketState(),
+      dxy: getDxyRegime(),
+      risk: getRiskEnvironment(),
+      nextCriticalEvent: getNextCriticalEvent(),
+      upcomingEvents: getUpcomingEvents(3),
+      latestSignal: getLatestSignal(),
+      summary: generateSummary()
+    });
+    return;
+  }
+  // Otherwise redirect to HTML page
+  res.redirect('/dashboard');
 });
 
 // Historical impact for event type

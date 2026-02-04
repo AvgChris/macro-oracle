@@ -7,6 +7,8 @@ import { startLiveFeeds } from './services/feeds.js';
 import { refreshLiveData } from './services/market.js';
 import { landingPageHtml } from './landing.js';
 import { apiDocsHtml } from './api-docs.js';
+import { signalPageHtml } from './pages/signal-page.js';
+import { dashboardPageHtml } from './pages/dashboard-page.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -131,6 +133,15 @@ app.get('/api/info', (req, res) => {
       '🆕 Derivatives data (funding rates, open interest, liquidations)'
     ]
   });
+});
+
+// HTML pages for signal and dashboard
+app.get('/signal', (req, res) => {
+  res.type('html').send(signalPageHtml);
+});
+
+app.get('/dashboard', (req, res) => {
+  res.type('html').send(dashboardPageHtml);
 });
 
 // API routes
