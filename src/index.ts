@@ -34,6 +34,16 @@ app.get('/', (req, res) => {
   res.type('html').send(landingPageHtml);
 });
 
+// OpenClaw skill file
+app.get('/skill.md', (req, res) => {
+  res.type('text/markdown').sendFile('skill.md', { root: process.cwd() });
+});
+
+// Skill metadata
+app.get('/skill.json', (req, res) => {
+  res.sendFile('skill.json', { root: process.cwd() });
+});
+
 // API docs page (beautiful HTML documentation)
 app.get('/api', (req, res) => {
   res.type('html').send(apiDocsHtml);
