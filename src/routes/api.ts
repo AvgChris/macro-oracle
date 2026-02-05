@@ -60,6 +60,12 @@ import {
 import { fetchWhaleSnapshot } from '../services/whales.js';
 import { fetchOnChainSnapshot } from '../services/onchain.js';
 import { fetchFedWatchSnapshot } from '../services/fedwatch.js';
+import {
+  calculateFearGreedPerformance,
+  getMacroEventHistory,
+  getHistoricalDisputeContext,
+  fetchCurrentFearGreed
+} from '../services/historical.js';
 import { OracleStatus } from '../types.js';
 
 const router = Router();
@@ -643,6 +649,85 @@ router.get('/derivatives/liquidations', async (req: Request, res: Response) => {
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch liquidation data' });
+  }
+});
+
+// === HISTORICAL DATA ENDPOINTS ===
+
+// Fear & Greed historical performance
+router.get('/historical/fear-greed', async (req: Request, res: Response) => {
+  try {
+    const threshold = parseInt(req.query.threshold as string) || 20;
+    const performance = calculateFearGreedPerformance(threshold);
+    const current = await fetchCurrentFearGreed();
+    
+    res.json({
+      current,
+      historicalPerformance: performance,
+      insight: current.value < 20 
+        ? `Current F&G (${current.value}) is in extreme fear territory. Historically, readings <20 have led to avg +${performance.performance['30d'].avgReturn}% returns over 30 days with ${performance.performance['30d'].winRate}% win rate.`
+        : `Current F&G (${current.value}) is not in extreme fear territory. Historical extreme fear data provided for reference.`
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch historical Fear & Greed data' });
+  }
+});
+
+// Macro event historical impact
+router.get('/historical/event/:eventType', (req: Request, res: Response) => {
+  try {
+    const eventType = req.params.eventType;
+    const history = getMacroEventHistory(eventType);
+    res.json(history);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch event history' });
+  }
+});
+
+// Dispute context for arbitration (historical period analysis)
+router.get('/context/dispute', (req: Request, res: Response) => {
+  try {
+    const startDate = req.query.start as string || '2026-01-01';
+    const endDate = req.query.end as string || '2026-02-04';
+    const context = getHistoricalDisputeContext(startDate, endDate);
+    res.json(context);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to generate dispute context' });
+  }
+});
+
+// Current context for live disputes
+router.get('/context/current', async (req: Request, res: Response) => {
+  try {
+    const fearGreed = await fetchCurrentFearGreed();
+    
+    // Determine volatility level
+    let volatilityLevel = 'normal';
+    if (fearGreed.value < 20) volatilityLevel = 'extreme';
+    else if (fearGreed.value < 35) volatilityLevel = 'high';
+    else if (fearGreed.value > 75) volatilityLevel = 'elevated';
+    
+    res.json({
+      timestamp: Date.now(),
+      fearGreed: fearGreed.value,
+      fearGreedClassification: fearGreed.classification,
+      volatilityLevel,
+      marketRegime: fearGreed.value < 25 ? 'crisis' : fearGreed.value > 60 ? 'euphoria' : 'normal',
+      recentEvents: [
+        `Fear & Greed at ${fearGreed.value} (${fearGreed.classification})`,
+        volatilityLevel === 'extreme' ? 'Market in extreme fear - elevated volatility expected' : null,
+      ].filter(Boolean),
+      recommendation: {
+        action: volatilityLevel === 'extreme' ? 'extend_deadline' : 'proceed_normal',
+        confidence: volatilityLevel === 'extreme' ? 85 : 70,
+        reasoning: volatilityLevel === 'extreme' 
+          ? 'Elevated volatility - consider extending deadlines and adjusting performance benchmarks'
+          : 'Normal market conditions'
+      },
+      historicalContext: fearGreed.isExtremeFear ? fearGreed.historicalContext : null
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to generate current context' });
   }
 });
 
