@@ -85,6 +85,7 @@ export interface EconomicCalendarEntry {
   country: string;
   forecast?: string;
   previous?: string;
+  notes?: string;       // Additional context about the data
 }
 
 export interface OracleStatus {

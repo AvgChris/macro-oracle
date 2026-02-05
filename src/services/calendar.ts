@@ -24,8 +24,9 @@ const FEBRUARY_2026_CALENDAR: EconomicCalendarEntry[] = [
     type: 'nfp',
     impact: 'critical',
     country: 'US',
-    forecast: '180K',
-    previous: '256K'
+    forecast: '60K',
+    previous: '50K',
+    notes: 'Dec 2025 was +50K. Oct revised to -173K, Nov revised to +56K. 2025 avg: 49K/month.'
   },
   {
     id: 'unemployment-2026-02-07',
@@ -35,8 +36,8 @@ const FEBRUARY_2026_CALENDAR: EconomicCalendarEntry[] = [
     type: 'unemployment',
     impact: 'high',
     country: 'US',
-    forecast: '4.1%',
-    previous: '4.1%'
+    forecast: '4.4%',
+    previous: '4.4%'
   },
   {
     id: 'cpi-2026-02-12',
@@ -46,8 +47,9 @@ const FEBRUARY_2026_CALENDAR: EconomicCalendarEntry[] = [
     type: 'cpi',
     impact: 'critical',
     country: 'US',
-    forecast: '2.9%',
-    previous: '2.9%'
+    forecast: '2.6%',
+    previous: '2.7%',
+    notes: 'Dec 2025 was 2.7% YoY. Core CPI at 2.6% (lowest since 2021).'
   },
   {
     id: 'core-cpi-2026-02-12',
@@ -57,8 +59,9 @@ const FEBRUARY_2026_CALENDAR: EconomicCalendarEntry[] = [
     type: 'cpi',
     impact: 'critical',
     country: 'US',
-    forecast: '3.1%',
-    previous: '3.2%'
+    forecast: '2.6%',
+    previous: '2.6%',
+    notes: 'Core CPI at 2.6% - lowest since 2021, below expectations.'
   },
   {
     id: 'retail-2026-02-14',
