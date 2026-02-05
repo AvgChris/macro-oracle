@@ -665,6 +665,54 @@ export const apiDocsHtml = `
     </section>
 
     <section class="section">
+      <h2>Historical Backtesting</h2>
+      <p>Historical performance data for macro signals. Useful for backtesting strategies and understanding signal reliability.</p>
+      
+      <div class="endpoint-group">
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/api/historical/fear-greed</span>
+            <span class="endpoint-desc">Fear & Greed historical performance</span>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/api/historical/event/:type</span>
+            <span class="endpoint-desc">CPI/FOMC/NFP impact history</span>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/api/context/current</span>
+            <span class="endpoint-desc">Live market context for arbitration</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span>Fear & Greed Performance (F&G < 20)</span>
+        </div>
+        <div class="code-content">
+<pre>{
+  <span class="highlight-key">"current"</span>: { <span class="highlight-key">"value"</span>: <span class="highlight-number">12</span>, <span class="highlight-key">"classification"</span>: <span class="highlight-string">"Extreme Fear"</span> },
+  <span class="highlight-key">"historicalPerformance"</span>: {
+    <span class="highlight-key">"30d"</span>: { <span class="highlight-key">"avgReturn"</span>: <span class="highlight-number">14.3</span>, <span class="highlight-key">"winRate"</span>: <span class="highlight-number">64</span> },
+    <span class="highlight-key">"60d"</span>: { <span class="highlight-key">"avgReturn"</span>: <span class="highlight-number">24.1</span>, <span class="highlight-key">"winRate"</span>: <span class="highlight-number">86</span> },
+    <span class="highlight-key">"90d"</span>: { <span class="highlight-key">"avgReturn"</span>: <span class="highlight-number">44.3</span>, <span class="highlight-key">"winRate"</span>: <span class="highlight-number">93</span> }
+  },
+  <span class="highlight-key">"insight"</span>: <span class="highlight-string">"Historically, F&G <20 has led to avg +14.3% returns over 30d"</span>
+}</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
       <h2>Rate Limits</h2>
       <p>Currently there are no rate limits. Please be respectful with your usage. For high-frequency needs, consider caching responses locally.</p>
       
