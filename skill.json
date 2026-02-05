@@ -1,0 +1,19 @@
+{
+  "name": "macro-oracle",
+  "version": "1.0.0",
+  "description": "Real-time macroeconomic intelligence for AI agents. Fear & Greed, Fed policy, DXY, CPI/FOMC events, and historical backtesting.",
+  "author": "Mistah",
+  "homepage": "https://macro-oracle-production.up.railway.app",
+  "repository": "https://github.com/AvgChris/macro-oracle",
+  "keywords": ["macro", "trading", "fear-greed", "fed", "dxy", "signals", "backtesting"],
+  "category": "trading",
+  "api_base": "https://macro-oracle-production.up.railway.app/api",
+  "endpoints": [
+    { "method": "GET", "path": "/api/signal", "description": "Current macro signal" },
+    { "method": "GET", "path": "/api/historical/fear-greed", "description": "F&G with backtesting" },
+    { "method": "GET", "path": "/api/calendar/next-critical", "description": "Next macro event" },
+    { "method": "GET", "path": "/api/context/current", "description": "Live dispute context" }
+  ],
+  "authentication": "none",
+  "rate_limits": "none"
+}
