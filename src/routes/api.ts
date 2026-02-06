@@ -835,4 +835,24 @@ router.get('/orderbook/:symbol', async (req: Request, res: Response) => {
   }
 });
 
+// Debug endpoint for orderbook API test
+router.get('/orderbook/debug/bybit', async (req: Request, res: Response) => {
+  const axios = (await import('axios')).default;
+  try {
+    const response = await axios.get('https://api.bybit.com/v5/market/orderbook', {
+      params: { category: 'spot', symbol: 'BTCUSDT', limit: 5 },
+      timeout: 10000,
+      headers: { 'User-Agent': 'MacroOracle/2.0' }
+    });
+    res.json({ success: true, data: response.data });
+  } catch (error: any) {
+    res.json({ 
+      success: false, 
+      error: error.message, 
+      code: error.code,
+      response: error.response?.data
+    });
+  }
+});
+
 export default router;

@@ -96,7 +96,11 @@ async function fetchOrderbook(symbol: string, limit: number = 50): Promise<{
         symbol: bybitSymbol, 
         limit: Math.min(limit, 50) // Bybit max is 50
       },
-      timeout: 5000
+      timeout: 10000,
+      headers: { 
+        'User-Agent': 'MacroOracle/2.0',
+        'Accept': 'application/json'
+      }
     });
     
     if (response.data.retCode !== 0) {
