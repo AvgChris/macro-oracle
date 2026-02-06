@@ -491,6 +491,91 @@ export const apiDocsHtml = `
     </section>
 
     <section class="section">
+      <h2>🔥 Orderbook + Macro Signals (NEW)</h2>
+      <p>The killer feature: real-time orderbook depth correlated with macro indicators. Get actionable signals, not just data.</p>
+      
+      <div class="endpoint-group">
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/api/orderbook/signal</span>
+            <span class="endpoint-desc">Combined orderbook + macro signal</span>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/api/orderbook/multi</span>
+            <span class="endpoint-desc">BTC, ETH, SOL orderbooks at once</span>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/api/orderbook/imbalance</span>
+            <span class="endpoint-desc">Quick bid/ask imbalance check</span>
+          </div>
+        </div>
+      </div>
+
+      <table class="param-table">
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="param-name">symbol</span></td>
+            <td><span class="param-type">string</span></td>
+            <td>BTC, ETH, or SOL (default: BTC)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Example: /api/orderbook/signal?symbol=BTC</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <span>JSON Response</span>
+        </div>
+        <div class="code-content">
+<pre>{
+  <span class="highlight-key">"symbol"</span>: <span class="highlight-string">"BTC"</span>,
+  <span class="highlight-key">"orderbook"</span>: {
+    <span class="highlight-key">"midPrice"</span>: <span class="highlight-number">65239.45</span>,
+    <span class="highlight-key">"bidDepth"</span>: <span class="highlight-number">134514.39</span>,
+    <span class="highlight-key">"askDepth"</span>: <span class="highlight-number">88105.55</span>,
+    <span class="highlight-key">"imbalancePercent"</span>: <span class="highlight-number">20.85</span>,
+    <span class="highlight-key">"askWall"</span>: {<span class="highlight-key">"price"</span>: <span class="highlight-number">65251</span>, <span class="highlight-key">"size"</span>: <span class="highlight-number">27038</span>}
+  },
+  <span class="highlight-key">"macro"</span>: {
+    <span class="highlight-key">"fearGreed"</span>: <span class="highlight-number">9</span>,
+    <span class="highlight-key">"fearGreedSignal"</span>: <span class="highlight-string">"extreme_fear"</span>,
+    <span class="highlight-key">"vix"</span>: <span class="highlight-number">21.77</span>
+  },
+  <span class="highlight-key">"signal"</span>: {
+    <span class="highlight-key">"direction"</span>: <span class="highlight-string">"strong_buy"</span>,
+    <span class="highlight-key">"confidence"</span>: <span class="highlight-number">80</span>,
+    <span class="highlight-key">"reasoning"</span>: [
+      <span class="highlight-string">"Strong bid imbalance (20.8% more bids)"</span>,
+      <span class="highlight-string">"Extreme fear (F&G: 9) — historically bullish"</span>
+    ],
+    <span class="highlight-key">"actionable"</span>: <span class="highlight-number">true</span>
+  }
+}</pre>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <strong>🎯 Why this matters:</strong> Orderbook imbalance alone is noisy. Combined with extreme fear (F&G: 9) and VIX, you get signals that actually work. Historically, extreme fear + bid imbalance = strong buying opportunities.
+      </div>
+    </section>
+
+    <section class="section">
       <h2>Core Endpoints</h2>
       
       <div class="endpoint-group">

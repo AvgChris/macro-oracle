@@ -107,6 +107,47 @@ curl "https://macro-oracle-production.up.railway.app/api/volatility/forecast"
 | `/api/solana` | SOL price, TVL, TPS, yield | Solana-native agents |
 | `/api/volatility/forecast` | 24h volatility prediction | Position sizing |
 
+## 🔥 Orderbook + Macro Signals (NEW)
+
+The killer feature: real-time orderbook depth correlated with macro indicators.
+
+| Endpoint | What It Does |
+|----------|--------------|
+| `/api/orderbook/signal?symbol=BTC` | Combined orderbook + macro signal |
+| `/api/orderbook/multi` | BTC, ETH, SOL orderbooks at once |
+| `/api/orderbook/imbalance?symbol=X` | Quick bid/ask imbalance check |
+
+### Example: /api/orderbook/signal
+```bash
+curl "https://macro-oracle-production.up.railway.app/api/orderbook/signal?symbol=BTC"
+```
+```json
+{
+  "orderbook": {
+    "midPrice": 65239,
+    "bidDepth": 134514,
+    "askDepth": 88105,
+    "imbalancePercent": 20.85
+  },
+  "macro": {
+    "fearGreed": 9,
+    "fearGreedSignal": "extreme_fear",
+    "vix": 21.77
+  },
+  "signal": {
+    "direction": "strong_buy",
+    "confidence": 80,
+    "reasoning": [
+      "Strong bid imbalance (20.8% more bids)",
+      "Extreme fear (F&G: 9) — historically bullish"
+    ],
+    "actionable": true
+  }
+}
+```
+
+**Why this matters:** Orderbook imbalance alone is noisy. Combined with extreme fear + VIX, you get signals that actually work.
+
 ### Should-Transact Query Parameters
 ```
 ?amount=10000    # Transaction size (larger = more conservative)
