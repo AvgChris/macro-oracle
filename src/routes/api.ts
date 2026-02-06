@@ -734,6 +734,7 @@ router.get('/context/current', async (req: Request, res: Response) => {
 // === AGENT-FOCUSED ENDPOINTS (Simple, actionable) ===
 
 import { shouldTransact, getTldr, fetchSolanaMetrics, forecastVolatility } from '../services/agent.js';
+import { getMacroOrderbookSignal, getMultiAssetOrderbook, getOrderbookImbalance } from '../services/orderbook.js';
 
 // Simple yes/no: Should I transact now?
 router.get('/agent/should-transact', async (req: Request, res: Response) => {
@@ -786,6 +787,51 @@ router.get('/volatility/forecast', async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to generate volatility forecast' });
+  }
+});
+
+// === ORDERBOOK + MACRO CORRELATION ENDPOINTS ===
+
+// Combined macro + orderbook signal (the killer feature)
+router.get('/orderbook/signal', async (req: Request, res: Response) => {
+  try {
+    const symbol = (req.query.symbol as string)?.toUpperCase() || 'BTC';
+    const signal = await getMacroOrderbookSignal(symbol);
+    res.json(signal);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to generate orderbook signal' });
+  }
+});
+
+// Multi-asset orderbook overview
+router.get('/orderbook/multi', async (req: Request, res: Response) => {
+  try {
+    const data = await getMultiAssetOrderbook();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch multi-asset orderbook' });
+  }
+});
+
+// Simple orderbook imbalance check
+router.get('/orderbook/imbalance', async (req: Request, res: Response) => {
+  try {
+    const symbol = (req.query.symbol as string)?.toUpperCase() || 'BTC';
+    const imbalance = await getOrderbookImbalance(symbol);
+    res.json(imbalance);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to fetch orderbook imbalance' });
+  }
+});
+
+// Orderbook for specific symbol
+router.get('/orderbook/:symbol', async (req: Request, res: Response) => {
+  try {
+    const symbol = req.params.symbol.toUpperCase();
+    const signal = await getMacroOrderbookSignal(symbol);
+    res.json(signal);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to fetch orderbook' });
   }
 });
 
