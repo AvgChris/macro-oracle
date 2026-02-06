@@ -731,4 +731,62 @@ router.get('/context/current', async (req: Request, res: Response) => {
   }
 });
 
+// === AGENT-FOCUSED ENDPOINTS (Simple, actionable) ===
+
+import { shouldTransact, getTldr, fetchSolanaMetrics, forecastVolatility } from '../services/agent.js';
+
+// Simple yes/no: Should I transact now?
+router.get('/agent/should-transact', async (req: Request, res: Response) => {
+  try {
+    const amount = req.query.amount ? parseFloat(req.query.amount as string) : undefined;
+    const urgency = (req.query.urgency as 'low' | 'medium' | 'high') || 'medium';
+    
+    const decision = await shouldTransact(amount, urgency);
+    res.json({
+      ...decision,
+      timestamp: Date.now(),
+      queryParams: { amount, urgency }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to evaluate transaction conditions' });
+  }
+});
+
+// One-line market summary
+router.get('/agent/tldr', async (req: Request, res: Response) => {
+  try {
+    const tldr = await getTldr();
+    res.json({
+      ...tldr,
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to generate summary' });
+  }
+});
+
+// Solana-specific metrics (for Colosseum hackathon)
+router.get('/solana', async (req: Request, res: Response) => {
+  try {
+    const metrics = await fetchSolanaMetrics();
+    res.json(metrics);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch Solana metrics' });
+  }
+});
+
+// Volatility forecast for next 24h
+router.get('/volatility/forecast', async (req: Request, res: Response) => {
+  try {
+    const forecast = await forecastVolatility();
+    res.json({
+      ...forecast,
+      timestamp: Date.now(),
+      period: '24h'
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to generate volatility forecast' });
+  }
+});
+
 export default router;
