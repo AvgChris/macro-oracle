@@ -71,7 +71,7 @@ interface MacroOrderbookSignal {
   };
 }
 
-const BINANCE_API = 'https://api.binance.com/api/v3';
+const BYBIT_API = 'https://api.bybit.com/v5/market';
 
 // Supported symbols
 const SYMBOLS: Record<string, string> = {
@@ -81,20 +81,36 @@ const SYMBOLS: Record<string, string> = {
 };
 
 /**
- * Fetch orderbook from Binance
+ * Fetch orderbook from Bybit (Binance is geo-blocked on Railway)
  */
-async function fetchBinanceOrderbook(symbol: string, limit: number = 100): Promise<{
+async function fetchOrderbook(symbol: string, limit: number = 50): Promise<{
   bids: [string, string][];
   asks: [string, string][];
   lastUpdateId: number;
 } | null> {
   try {
-    const binanceSymbol = SYMBOLS[symbol.toUpperCase()] || `${symbol.toUpperCase()}USDT`;
-    const response = await axios.get(`${BINANCE_API}/depth`, {
-      params: { symbol: binanceSymbol, limit },
+    const bybitSymbol = SYMBOLS[symbol.toUpperCase()] || `${symbol.toUpperCase()}USDT`;
+    const response = await axios.get(`${BYBIT_API}/orderbook`, {
+      params: { 
+        category: 'spot',
+        symbol: bybitSymbol, 
+        limit: Math.min(limit, 50) // Bybit max is 50
+      },
       timeout: 5000
     });
-    return response.data;
+    
+    if (response.data.retCode !== 0) {
+      console.error(`Bybit error for ${symbol}:`, response.data.retMsg);
+      return null;
+    }
+    
+    const result = response.data.result;
+    // Bybit returns 'a' for asks and 'b' for bids
+    return {
+      bids: result.b || [],
+      asks: result.a || [],
+      lastUpdateId: result.u || 0
+    };
   } catch (error) {
     console.error(`Failed to fetch orderbook for ${symbol}:`, error);
     return null;
@@ -196,7 +212,7 @@ function analyzeOrderbook(
  */
 export async function getMacroOrderbookSignal(symbol: string = 'BTC'): Promise<MacroOrderbookSignal> {
   // Fetch orderbook
-  const rawOrderbook = await fetchBinanceOrderbook(symbol, 100);
+  const rawOrderbook = await fetchOrderbook(symbol, 100);
   if (!rawOrderbook) {
     throw new Error(`Failed to fetch orderbook for ${symbol}`);
   }
@@ -364,7 +380,7 @@ export async function getMultiAssetOrderbook(): Promise<{
   const assets: Record<string, OrderbookSnapshot> = {};
   
   for (const symbol of symbols) {
-    const raw = await fetchBinanceOrderbook(symbol, 50);
+    const raw = await fetchOrderbook(symbol, 50);
     if (raw) {
       assets[symbol] = analyzeOrderbook(raw.bids, raw.asks, symbol);
     }
@@ -419,7 +435,7 @@ export async function getOrderbookImbalance(symbol: string = 'BTC'): Promise<{
   midPrice: number;
   timestamp: number;
 }> {
-  const raw = await fetchBinanceOrderbook(symbol, 100);
+  const raw = await fetchOrderbook(symbol, 100);
   if (!raw) {
     throw new Error(`Failed to fetch orderbook for ${symbol}`);
   }
