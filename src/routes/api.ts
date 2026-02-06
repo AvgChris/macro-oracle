@@ -735,6 +735,7 @@ router.get('/context/current', async (req: Request, res: Response) => {
 
 import { shouldTransact, getTldr, fetchSolanaMetrics, forecastVolatility } from '../services/agent.js';
 import { getMacroOrderbookSignal, getMultiAssetOrderbook, getOrderbookImbalance } from '../services/orderbook.js';
+import { getBacktestSnapshot, getFearGreedBacktest, getCorrelationsSummary, getStrategyPerformance } from '../services/backtest.js';
 
 // Simple yes/no: Should I transact now?
 router.get('/agent/should-transact', async (req: Request, res: Response) => {
@@ -852,6 +853,52 @@ router.get('/orderbook/debug/kucoin', async (req: Request, res: Response) => {
       code: error.code,
       response: error.response?.data
     });
+  }
+});
+
+// === BACKTESTING ENDPOINTS ===
+
+// Full backtest snapshot with all strategies and correlations
+router.get('/backtest', (req: Request, res: Response) => {
+  try {
+    const snapshot = getBacktestSnapshot();
+    res.json(snapshot);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch backtest data' });
+  }
+});
+
+// Fear & Greed specific backtest (our best strategy)
+router.get('/backtest/fear-greed', (req: Request, res: Response) => {
+  try {
+    const backtest = getFearGreedBacktest();
+    res.json(backtest);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch Fear & Greed backtest' });
+  }
+});
+
+// Correlations summary
+router.get('/backtest/correlations', (req: Request, res: Response) => {
+  try {
+    const correlations = getCorrelationsSummary();
+    res.json(correlations);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch correlations' });
+  }
+});
+
+// Strategy performance by name
+router.get('/backtest/strategy/:name', (req: Request, res: Response) => {
+  try {
+    const strategy = getStrategyPerformance(req.params.name);
+    if (!strategy) {
+      res.status(404).json({ error: 'Strategy not found' });
+      return;
+    }
+    res.json(strategy);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch strategy performance' });
   }
 });
 

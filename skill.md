@@ -1,7 +1,7 @@
 ---
 name: macro-oracle
-version: 2.0.0
-description: Real-time macroeconomic intelligence for AI agents. Simple yes/no transaction decisions, Solana metrics, volatility forecasting, Fear & Greed, Fed policy, and historical backtesting.
+version: 2.1.0
+description: Real-time macroeconomic intelligence for AI agents. Backtested signals, orderbook analysis, Fear & Greed contrarian strategy (68% win rate), and simple yes/no transaction decisions.
 homepage: https://macro-oracle-production.up.railway.app
 author: Mistah
 metadata: {"category":"trading","api_base":"https://macro-oracle-production.up.railway.app/api"}
@@ -9,28 +9,22 @@ metadata: {"category":"trading","api_base":"https://macro-oracle-production.up.r
 
 # Macro Oracle
 
-**Macroeconomic intelligence for autonomous agents.** One API call to know if you should transact.
+**Backtested macro intelligence for autonomous agents.** One API call to know if you should transact.
 
 **API Base:** `https://macro-oracle-production.up.railway.app/api`
 
 No authentication required. All endpoints free. Sub-second response.
 
-## 🎯 Agent-First Design
+## 🎯 Why Macro Oracle?
 
-Most macro APIs dump data. Macro Oracle gives **actionable decisions**.
+Most trading fails because it ignores context. We've backtested 365 days of data:
 
-```javascript
-// Should I execute this USDC transaction?
-const decision = await fetch(
-  'https://macro-oracle-production.up.railway.app/api/agent/should-transact?amount=5000'
-).then(r => r.json());
+| Strategy | Win Rate | Return | Trades |
+|----------|----------|--------|--------|
+| **Fear/Greed Contrarian** | **68.2%** | **+26.8%** | 22 |
+| Combined Signal | 57.6% | +16.7% | 33 |
 
-if (!decision.shouldTransact) {
-  console.log(decision.recommendation);
-  // "Wait until after Non-Farm Payrolls. Suggested: 2026-02-07T15:30:00Z"
-  return;
-}
-```
+**Strongest correlation:** Funding Rate → 3-day returns (0.50 correlation)
 
 ## ⚡ Quick Start
 
@@ -45,79 +39,34 @@ curl "https://macro-oracle-production.up.railway.app/api/agent/should-transact"
   "riskLevel": "high",
   "factors": [
     {"name": "Fear & Greed", "signal": "red", "detail": "Extreme fear (9)"},
-    {"name": "Upcoming Event", "signal": "yellow", "detail": "NFP in 31h"}
+    {"name": "Upcoming Event", "signal": "yellow", "detail": "NFP in 28h"}
   ],
   "recommendation": "Wait until after Non-Farm Payrolls",
   "waitUntil": "2026-02-07T15:30:00.000Z"
 }
 ```
 
-### 2. One-Line Summary
+### 2. Backtested Strategy Performance
 ```bash
-curl "https://macro-oracle-production.up.railway.app/api/agent/tldr"
+curl "https://macro-oracle-production.up.railway.app/api/backtest"
 ```
 ```json
 {
-  "summary": "Extreme fear (F&G: 9). Historically +14% avg returns over 30d.",
-  "sentiment": "bearish",
-  "action": "Consider accumulating. DCA if bullish long-term.",
-  "fearGreed": 9,
-  "nextEvent": "Non-Farm Payrolls on 2026-02-07"
-}
-```
-
-### 3. Solana Metrics
-```bash
-curl "https://macro-oracle-production.up.railway.app/api/solana"
-```
-```json
-{
-  "price": 80.4,
-  "priceChange24h": -10.45,
-  "tvl": 6177153348,
-  "tps": 3708,
-  "stakingYield": 6.5,
-  "macroContext": {
-    "fearGreed": 9,
-    "correlation": {"btc": 0.85, "eth": 0.82},
-    "trend": "bearish"
+  "strategies": [
+    {"name": "Fear/Greed Contrarian", "winRate": 68.2, "totalReturn": 26.8},
+    {"name": "Combined Signal", "winRate": 57.6, "totalReturn": 16.7}
+  ],
+  "correlations": [
+    {"indicator": "funding_rate", "threeDayReturn": 0.498, "strength": "strong"}
+  ],
+  "summary": {
+    "bestStrategy": "Fear/Greed Contrarian",
+    "recommendation": "Use extreme fear (F&G < 20) as primary buy signal"
   }
 }
 ```
 
-### 4. Volatility Forecast
-```bash
-curl "https://macro-oracle-production.up.railway.app/api/volatility/forecast"
-```
-```json
-{
-  "forecast": "moderate",
-  "expectedRange": {"btc": 3, "eth": 3.5, "sol": 4},
-  "drivers": ["Extreme sentiment (F&G: 9)"],
-  "recommendation": "Above-average volatility expected. Reduce position sizes by 25%."
-}
-```
-
-## 🔥 Agent-Focused Endpoints
-
-| Endpoint | What It Does | Use Case |
-|----------|--------------|----------|
-| `/api/agent/should-transact` | Yes/no transaction decision | Before any USDC transfer |
-| `/api/agent/tldr` | One-line market summary | Quick status check |
-| `/api/solana` | SOL price, TVL, TPS, yield | Solana-native agents |
-| `/api/volatility/forecast` | 24h volatility prediction | Position sizing |
-
-## 🔥 Orderbook + Macro Signals (NEW)
-
-The killer feature: real-time orderbook depth correlated with macro indicators.
-
-| Endpoint | What It Does |
-|----------|--------------|
-| `/api/orderbook/signal?symbol=BTC` | Combined orderbook + macro signal |
-| `/api/orderbook/multi` | BTC, ETH, SOL orderbooks at once |
-| `/api/orderbook/imbalance?symbol=X` | Quick bid/ask imbalance check |
-
-### Example: /api/orderbook/signal
+### 3. Orderbook + Macro Signal
 ```bash
 curl "https://macro-oracle-production.up.railway.app/api/orderbook/signal?symbol=BTC"
 ```
@@ -131,8 +80,7 @@ curl "https://macro-oracle-production.up.railway.app/api/orderbook/signal?symbol
   },
   "macro": {
     "fearGreed": 9,
-    "fearGreedSignal": "extreme_fear",
-    "vix": 21.77
+    "fearGreedSignal": "extreme_fear"
   },
   "signal": {
     "direction": "strong_buy",
@@ -140,159 +88,137 @@ curl "https://macro-oracle-production.up.railway.app/api/orderbook/signal?symbol
     "reasoning": [
       "Strong bid imbalance (20.8% more bids)",
       "Extreme fear (F&G: 9) — historically bullish"
-    ],
-    "actionable": true
+    ]
   }
 }
 ```
 
-**Why this matters:** Orderbook imbalance alone is noisy. Combined with extreme fear + VIX, you get signals that actually work.
+### 4. Fear & Greed Backtest
+```bash
+curl "https://macro-oracle-production.up.railway.app/api/backtest/fear-greed"
+```
+```json
+{
+  "threshold": 20,
+  "performance": {
+    "30d": {"avgReturn": 14.3, "winRate": 64},
+    "60d": {"avgReturn": 24.1, "winRate": 86},
+    "90d": {"avgReturn": 44.3, "winRate": 93}
+  },
+  "currentFearGreed": 9,
+  "isSignalActive": true
+}
+```
 
-### Should-Transact Query Parameters
-```
-?amount=10000    # Transaction size (larger = more conservative)
-?urgency=high    # low, medium, high (higher = more willing to proceed)
-```
+## 📊 All Endpoints
 
-## 📊 Data Endpoints
-
-### Fear & Greed with Backtesting
-```
-GET /api/historical/fear-greed
-```
-Current reading + what historically happens when F&G < 20:
-- 30-day: +14.3% avg, 64% win rate
-- 60-day: +24.1% avg, 86% win rate
-- 90-day: +44.3% avg, 93% win rate
-
-### Economic Calendar
-```
-GET /api/calendar/next-critical
-```
-Next high-impact event with countdown and historical BTC impact.
-
-### Dispute Context (for Arbitration)
-```
-GET /api/context/current
-```
-Live market conditions for AI arbitrators — volatility level, regime, recommended actions.
-
-### Full Market Snapshot
-```
-GET /api/dashboard/json
-```
-Everything in one call: F&G, VIX, DXY, S&P, Gold, crypto prices, upcoming events.
-
-## 📋 All Endpoints
-
-### Agent-Focused (New)
+### Agent-Focused (Actionable Decisions)
 | Endpoint | Description |
 |----------|-------------|
-| `GET /api/agent/should-transact` | Simple yes/no transaction decision |
+| `GET /api/agent/should-transact` | Yes/no transaction decision with reasoning |
 | `GET /api/agent/tldr` | One-sentence market summary |
-| `GET /api/solana` | Solana metrics + TVL + TPS |
 | `GET /api/volatility/forecast` | 24h volatility prediction |
+| `GET /api/solana` | Solana metrics + TVL + TPS |
+
+### Backtesting & Signals
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/backtest` | Full backtest snapshot (strategies, correlations) |
+| `GET /api/backtest/fear-greed` | Fear & Greed strategy performance |
+| `GET /api/backtest/correlations` | Indicator correlations with returns |
+| `GET /api/backtest/strategy/:name` | Specific strategy performance |
+
+### Orderbook + Macro
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/orderbook/signal?symbol=BTC` | Combined orderbook + macro signal |
+| `GET /api/orderbook/multi` | BTC, ETH, SOL orderbooks at once |
+| `GET /api/orderbook/imbalance?symbol=X` | Quick bid/ask imbalance check |
 
 ### Market Intelligence
 | Endpoint | Description |
 |----------|-------------|
-| `GET /api/signal/json` | Current macro signal + crypto impact |
+| `GET /api/signal` | Current macro signal + crypto impact |
 | `GET /api/dashboard/json` | Full market snapshot |
-| `GET /api/summary` | Outlook + risks + opportunities |
 | `GET /api/market` | BTC, ETH, DXY, VIX, Gold |
-| `GET /api/tradfi` | S&P 500, Nasdaq, VIX, Gold |
-| `GET /api/fred` | Fed Funds Rate, CPI, Treasury yields |
+| `GET /api/historical/fear-greed` | F&G with backtesting data |
 
 ### Calendar & Events
 | Endpoint | Description |
 |----------|-------------|
-| `GET /api/calendar` | Upcoming macro events |
 | `GET /api/calendar/next-critical` | Next FOMC/CPI/NFP with countdown |
-| `GET /api/calendar/all` | Full calendar |
 | `GET /api/fedwatch` | Fed rate probabilities by meeting |
 
-### Historical & Context
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/historical/fear-greed` | F&G with backtesting data |
-| `GET /api/historical/event/:type` | CPI/FOMC/NFP historical impact |
-| `GET /api/context/current` | Live dispute context |
-| `GET /api/context/dispute` | Historical period analysis |
-
-### Advanced Data
+### Derivatives & On-Chain
 | Endpoint | Description |
 |----------|-------------|
 | `GET /api/derivatives` | Funding rates, OI, liquidations |
-| `GET /api/stablecoins` | USDT/USDC supply + flows |
 | `GET /api/whales` | Large BTC transactions |
-| `GET /api/onchain` | Network stats, mempool |
-| `GET /api/news` | Crypto news sentiment |
-| `GET /api/predictions` | Polymarket odds |
 
 ## 💡 Integration Examples
 
-### Trading Agent
+### Trading Agent (Best Practice)
 ```javascript
-const { shouldTransact, waitUntil } = await fetch(
-  'https://macro-oracle-production.up.railway.app/api/agent/should-transact?amount=10000'
+// 1. Check if we should trade
+const decision = await fetch(
+  'https://macro-oracle-production.up.railway.app/api/agent/should-transact'
 ).then(r => r.json());
 
-if (!shouldTransact) {
-  scheduleRetry(new Date(waitUntil));
-  return;
+if (!decision.shouldTransact) {
+  console.log(decision.recommendation);
+  return; // Wait for better conditions
 }
 
-// Proceed with trade
-executeTrade();
-```
-
-### Escrow Service
-```javascript
-const context = await fetch(
-  'https://macro-oracle-production.up.railway.app/api/context/current'
+// 2. Get backtest-validated signal
+const backtest = await fetch(
+  'https://macro-oracle-production.up.railway.app/api/backtest/fear-greed'
 ).then(r => r.json());
 
-if (context.volatilityLevel === 'extreme') {
-  // Extend escrow deadline during market stress
-  escrow.extendDeadline(48 * 60 * 60 * 1000);
+if (backtest.isSignalActive && backtest.currentFearGreed < 20) {
+  // Extreme fear = historically +14% avg return
+  executeBuy();
 }
 ```
 
-### Solana DeFi Agent
+### With Clodds Integration (Ready)
 ```javascript
-const sol = await fetch(
-  'https://macro-oracle-production.up.railway.app/api/solana'
+// Macro Oracle signals + Clodds execution
+const signal = await fetch(
+  'https://macro-oracle-production.up.railway.app/api/orderbook/signal?symbol=BTC'
 ).then(r => r.json());
 
-if (sol.macroContext.fearGreed < 20 && sol.priceChange24h < -10) {
-  // Extreme fear + big dip = historical buying opportunity
-  await depositToVault(sol.price);
+if (signal.signal.direction === 'strong_buy') {
+  // Execute via Clodds Compute API
+  await clodds.trade({
+    action: 'buy',
+    symbol: 'BTC',
+    platform: 'hyperliquid',
+    confidence: signal.signal.confidence
+  });
 }
 ```
 
-### Dynamic Pricing
-```javascript
-const { forecast, expectedRange } = await fetch(
-  'https://macro-oracle-production.up.railway.app/api/volatility/forecast'
-).then(r => r.json());
+## 📈 Backtested Edge
 
-if (forecast === 'extreme') {
-  // Widen spreads during high volatility
-  spread *= 2;
-}
-```
+We don't guess. We tested:
+
+**Correlations (365 days):**
+- Funding Rate → 3-day returns: **0.50** (strong)
+- Open Interest → Next day: **0.25** (moderate)
+- Fear/Greed → 7-day returns: 0.07 (weak, but extreme values work)
+
+**Strategy Results:**
+- Fear/Greed < 20 → Buy: **68% win rate, +26.8% return**
+- Extreme fear entries: **+14% avg 30-day return**
 
 ## 📡 Data Sources
 
 - **Fear & Greed:** Alternative.me (live)
+- **Orderbook:** Binance, KuCoin (live)
 - **Federal Reserve:** FRED API (official)
 - **TradFi:** Yahoo Finance (live)
-- **Solana:** CoinGecko + DeFiLlama + Solana RPC
-- **Stablecoins:** DeFiLlama
-- **Derivatives:** OKX
-- **Predictions:** Polymarket
-- **Whales:** Blockchain.info
-- **News:** CoinDesk RSS
+- **Derivatives:** OKX, Binance Futures
+- **Solana:** CoinGecko + DeFiLlama
 
 ## ⚙️ Technical Details
 
@@ -306,5 +232,4 @@ if (forecast === 'extreme') {
 Built by **Mistah** 🎩 for the **Colosseum Agent Hackathon**.
 
 **GitHub:** https://github.com/AvgChris/macro-oracle  
-**Live API:** https://macro-oracle-production.up.railway.app  
-**Docs:** https://macro-oracle-production.up.railway.app/api
+**Live API:** https://macro-oracle-production.up.railway.app
