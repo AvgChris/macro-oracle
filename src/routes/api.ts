@@ -836,11 +836,11 @@ router.get('/orderbook/:symbol', async (req: Request, res: Response) => {
 });
 
 // Debug endpoint for orderbook API test
-router.get('/orderbook/debug/bybit', async (req: Request, res: Response) => {
+router.get('/orderbook/debug/kucoin', async (req: Request, res: Response) => {
   const axios = (await import('axios')).default;
   try {
-    const response = await axios.get('https://api.bybit.com/v5/market/orderbook', {
-      params: { category: 'spot', symbol: 'BTCUSDT', limit: 5 },
+    const response = await axios.get('https://api.kucoin.com/api/v1/market/orderbook/level2_20', {
+      params: { symbol: 'BTC-USDT' },
       timeout: 10000,
       headers: { 'User-Agent': 'MacroOracle/2.0' }
     });

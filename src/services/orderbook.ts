@@ -71,31 +71,28 @@ interface MacroOrderbookSignal {
   };
 }
 
-const BYBIT_API = 'https://api.bybit.com/v5/market';
+const KUCOIN_API = 'https://api.kucoin.com/api/v1/market';
 
-// Supported symbols
+// Supported symbols (KuCoin uses hyphen format)
 const SYMBOLS: Record<string, string> = {
-  BTC: 'BTCUSDT',
-  ETH: 'ETHUSDT',
-  SOL: 'SOLUSDT',
+  BTC: 'BTC-USDT',
+  ETH: 'ETH-USDT',
+  SOL: 'SOL-USDT',
 };
 
 /**
- * Fetch orderbook from Bybit (Binance is geo-blocked on Railway)
+ * Fetch orderbook from KuCoin (Binance/Bybit are geo-blocked on Railway)
  */
-async function fetchOrderbook(symbol: string, limit: number = 50): Promise<{
+async function fetchOrderbook(symbol: string, limit: number = 20): Promise<{
   bids: [string, string][];
   asks: [string, string][];
   lastUpdateId: number;
 } | null> {
   try {
-    const bybitSymbol = SYMBOLS[symbol.toUpperCase()] || `${symbol.toUpperCase()}USDT`;
-    const response = await axios.get(`${BYBIT_API}/orderbook`, {
-      params: { 
-        category: 'spot',
-        symbol: bybitSymbol, 
-        limit: Math.min(limit, 50) // Bybit max is 50
-      },
+    const kucoinSymbol = SYMBOLS[symbol.toUpperCase()] || `${symbol.toUpperCase()}-USDT`;
+    // KuCoin offers level2_20 (20 levels) or level2_100 (100 levels, requires auth)
+    const response = await axios.get(`${KUCOIN_API}/orderbook/level2_20`, {
+      params: { symbol: kucoinSymbol },
       timeout: 10000,
       headers: { 
         'User-Agent': 'MacroOracle/2.0',
@@ -103,17 +100,16 @@ async function fetchOrderbook(symbol: string, limit: number = 50): Promise<{
       }
     });
     
-    if (response.data.retCode !== 0) {
-      console.error(`Bybit error for ${symbol}:`, response.data.retMsg);
+    if (response.data.code !== '200000') {
+      console.error(`KuCoin error for ${symbol}:`, response.data.msg);
       return null;
     }
     
-    const result = response.data.result;
-    // Bybit returns 'a' for asks and 'b' for bids
+    const data = response.data.data;
     return {
-      bids: result.b || [],
-      asks: result.a || [],
-      lastUpdateId: result.u || 0
+      bids: data.bids || [],
+      asks: data.asks || [],
+      lastUpdateId: data.sequence || 0
     };
   } catch (error) {
     console.error(`Failed to fetch orderbook for ${symbol}:`, error);
