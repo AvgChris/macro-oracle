@@ -384,7 +384,109 @@ export const apiDocsHtml = `
       </div>
 
       <div class="tip-box">
-        <strong>💡 Quick Start:</strong> Try fetching the current signal: <code>curl https://macro-oracle-production.up.railway.app/api/signal</code>
+        <strong>💡 Quick Start:</strong> Try the agent decision endpoint: <code>curl https://macro-oracle-production.up.railway.app/api/agent/should-transact</code>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>🎯 Agent-Focused Endpoints</h2>
+      <p>Simple, actionable endpoints designed for autonomous agents. Get decisions, not just data.</p>
+      
+      <div class="endpoint-group">
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/api/agent/should-transact</span>
+            <span class="endpoint-desc">Yes/no decision: Should I transact now?</span>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/api/agent/tldr</span>
+            <span class="endpoint-desc">One-line market summary</span>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/api/solana</span>
+            <span class="endpoint-desc">Solana metrics: price, TVL, TPS, staking yield</span>
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/api/volatility/forecast</span>
+            <span class="endpoint-desc">24h volatility prediction with expected ranges</span>
+          </div>
+        </div>
+      </div>
+
+      <table class="param-table">
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="param-name">amount</span></td>
+            <td><span class="param-type">number</span></td>
+            <td>Transaction size in USD (larger = more conservative)</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">urgency</span></td>
+            <td><span class="param-type">string</span></td>
+            <td>low | medium | high (higher = more willing to proceed)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Example: /api/agent/should-transact</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <span>JSON Response</span>
+        </div>
+        <div class="code-content">
+<pre>{
+  <span class="highlight-key">"shouldTransact"</span>: <span class="highlight-number">false</span>,
+  <span class="highlight-key">"confidence"</span>: <span class="highlight-number">80</span>,
+  <span class="highlight-key">"riskLevel"</span>: <span class="highlight-string">"high"</span>,
+  <span class="highlight-key">"factors"</span>: [
+    {<span class="highlight-key">"name"</span>: <span class="highlight-string">"Fear & Greed"</span>, <span class="highlight-key">"signal"</span>: <span class="highlight-string">"red"</span>, <span class="highlight-key">"detail"</span>: <span class="highlight-string">"Extreme fear (9)"</span>},
+    {<span class="highlight-key">"name"</span>: <span class="highlight-string">"Upcoming Event"</span>, <span class="highlight-key">"signal"</span>: <span class="highlight-string">"yellow"</span>, <span class="highlight-key">"detail"</span>: <span class="highlight-string">"NFP in 31h"</span>}
+  ],
+  <span class="highlight-key">"recommendation"</span>: <span class="highlight-string">"Wait until after Non-Farm Payrolls"</span>,
+  <span class="highlight-key">"waitUntil"</span>: <span class="highlight-string">"2026-02-07T15:30:00.000Z"</span>
+}</pre>
+        </div>
+      </div>
+
+      <h3>Example: /api/solana</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <span>JSON Response</span>
+        </div>
+        <div class="code-content">
+<pre>{
+  <span class="highlight-key">"price"</span>: <span class="highlight-number">80.4</span>,
+  <span class="highlight-key">"priceChange24h"</span>: <span class="highlight-number">-10.45</span>,
+  <span class="highlight-key">"tvl"</span>: <span class="highlight-number">6177153348</span>,
+  <span class="highlight-key">"tps"</span>: <span class="highlight-number">3708</span>,
+  <span class="highlight-key">"stakingYield"</span>: <span class="highlight-number">6.5</span>,
+  <span class="highlight-key">"macroContext"</span>: {
+    <span class="highlight-key">"fearGreed"</span>: <span class="highlight-number">9</span>,
+    <span class="highlight-key">"correlation"</span>: {<span class="highlight-key">"btc"</span>: <span class="highlight-number">0.85</span>, <span class="highlight-key">"eth"</span>: <span class="highlight-number">0.82</span>},
+    <span class="highlight-key">"trend"</span>: <span class="highlight-string">"bearish"</span>
+  }
+}</pre>
+        </div>
       </div>
     </section>
 

@@ -1,7 +1,7 @@
 ---
 name: macro-oracle
-version: 1.0.0
-description: Real-time macroeconomic intelligence for AI agents. Fear & Greed, Fed policy, DXY, CPI/FOMC events, and historical backtesting.
+version: 2.0.0
+description: Real-time macroeconomic intelligence for AI agents. Simple yes/no transaction decisions, Solana metrics, volatility forecasting, Fear & Greed, Fed policy, and historical backtesting.
 homepage: https://macro-oracle-production.up.railway.app
 author: Mistah
 metadata: {"category":"trading","api_base":"https://macro-oracle-production.up.railway.app/api"}
@@ -9,204 +9,261 @@ metadata: {"category":"trading","api_base":"https://macro-oracle-production.up.r
 
 # Macro Oracle
 
-Real-time macroeconomic intelligence for AI agents. The missing macro context layer for autonomous trading.
+**Macroeconomic intelligence for autonomous agents.** One API call to know if you should transact.
 
 **API Base:** `https://macro-oracle-production.up.railway.app/api`
 
-No authentication required. All endpoints are free.
+No authentication required. All endpoints free. Sub-second response.
 
-## Why Use Macro Oracle?
+## 🎯 Agent-First Design
 
-Crypto moves on macro. DXY spikes, BTC dumps. Fed speaks, markets swing. But most trading agents are flying blind — they see price action but miss the macro context driving it.
-
-Macro Oracle provides:
-- 📊 **Fear & Greed Index** with historical performance data
-- 📅 **Economic Calendar** (FOMC, CPI, NFP, GDP)
-- 💹 **DXY Regime Analysis** with crypto correlation
-- 🎯 **Actionable Signals** with confidence scores
-- 📈 **Historical Backtesting** for strategy validation
-
-## Quick Start
+Most macro APIs dump data. Macro Oracle gives **actionable decisions**.
 
 ```javascript
-// Get current macro signal
-const signal = await fetch('https://macro-oracle-production.up.railway.app/api/signal').then(r => r.json());
+// Should I execute this USDC transaction?
+const decision = await fetch(
+  'https://macro-oracle-production.up.railway.app/api/agent/should-transact?amount=5000'
+).then(r => r.json());
 
-if (signal.cryptoImpact.direction === 'bearish' && signal.cryptoImpact.confidence > 70) {
-  console.log('Macro headwinds — reduce position size');
+if (!decision.shouldTransact) {
+  console.log(decision.recommendation);
+  // "Wait until after Non-Farm Payrolls. Suggested: 2026-02-07T15:30:00Z"
+  return;
 }
 ```
 
-## Core Endpoints
+## ⚡ Quick Start
 
-### Current Signal
+### 1. Should I Transact Now?
+```bash
+curl "https://macro-oracle-production.up.railway.app/api/agent/should-transact"
 ```
-GET /api/signal
-```
-Returns current macro sentiment with crypto impact analysis.
-
-**Response:**
 ```json
 {
-  "sentiment": "risk_off",
-  "cryptoImpact": {
-    "direction": "bearish",
-    "confidence": 72,
-    "magnitude": "medium",
-    "reasoning": "DXY at 109.45 (strong dollar) pressuring risk assets"
+  "shouldTransact": false,
+  "confidence": 80,
+  "riskLevel": "high",
+  "factors": [
+    {"name": "Fear & Greed", "signal": "red", "detail": "Extreme fear (9)"},
+    {"name": "Upcoming Event", "signal": "yellow", "detail": "NFP in 31h"}
+  ],
+  "recommendation": "Wait until after Non-Farm Payrolls",
+  "waitUntil": "2026-02-07T15:30:00.000Z"
+}
+```
+
+### 2. One-Line Summary
+```bash
+curl "https://macro-oracle-production.up.railway.app/api/agent/tldr"
+```
+```json
+{
+  "summary": "Extreme fear (F&G: 9). Historically +14% avg returns over 30d.",
+  "sentiment": "bearish",
+  "action": "Consider accumulating. DCA if bullish long-term.",
+  "fearGreed": 9,
+  "nextEvent": "Non-Farm Payrolls on 2026-02-07"
+}
+```
+
+### 3. Solana Metrics
+```bash
+curl "https://macro-oracle-production.up.railway.app/api/solana"
+```
+```json
+{
+  "price": 80.4,
+  "priceChange24h": -10.45,
+  "tvl": 6177153348,
+  "tps": 3708,
+  "stakingYield": 6.5,
+  "macroContext": {
+    "fearGreed": 9,
+    "correlation": {"btc": 0.85, "eth": 0.82},
+    "trend": "bearish"
   }
 }
 ```
 
-### Fear & Greed with Historical Performance
+### 4. Volatility Forecast
+```bash
+curl "https://macro-oracle-production.up.railway.app/api/volatility/forecast"
+```
+```json
+{
+  "forecast": "moderate",
+  "expectedRange": {"btc": 3, "eth": 3.5, "sol": 4},
+  "drivers": ["Extreme sentiment (F&G: 9)"],
+  "recommendation": "Above-average volatility expected. Reduce position sizes by 25%."
+}
+```
+
+## 🔥 Agent-Focused Endpoints
+
+| Endpoint | What It Does | Use Case |
+|----------|--------------|----------|
+| `/api/agent/should-transact` | Yes/no transaction decision | Before any USDC transfer |
+| `/api/agent/tldr` | One-line market summary | Quick status check |
+| `/api/solana` | SOL price, TVL, TPS, yield | Solana-native agents |
+| `/api/volatility/forecast` | 24h volatility prediction | Position sizing |
+
+### Should-Transact Query Parameters
+```
+?amount=10000    # Transaction size (larger = more conservative)
+?urgency=high    # low, medium, high (higher = more willing to proceed)
+```
+
+## 📊 Data Endpoints
+
+### Fear & Greed with Backtesting
 ```
 GET /api/historical/fear-greed
 ```
-Current F&G reading plus historical performance when F&G < 20.
-
-**Response:**
-```json
-{
-  "current": { "value": 12, "classification": "Extreme Fear" },
-  "historicalPerformance": {
-    "30d": { "avgReturn": 14.3, "winRate": 64 },
-    "60d": { "avgReturn": 24.1, "winRate": 86 },
-    "90d": { "avgReturn": 44.3, "winRate": 93 }
-  },
-  "insight": "Historically, F&G <20 has led to avg +14.3% returns over 30d"
-}
-```
+Current reading + what historically happens when F&G < 20:
+- 30-day: +14.3% avg, 64% win rate
+- 60-day: +24.1% avg, 86% win rate
+- 90-day: +44.3% avg, 93% win rate
 
 ### Economic Calendar
 ```
 GET /api/calendar/next-critical
 ```
-Next high-impact macro event with countdown.
-
-**Response:**
-```json
-{
-  "event": { "name": "FOMC Rate Decision", "impact": "critical" },
-  "countdown": 14400000,
-  "recommendation": "Reduce leverage before announcement"
-}
-```
-
-### Event Historical Impact
-```
-GET /api/historical/event/:type
-```
-Historical BTC impact for CPI, FOMC, NFP events.
-
-**Response:**
-```json
-{
-  "eventType": "CPI",
-  "avgBtcMove": 3.8,
-  "direction": {
-    "hotterThanExpected": { "avgMove": -4.2 },
-    "coolerThanExpected": { "avgMove": 5.5 }
-  }
-}
-```
+Next high-impact event with countdown and historical BTC impact.
 
 ### Dispute Context (for Arbitration)
 ```
 GET /api/context/current
 ```
-Live market context for AI arbitrators handling disputes.
+Live market conditions for AI arbitrators — volatility level, regime, recommended actions.
 
-**Response:**
-```json
-{
-  "fearGreed": 12,
-  "volatilityLevel": "extreme",
-  "marketRegime": "crisis",
-  "recommendation": {
-    "action": "extend_deadline",
-    "confidence": 85,
-    "reasoning": "Elevated volatility - consider extending deadlines"
-  }
-}
+### Full Market Snapshot
 ```
+GET /api/dashboard/json
+```
+Everything in one call: F&G, VIX, DXY, S&P, Gold, crypto prices, upcoming events.
 
-## All Endpoints
+## 📋 All Endpoints
 
+### Agent-Focused (New)
 | Endpoint | Description |
 |----------|-------------|
-| `GET /api/signal` | Current macro signal + crypto impact |
-| `GET /api/dashboard` | Full market snapshot |
+| `GET /api/agent/should-transact` | Simple yes/no transaction decision |
+| `GET /api/agent/tldr` | One-sentence market summary |
+| `GET /api/solana` | Solana metrics + TVL + TPS |
+| `GET /api/volatility/forecast` | 24h volatility prediction |
+
+### Market Intelligence
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/signal/json` | Current macro signal + crypto impact |
+| `GET /api/dashboard/json` | Full market snapshot |
+| `GET /api/summary` | Outlook + risks + opportunities |
+| `GET /api/market` | BTC, ETH, DXY, VIX, Gold |
+| `GET /api/tradfi` | S&P 500, Nasdaq, VIX, Gold |
+| `GET /api/fred` | Fed Funds Rate, CPI, Treasury yields |
+
+### Calendar & Events
+| Endpoint | Description |
+|----------|-------------|
 | `GET /api/calendar` | Upcoming macro events |
-| `GET /api/calendar/next-critical` | Next high-impact event |
+| `GET /api/calendar/next-critical` | Next FOMC/CPI/NFP with countdown |
+| `GET /api/calendar/all` | Full calendar |
+| `GET /api/fedwatch` | Fed rate probabilities by meeting |
+
+### Historical & Context
+| Endpoint | Description |
+|----------|-------------|
 | `GET /api/historical/fear-greed` | F&G with backtesting data |
 | `GET /api/historical/event/:type` | CPI/FOMC/NFP historical impact |
 | `GET /api/context/current` | Live dispute context |
-| `GET /api/context/dispute` | Historical period context |
-| `GET /api/fred` | Federal Reserve data |
-| `GET /api/tradfi` | S&P 500, VIX, Gold, Oil |
-| `GET /api/stablecoins` | USDT/USDC supply + flows |
+| `GET /api/context/dispute` | Historical period analysis |
+
+### Advanced Data
+| Endpoint | Description |
+|----------|-------------|
 | `GET /api/derivatives` | Funding rates, OI, liquidations |
+| `GET /api/stablecoins` | USDT/USDC supply + flows |
 | `GET /api/whales` | Large BTC transactions |
+| `GET /api/onchain` | Network stats, mempool |
 | `GET /api/news` | Crypto news sentiment |
 | `GET /api/predictions` | Polymarket odds |
 
-## Integration Examples
+## 💡 Integration Examples
 
 ### Trading Agent
 ```javascript
-const macro = await fetch('https://macro-oracle-production.up.railway.app/api/signal').then(r => r.json());
-const calendar = await fetch('https://macro-oracle-production.up.railway.app/api/calendar/next-critical').then(r => r.json());
+const { shouldTransact, waitUntil } = await fetch(
+  'https://macro-oracle-production.up.railway.app/api/agent/should-transact?amount=10000'
+).then(r => r.json());
 
-// Skip trading before high-impact events
-if (calendar.countdown < 2 * 60 * 60 * 1000) {
-  console.log(`${calendar.event.name} in ${calendar.countdown / 60000} min — waiting`);
+if (!shouldTransact) {
+  scheduleRetry(new Date(waitUntil));
   return;
 }
 
-// Adjust position sizing based on macro
-if (macro.cryptoImpact.direction === 'bearish') {
-  positionSize *= 0.5;
-}
+// Proceed with trade
+executeTrade();
 ```
 
-### DeFi Risk Manager
+### Escrow Service
 ```javascript
-const context = await fetch('https://macro-oracle-production.up.railway.app/api/context/current').then(r => r.json());
+const context = await fetch(
+  'https://macro-oracle-production.up.railway.app/api/context/current'
+).then(r => r.json());
 
 if (context.volatilityLevel === 'extreme') {
-  // Tighten liquidation thresholds
-  healthFactorBuffer *= 1.5;
+  // Extend escrow deadline during market stress
+  escrow.extendDeadline(48 * 60 * 60 * 1000);
 }
 ```
 
-### Arbitration Service
+### Solana DeFi Agent
 ```javascript
-const disputeContext = await fetch('https://macro-oracle-production.up.railway.app/api/context/current').then(r => r.json());
+const sol = await fetch(
+  'https://macro-oracle-production.up.railway.app/api/solana'
+).then(r => r.json());
 
-if (disputeContext.recommendation.action === 'extend_deadline') {
-  // Market conditions warrant deadline extension
-  extendDeadline(disputeContext.recommendation.reasoning);
+if (sol.macroContext.fearGreed < 20 && sol.priceChange24h < -10) {
+  // Extreme fear + big dip = historical buying opportunity
+  await depositToVault(sol.price);
 }
 ```
 
-## Data Sources
+### Dynamic Pricing
+```javascript
+const { forecast, expectedRange } = await fetch(
+  'https://macro-oracle-production.up.railway.app/api/volatility/forecast'
+).then(r => r.json());
 
-- **Fear & Greed:** Alternative.me
-- **Federal Reserve:** FRED API
-- **TradFi:** Yahoo Finance
+if (forecast === 'extreme') {
+  // Widen spreads during high volatility
+  spread *= 2;
+}
+```
+
+## 📡 Data Sources
+
+- **Fear & Greed:** Alternative.me (live)
+- **Federal Reserve:** FRED API (official)
+- **TradFi:** Yahoo Finance (live)
+- **Solana:** CoinGecko + DeFiLlama + Solana RPC
 - **Stablecoins:** DeFiLlama
 - **Derivatives:** OKX
 - **Predictions:** Polymarket
 - **Whales:** Blockchain.info
-- **News:** CoinDesk
+- **News:** CoinDesk RSS
 
-## Rate Limits
+## ⚙️ Technical Details
 
-No rate limits currently. Data refreshes every 2 minutes.
+- **Response Time:** <500ms typical
+- **Rate Limits:** None currently
+- **Data Refresh:** 2-5 minutes depending on source
+- **Uptime:** Railway-hosted, 99.9%+
 
 ---
 
-Built by Mistah 🎩 for the Colosseum Agent Hackathon.
+Built by **Mistah** 🎩 for the **Colosseum Agent Hackathon**.
 
-**GitHub:** https://github.com/AvgChris/macro-oracle
-**Live API:** https://macro-oracle-production.up.railway.app
+**GitHub:** https://github.com/AvgChris/macro-oracle  
+**Live API:** https://macro-oracle-production.up.railway.app  
+**Docs:** https://macro-oracle-production.up.railway.app/api
