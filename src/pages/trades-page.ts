@@ -566,9 +566,6 @@ export const tradesPageHtml = `
         const trades = await tradesRes.json();
         const stats = await statsRes.json();
         
-        // Fetch prices for open trades
-        await fetchPrices(trades);
-        
         // Update stats
         document.getElementById('win-rate').textContent = stats.winRate + '%';
         document.getElementById('win-rate').className = 'stat-value ' + (stats.winRate >= 50 ? 'up' : 'down');
@@ -592,6 +589,8 @@ export const tradesPageHtml = `
         const activeContainer = document.getElementById('active-trades');
         if (activeTrades.length > 0) {
           activeContainer.innerHTML = activeTrades.map(renderTradeCard).join('');
+          // Fetch prices AFTER cards are rendered
+          await fetchPrices(trades);
         } else {
           activeContainer.innerHTML = '<div class="trade-card" style="text-align: center; color: var(--text-muted);">No active trades — waiting for next signal</div>';
         }
