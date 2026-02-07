@@ -221,6 +221,35 @@ export const tradesPageHtml = `
       font-size: 11px;
       color: var(--purple-secondary);
     }
+    .current-price-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--bg-primary);
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .current-price-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .current-price-value {
+      font-size: 20px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-primary);
+    }
+    .current-pnl {
+      font-size: 16px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .current-pnl.up { background: var(--success-bg); color: var(--success); }
+    .current-pnl.down { background: var(--danger-bg); color: var(--danger); }
     .trade-meta {
       display: flex;
       justify-content: space-between;
@@ -500,6 +529,14 @@ export const tradesPageHtml = `
             </div>
           </div>
           
+          \${isOpen ? \`
+          <div class="current-price-row">
+            <span class="current-price-label">Current Price:</span>
+            <span class="current-price-value" id="price-\${trade.symbol}">\${trade.currentPrice ? formatPrice(trade.currentPrice) : 'Loading...'}</span>
+            <span class="current-pnl \${trade.unrealizedPnl >= 0 ? 'up' : 'down'}" id="pnl-\${trade.symbol}">\${trade.unrealizedPnl ? ((trade.unrealizedPnl >= 0 ? '+' : '') + trade.unrealizedPnl.toFixed(2) + '%') : ''}</span>
+          </div>
+          \` : ''}
+          
           <div class="trade-reasoning">\${trade.reasoning}</div>
           
           <div class="trade-indicators">
@@ -528,6 +565,9 @@ export const tradesPageHtml = `
         
         const trades = await tradesRes.json();
         const stats = await statsRes.json();
+        
+        // Fetch prices for open trades
+        await fetchPrices(trades);
         
         // Update stats
         document.getElementById('win-rate').textContent = stats.winRate + '%';
@@ -579,8 +619,10 @@ export const tradesPageHtml = `
         // Charts
         renderCharts(trades, stats);
         
+        return trades;
       } catch (e) {
         console.error('Failed to fetch trades:', e);
+        return [];
       }
     }
     
@@ -643,8 +685,74 @@ export const tradesPageHtml = `
       });
     }
     
+    // Fetch current prices for open trades
+    async function fetchPrices(trades) {
+      const openTrades = trades.filter(t => t.status === 'open');
+      if (openTrades.length === 0) return;
+      
+      // Build CoinGecko IDs mapping
+      const symbolToId = {
+        'BTC': 'bitcoin',
+        'ETH': 'ethereum', 
+        'SOL': 'solana',
+        'SKR': 'seeker',
+        'AVAX': 'avalanche-2',
+        'BNB': 'binancecoin',
+        'XRP': 'ripple',
+        'ADA': 'cardano',
+        'DOGE': 'dogecoin',
+        'DOT': 'polkadot',
+        'LINK': 'chainlink',
+        'MATIC': 'matic-network',
+        'UNI': 'uniswap',
+        'ATOM': 'cosmos',
+        'LTC': 'litecoin',
+        'XMR': 'monero',
+        'TRUMP': 'maga',
+        'SUI': 'sui'
+      };
+      
+      const ids = openTrades.map(t => symbolToId[t.symbol] || t.symbol.toLowerCase()).filter(Boolean);
+      if (ids.length === 0) return;
+      
+      try {
+        const res = await fetch(\`https://api.coingecko.com/api/v3/simple/price?ids=\${ids.join(',')}&vs_currencies=usd\`);
+        const prices = await res.json();
+        
+        openTrades.forEach(trade => {
+          const id = symbolToId[trade.symbol] || trade.symbol.toLowerCase();
+          const priceData = prices[id];
+          if (priceData && priceData.usd) {
+            const currentPrice = priceData.usd;
+            const pnl = trade.direction === 'LONG' 
+              ? ((currentPrice - trade.entry) / trade.entry) * 100
+              : ((trade.entry - currentPrice) / trade.entry) * 100;
+            
+            const priceEl = document.getElementById('price-' + trade.symbol);
+            const pnlEl = document.getElementById('pnl-' + trade.symbol);
+            
+            if (priceEl) priceEl.textContent = formatPrice(currentPrice);
+            if (pnlEl) {
+              pnlEl.textContent = (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%';
+              pnlEl.className = 'current-pnl ' + (pnl >= 0 ? 'up' : 'down');
+            }
+          }
+        });
+      } catch (e) {
+        console.error('Failed to fetch prices:', e);
+      }
+    }
+    
+    // Initial load
     fetchTrades();
-    setInterval(fetchTrades, 60000); // Refresh every minute
+    
+    // Refresh trades every minute
+    setInterval(fetchTrades, 60000);
+    
+    // Refresh prices every 15 minutes (in addition to trade refreshes)
+    setInterval(() => {
+      fetch('/api/trades').then(r => r.json()).then(fetchPrices);
+    }, 900000);
   </script>
 </body>
 </html>
