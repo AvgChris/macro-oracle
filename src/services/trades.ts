@@ -72,6 +72,20 @@ const trades: TradeCall[] = [
     reasoning: 'Pullback after +29% week, high volume (50% mcap), F&G 6 extreme fear',
     indicators: ['Weekly Momentum', 'Volume/MCap Ratio', 'Extreme Fear'],
     status: 'open',
+  },
+  {
+    id: 'trade-003',
+    timestamp: '2026-02-07T16:32:00Z',
+    symbol: 'BCH',
+    direction: 'SHORT',
+    entry: 523.70,
+    stopLoss: 554.78,
+    takeProfit1: 461.54,
+    takeProfit2: 400.00,
+    confidence: 50,
+    reasoning: 'MACD bearish cross, Price below 20/50 EMA. Technical indicators showing downward momentum',
+    indicators: ['MACD Bearish', 'Bearish Trend', 'Below EMA 20/50'],
+    status: 'open',
   }
 ];
 
