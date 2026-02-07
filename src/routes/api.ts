@@ -736,6 +736,7 @@ router.get('/context/current', async (req: Request, res: Response) => {
 import { shouldTransact, getTldr, fetchSolanaMetrics, forecastVolatility } from '../services/agent.js';
 import { getMacroOrderbookSignal, getMultiAssetOrderbook, getOrderbookImbalance } from '../services/orderbook.js';
 import { getBacktestSnapshot, getFearGreedBacktest, getCorrelationsSummary, getStrategyPerformance } from '../services/backtest.js';
+import { getAllTrades, getOpenTrades, getTradeStats, getTradeById, addTrade, closeTrade, getRecentTrades } from '../services/trades.js';
 
 // Simple yes/no: Should I transact now?
 router.get('/agent/should-transact', async (req: Request, res: Response) => {
@@ -899,6 +900,78 @@ router.get('/backtest/strategy/:name', (req: Request, res: Response) => {
     res.json(strategy);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch strategy performance' });
+  }
+});
+
+// === TRADE CALLS ENDPOINTS ===
+
+// Get all trades
+router.get('/trades', (req: Request, res: Response) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 50;
+    const trades = getRecentTrades(limit);
+    res.json(trades);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch trades' });
+  }
+});
+
+// Get trade stats
+router.get('/trades/stats', (req: Request, res: Response) => {
+  try {
+    const stats = getTradeStats();
+    res.json(stats);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch trade stats' });
+  }
+});
+
+// Get open trades only
+router.get('/trades/open', (req: Request, res: Response) => {
+  try {
+    const trades = getOpenTrades();
+    res.json(trades);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch open trades' });
+  }
+});
+
+// Get trade by ID
+router.get('/trades/:id', (req: Request, res: Response) => {
+  try {
+    const trade = getTradeById(req.params.id);
+    if (!trade) {
+      res.status(404).json({ error: 'Trade not found' });
+      return;
+    }
+    res.json(trade);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch trade' });
+  }
+});
+
+// Add new trade (POST)
+router.post('/trades', (req: Request, res: Response) => {
+  try {
+    const trade = addTrade(req.body);
+    res.status(201).json(trade);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add trade' });
+  }
+});
+
+// Close a trade
+router.post('/trades/:id/close', (req: Request, res: Response) => {
+  try {
+    const { exitPrice, status } = req.body;
+    const trade = closeTrade(req.params.id, exitPrice, status);
+    if (!trade) {
+      res.status(404).json({ error: 'Trade not found' });
+      return;
+    }
+    res.json(trade);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to close trade' });
   }
 });
 

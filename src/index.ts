@@ -10,6 +10,7 @@ import { apiDocsHtml } from './api-docs.js';
 import { signalPageHtml } from './pages/signal-page.js';
 import { dashboardPageHtml } from './pages/dashboard-page.js';
 import { backtestPageHtml } from './pages/backtest-page.js';
+import { tradesPageHtml } from './pages/trades-page.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -158,6 +159,11 @@ app.get('/dashboard', (req, res) => {
 // Backtest visualization page
 app.get('/backtest', (req, res) => {
   res.type('html').send(backtestPageHtml);
+});
+
+// Trade calls page
+app.get('/trades', (req, res) => {
+  res.type('html').send(tradesPageHtml);
 });
 
 // API routes
