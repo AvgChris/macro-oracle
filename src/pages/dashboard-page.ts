@@ -180,6 +180,7 @@ export const dashboardPageHtml = `
         <a href="/">Home</a>
         <a href="/api">API Docs</a>
         <a href="/signal">Signal</a>
+        <a href="/backtest">Backtest</a>
       </nav>
     </header>
 

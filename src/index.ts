@@ -9,6 +9,7 @@ import { landingPageHtml } from './landing.js';
 import { apiDocsHtml } from './api-docs.js';
 import { signalPageHtml } from './pages/signal-page.js';
 import { dashboardPageHtml } from './pages/dashboard-page.js';
+import { backtestPageHtml } from './pages/backtest-page.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -152,6 +153,11 @@ app.get('/signal', (req, res) => {
 
 app.get('/dashboard', (req, res) => {
   res.type('html').send(dashboardPageHtml);
+});
+
+// Backtest visualization page
+app.get('/backtest', (req, res) => {
+  res.type('html').send(backtestPageHtml);
 });
 
 // API routes
