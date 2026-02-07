@@ -145,8 +145,10 @@ export const signalPageHtml = `
       </a>
       <nav>
         <a href="/">Home</a>
-        <a href="/api">API Docs</a>
+        <a href="/api">API</a>
         <a href="/dashboard">Dashboard</a>
+        <a href="/backtest">Backtest</a>
+        <a href="/trades">Trades</a>
       </nav>
     </header>
 
