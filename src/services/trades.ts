@@ -71,7 +71,11 @@ const trades: TradeCall[] = [
     confidence: 55,
     reasoning: 'Pullback after +29% week, high volume (50% mcap), F&G 6 extreme fear. SL moved to breakeven (Feb 8, 16:14 UTC) after +12% move',
     indicators: ['Weekly Momentum', 'Volume/MCap Ratio', 'Extreme Fear'],
-    status: 'open',
+    status: 'stopped',
+    exitPrice: 0.0231,
+    exitTimestamp: '2026-02-09T10:00:00Z',
+    pnlPercent: 0,
+    outcome: 'win'
   },
   {
     id: 'trade-003',
