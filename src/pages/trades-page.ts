@@ -708,7 +708,11 @@ export const tradesPageHtml = `
         'LTC': 'litecoin',
         'XMR': 'monero',
         'TRUMP': 'maga',
-        'SUI': 'sui'
+        'SUI': 'sui',
+        'ASTER': 'aster-2',
+        'BCH': 'bitcoin-cash',
+        'XAUT': 'tether-gold',
+        'PAXG': 'pax-gold'
       };
       
       const ids = openTrades.map(t => symbolToId[t.symbol] || t.symbol.toLowerCase()).filter(Boolean);
