@@ -94,6 +94,20 @@ const trades: TradeCall[] = [
     exitTimestamp: '2026-02-09T14:50:00Z',
     pnlPercent: 0,
     outcome: 'win'
+  },
+  {
+    id: 'trade-004',
+    timestamp: '2026-02-09T14:57:00Z',
+    symbol: 'ASTER',
+    direction: 'LONG',
+    entry: 0.60,
+    stopLoss: 0.53,
+    takeProfit1: 0.74,
+    takeProfit2: 0.89,
+    confidence: 95,
+    reasoning: '95% confidence setup. MACD bullish + Extreme Fear (F&G 14) + RSI bullish divergence + MACD bullish divergence. 5x leverage.',
+    indicators: ['MACD Bullish', 'Extreme Fear (F&G 14)', 'RSI Bullish Divergence', 'MACD Bullish Divergence'],
+    status: 'open',
   }
 ];
 
