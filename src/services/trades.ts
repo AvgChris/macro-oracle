@@ -83,13 +83,17 @@ const trades: TradeCall[] = [
     symbol: 'BCH',
     direction: 'SHORT',
     entry: 523.70,
-    stopLoss: 554.78,
+    stopLoss: 523.70,
     takeProfit1: 461.54,
     takeProfit2: 400.00,
     confidence: 50,
-    reasoning: 'MACD bearish cross, Price below 20/50 EMA. Technical indicators showing downward momentum',
+    reasoning: 'MACD bearish cross, Price below 20/50 EMA. SL moved to breakeven after initial profit.',
     indicators: ['MACD Bearish', 'Bearish Trend', 'Below EMA 20/50'],
-    status: 'open',
+    status: 'stopped',
+    exitPrice: 523.70,
+    exitTimestamp: '2026-02-09T14:50:00Z',
+    pnlPercent: 0,
+    outcome: 'win'
   }
 ];
 
