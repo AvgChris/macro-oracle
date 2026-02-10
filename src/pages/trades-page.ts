@@ -689,44 +689,15 @@ export const tradesPageHtml = `
       const openTrades = trades.filter(t => t.status === 'open');
       if (openTrades.length === 0) return;
       
-      // Build CoinGecko IDs mapping
-      const symbolToId = {
-        'BTC': 'bitcoin',
-        'ETH': 'ethereum', 
-        'SOL': 'solana',
-        'SKR': 'seeker',
-        'AVAX': 'avalanche-2',
-        'BNB': 'binancecoin',
-        'XRP': 'ripple',
-        'ADA': 'cardano',
-        'DOGE': 'dogecoin',
-        'DOT': 'polkadot',
-        'LINK': 'chainlink',
-        'MATIC': 'matic-network',
-        'UNI': 'uniswap',
-        'ATOM': 'cosmos',
-        'LTC': 'litecoin',
-        'XMR': 'monero',
-        'TRUMP': 'maga',
-        'SUI': 'sui',
-        'ASTER': 'aster-2',
-        'BCH': 'bitcoin-cash',
-        'XAUT': 'tether-gold',
-        'PAXG': 'pax-gold'
-      };
-      
-      const ids = openTrades.map(t => symbolToId[t.symbol] || t.symbol.toLowerCase()).filter(Boolean);
-      if (ids.length === 0) return;
-      
-      try {
-        const res = await fetch(\`https://api.coingecko.com/api/v3/simple/price?ids=\${ids.join(',')}&vs_currencies=usd\`);
-        const prices = await res.json();
-        
-        openTrades.forEach(trade => {
-          const id = symbolToId[trade.symbol] || trade.symbol.toLowerCase();
-          const priceData = prices[id];
-          if (priceData && priceData.usd) {
-            const currentPrice = priceData.usd;
+      // Use OKX API (same source as our scanner) for accurate prices
+      for (const trade of openTrades) {
+        try {
+          const instId = trade.symbol + '-USDT';
+          const res = await fetch(\`https://www.okx.com/api/v5/market/ticker?instId=\${instId}\`);
+          const data = await res.json();
+          
+          if (data.code === '0' && data.data && data.data[0]) {
+            const currentPrice = parseFloat(data.data[0].last);
             const pnl = trade.direction === 'LONG' 
               ? ((currentPrice - trade.entry) / trade.entry) * 100
               : ((trade.entry - currentPrice) / trade.entry) * 100;
@@ -740,9 +711,9 @@ export const tradesPageHtml = `
               pnlEl.className = 'current-pnl ' + (pnl >= 0 ? 'up' : 'down');
             }
           }
-        });
-      } catch (e) {
-        console.error('Failed to fetch prices:', e);
+        } catch (e) {
+          console.error('Failed to fetch price for ' + trade.symbol + ':', e);
+        }
       }
     }
     
