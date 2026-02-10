@@ -737,6 +737,7 @@ import { shouldTransact, getTldr, fetchSolanaMetrics, forecastVolatility } from 
 import { getMacroOrderbookSignal, getMultiAssetOrderbook, getOrderbookImbalance } from '../services/orderbook.js';
 import { getBacktestSnapshot, getFearGreedBacktest, getCorrelationsSummary, getStrategyPerformance } from '../services/backtest.js';
 import { getAllTrades, getOpenTrades, getTradeStats, getTradeById, addTrade, closeTrade, getRecentTrades } from '../services/trades.js';
+import { autoTrader } from '../services/execution/auto-trader.js';
 
 // Simple yes/no: Should I transact now?
 router.get('/agent/should-transact', async (req: Request, res: Response) => {
@@ -1013,6 +1014,73 @@ router.post('/trades/:id/close', (req: Request, res: Response) => {
     res.json(trade);
   } catch (error) {
     res.status(500).json({ error: 'Failed to close trade' });
+  }
+});
+
+// === AUTONOMOUS TRADING ENDPOINTS ===
+
+// Get auto-trader status
+router.get('/auto-trader/status', (req: Request, res: Response) => {
+  try {
+    const status = autoTrader.getStatus();
+    res.json(status);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get auto-trader status' });
+  }
+});
+
+// Process signals (trigger trade evaluation)
+router.post('/auto-trader/process', async (req: Request, res: Response) => {
+  try {
+    const results = await autoTrader.processSignals();
+    res.json({
+      timestamp: Date.now(),
+      processed: results.length,
+      results
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to process signals' });
+  }
+});
+
+// Enable/disable auto-trader
+router.post('/auto-trader/enable', (req: Request, res: Response) => {
+  autoTrader.enable();
+  res.json({ enabled: true, status: autoTrader.getStatus() });
+});
+
+router.post('/auto-trader/disable', (req: Request, res: Response) => {
+  autoTrader.disable();
+  res.json({ enabled: false, status: autoTrader.getStatus() });
+});
+
+// Toggle dry run mode
+router.post('/auto-trader/dry-run', (req: Request, res: Response) => {
+  const { enabled } = req.body;
+  autoTrader.setDryRun(enabled !== false);
+  res.json({ dryRun: enabled !== false, status: autoTrader.getStatus() });
+});
+
+// Update configuration
+router.post('/auto-trader/config', (req: Request, res: Response) => {
+  try {
+    autoTrader.updateConfig(req.body);
+    res.json({ updated: true, status: autoTrader.getStatus() });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to update config' });
+  }
+});
+
+// Get trade log
+router.get('/auto-trader/log', (req: Request, res: Response) => {
+  try {
+    const log = autoTrader.getTradeLog();
+    res.json({
+      count: log.length,
+      trades: log
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get trade log' });
   }
 });
 
