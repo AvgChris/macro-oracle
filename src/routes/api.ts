@@ -1017,6 +1017,40 @@ router.post('/trades/:id/close', (req: Request, res: Response) => {
   }
 });
 
+// === PRICE ENDPOINT (proxy for frontend) ===
+
+// Get current price from OKX (avoids CORS issues)
+router.get('/price/:symbol', async (req: Request, res: Response) => {
+  try {
+    const symbol = req.params.symbol.toUpperCase();
+    const instId = `${symbol}-USDT`;
+    
+    const axios = (await import('axios')).default;
+    const response = await axios.get('https://www.okx.com/api/v5/market/ticker', {
+      params: { instId },
+      timeout: 5000,
+      headers: { 'User-Agent': 'MacroOracle/2.0' }
+    });
+    
+    if (response.data.code === '0' && response.data.data?.[0]) {
+      const ticker = response.data.data[0];
+      res.json({
+        symbol,
+        price: parseFloat(ticker.last),
+        change24h: ((parseFloat(ticker.last) - parseFloat(ticker.open24h)) / parseFloat(ticker.open24h) * 100).toFixed(2),
+        high24h: parseFloat(ticker.high24h),
+        low24h: parseFloat(ticker.low24h),
+        volume24h: parseFloat(ticker.volCcy24h),
+        timestamp: parseInt(ticker.ts)
+      });
+    } else {
+      res.status(404).json({ error: `Price not found for ${symbol}` });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to fetch price' });
+  }
+});
+
 // === AUTONOMOUS TRADING ENDPOINTS ===
 
 // Get auto-trader status

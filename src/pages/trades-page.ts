@@ -689,15 +689,14 @@ export const tradesPageHtml = `
       const openTrades = trades.filter(t => t.status === 'open');
       if (openTrades.length === 0) return;
       
-      // Use OKX API (same source as our scanner) for accurate prices
+      // Use our API proxy to fetch OKX prices (avoids CORS)
       for (const trade of openTrades) {
         try {
-          const instId = trade.symbol + '-USDT';
-          const res = await fetch(\`https://www.okx.com/api/v5/market/ticker?instId=\${instId}\`);
+          const res = await fetch('/api/price/' + trade.symbol);
           const data = await res.json();
           
-          if (data.code === '0' && data.data && data.data[0]) {
-            const currentPrice = parseFloat(data.data[0].last);
+          if (data.price) {
+            const currentPrice = data.price;
             const pnl = trade.direction === 'LONG' 
               ? ((currentPrice - trade.entry) / trade.entry) * 100
               : ((trade.entry - currentPrice) / trade.entry) * 100;
