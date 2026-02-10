@@ -555,7 +555,7 @@ export const landingPageHtml = `
           <span>Real-time market intelligence</span>
         </div>
         <h1>Market signals that<br>actually matter</h1>
-        <p>Six automated monitors tracking price action, on-chain activity, macro events, funding rates, sentiment, and institutional flows.</p>
+        <p>15+ automated monitors tracking price action, orderbook depth, on-chain activity, macro events, funding rates, sentiment, stablecoins, predictions, and institutional flows — plus autonomous trade execution.</p>
         <div class="hero-buttons">
           <a href="/api/dashboard" class="btn btn-primary">Live Dashboard →</a>
           <a href="/api" class="btn btn-secondary">API Docs</a>
@@ -566,20 +566,20 @@ export const landingPageHtml = `
     <section class="container">
       <div class="stats">
         <div class="stat-card">
-          <div class="stat-value">6</div>
+          <div class="stat-value">15+</div>
           <div class="stat-label">Active Monitors</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">15m</div>
-          <div class="stat-label">Fastest Check</div>
+          <div class="stat-value">2m</div>
+          <div class="stat-label">Data Refresh</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">5+</div>
+          <div class="stat-value">12+</div>
           <div class="stat-label">Data Sources</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">\$0</div>
-          <div class="stat-label">All Free APIs</div>
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Win Rate</div>
         </div>
       </div>
     </section>
@@ -649,6 +649,56 @@ export const landingPageHtml = `
             <div class="monitor-meta">
               <span class="meta-tag frequency">Daily 10pm</span>
               <span class="meta-tag">CoinGlass</span>
+            </div>
+          </div>
+
+          <div class="monitor-card">
+            <div class="monitor-icon">📊</div>
+            <h3>Orderbook Depth</h3>
+            <p>Analyzes bid/ask imbalances and large wall detection across major exchanges.</p>
+            <div class="monitor-meta">
+              <span class="meta-tag frequency">Every 2m</span>
+              <span class="meta-tag">OKX</span>
+            </div>
+          </div>
+
+          <div class="monitor-card">
+            <div class="monitor-icon">💵</div>
+            <h3>Stablecoin Supply</h3>
+            <p>Monitors USDT, USDC, DAI supply changes — leading indicator of market inflows.</p>
+            <div class="monitor-meta">
+              <span class="meta-tag frequency">Every 1h</span>
+              <span class="meta-tag">DeFiLlama</span>
+            </div>
+          </div>
+
+          <div class="monitor-card">
+            <div class="monitor-icon">🎯</div>
+            <h3>Trade Signals</h3>
+            <p>Scans 100+ coins for high-confidence setups using RSI, MACD, EMA, and divergences.</p>
+            <div class="monitor-meta">
+              <span class="meta-tag frequency">Every 2h</span>
+              <span class="meta-tag">OKX</span>
+            </div>
+          </div>
+
+          <div class="monitor-card">
+            <div class="monitor-icon">🔮</div>
+            <h3>Prediction Markets</h3>
+            <p>Tracks Polymarket odds for Fed decisions, elections, and macro events.</p>
+            <div class="monitor-meta">
+              <span class="meta-tag frequency">Every 30m</span>
+              <span class="meta-tag">Polymarket</span>
+            </div>
+          </div>
+
+          <div class="monitor-card">
+            <div class="monitor-icon">🤖</div>
+            <h3>Auto-Trader</h3>
+            <p>Autonomous execution on Hyperliquid with Kelly sizing, risk limits, and SL/TP management.</p>
+            <div class="monitor-meta">
+              <span class="meta-tag frequency">Real-time</span>
+              <span class="meta-tag">Hyperliquid</span>
             </div>
           </div>
         </div>
@@ -765,6 +815,36 @@ export const landingPageHtml = `
               <td>ETF Flows</td>
               <td>Daily flow</td>
               <td><span class="threshold-value">\$200M+</span></td>
+              <td>Daily</td>
+            </tr>
+            <tr>
+              <td>Orderbook</td>
+              <td>Bid/Ask imbalance</td>
+              <td><span class="threshold-value">&gt;20%</span></td>
+              <td>15 min</td>
+            </tr>
+            <tr>
+              <td>Trade Signals</td>
+              <td>Confidence</td>
+              <td><span class="threshold-value">&gt;80%</span></td>
+              <td>2 hours</td>
+            </tr>
+            <tr>
+              <td>Trade Signals</td>
+              <td>Required indicators</td>
+              <td><span class="threshold-value">2+ agreeing</span></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Auto-Trader</td>
+              <td>Position size</td>
+              <td><span class="threshold-value">5% max</span></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Auto-Trader</td>
+              <td>Daily loss limit</td>
+              <td><span class="threshold-value">5% max</span></td>
               <td>Daily</td>
             </tr>
           </tbody>
