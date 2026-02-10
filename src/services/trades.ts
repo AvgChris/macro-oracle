@@ -121,7 +121,11 @@ const trades: TradeCall[] = [
     confidence: 80,
     reasoning: 'MACD bullish cross, price above 20/50 EMA, Extreme Fear (F&G 9). 5x leverage.',
     indicators: ['MACD Bullish', 'Bullish Trend', 'Extreme Fear (F&G 9)'],
-    status: 'open',
+    status: 'stopped',
+    exitPrice: 1.9375,
+    exitTimestamp: '2026-02-10T10:55:00Z',
+    pnlPercent: 0,
+    outcome: 'win'
   }
 ];
 
