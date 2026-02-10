@@ -905,6 +905,47 @@ router.get('/backtest/strategy/:name', (req: Request, res: Response) => {
 
 // === TRADE CALLS ENDPOINTS ===
 
+// Get latest trade signals/recommendations for agents
+router.get('/trades/signals', (req: Request, res: Response) => {
+  try {
+    const openTrades = getOpenTrades();
+    const stats = getTradeStats();
+    
+    // Format signals for agent consumption
+    const signals = openTrades.map(trade => ({
+      symbol: trade.symbol,
+      direction: trade.direction,
+      entry: trade.entry,
+      stopLoss: trade.stopLoss,
+      takeProfit1: trade.takeProfit1,
+      takeProfit2: trade.takeProfit2,
+      confidence: trade.confidence,
+      indicators: trade.indicators,
+      reasoning: trade.reasoning,
+      timestamp: trade.timestamp,
+      status: trade.status
+    }));
+    
+    res.json({
+      timestamp: Date.now(),
+      activeSignals: signals.length,
+      signals,
+      performance: {
+        winRate: stats.winRate,
+        totalPnl: stats.totalPnl,
+        profitFactor: stats.profitFactor
+      },
+      usage: {
+        description: 'Active trade signals from Macro Oracle scanner',
+        refreshRate: '2 hours',
+        riskWarning: 'DYOR - these are signals, not financial advice'
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch trade signals' });
+  }
+});
+
 // Get all trades
 router.get('/trades', (req: Request, res: Response) => {
   try {

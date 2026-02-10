@@ -10,17 +10,17 @@ export const apiDocsHtml = `
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-primary: #ffffff;
-      --bg-secondary: #f8f9fc;
-      --bg-card: #ffffff;
-      --bg-card-hover: #f3f4f8;
+      --bg-primary: #0f0f1a;
+      --bg-secondary: #1a1a2e;
+      --bg-card: #252540;
+      --bg-card-hover: #2f2f4a;
       --purple-primary: #7c3aed;
       --purple-secondary: #8b5cf6;
-      --purple-glow: rgba(124, 58, 237, 0.08);
-      --text-primary: #1a1a2e;
-      --text-secondary: #4a4a68;
-      --text-muted: #8888a0;
-      --border-color: #e5e7eb;
+      --purple-glow: rgba(124, 58, 237, 0.15);
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6b6b80;
+      --border-color: #3a3a52;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
@@ -48,7 +48,7 @@ export const apiDocsHtml = `
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(15, 15, 26, 0.95);
       backdrop-filter: blur(10px);
       z-index: 100;
     }
