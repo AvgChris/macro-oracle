@@ -155,7 +155,7 @@ export const landingPageHtml = `
       font-weight: 700;
       line-height: 1.1;
       margin-bottom: 24px;
-      background: linear-gradient(135deg, #1a1a2e 0%, #4a4a68 100%);
+      background: linear-gradient(135deg, #ffffff 0%, #a0a0b8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
