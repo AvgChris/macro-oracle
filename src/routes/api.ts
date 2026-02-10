@@ -267,13 +267,28 @@ router.get('/summary', (req: Request, res: Response) => {
 });
 
 // JSON endpoint for dashboard page
-router.get('/dashboard/json', (req: Request, res: Response) => {
+router.get('/dashboard/json', async (req: Request, res: Response) => {
   const market = getMarketSnapshot();
   const crypto = getCryptoMarketState();
+  
+  // Fetch Fear & Greed
+  let fearGreed = { value: 0, classification: 'Unknown' };
+  try {
+    fearGreed = await fetchCurrentFearGreed();
+  } catch (e) {
+    console.error('Failed to fetch Fear & Greed:', e);
+  }
+  
   res.json({
     timestamp: Date.now(),
-    market,
+    market: {
+      ...market,
+      btc: { price: market.btc, change24h: 0 },
+      eth: { price: market.eth, change24h: 0 },
+      fearGreed: fearGreed
+    },
     crypto,
+    fearGreed: fearGreed,
     dxy: getDxyRegime(),
     risk: getRiskEnvironment(),
     nextCriticalEvent: getNextCriticalEvent(),

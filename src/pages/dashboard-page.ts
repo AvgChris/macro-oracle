@@ -303,18 +303,21 @@ export const dashboardPageHtml = `
         const data = await res.json();
         
         // BTC
-        const btc = data.market?.crypto?.btc || data.crypto?.btc || data.btc;
-        if (btc) {
-          document.getElementById('btc-price').textContent = formatPrice(btc.price || btc);
-          const change = btc.change24h || btc.change;
+        const btcData = data.market?.btc || data.crypto;
+        if (btcData) {
+          const btcPrice = btcData.price || btcData.btcPrice || data.market?.btc;
+          document.getElementById('btc-price').textContent = formatPrice(btcPrice);
+          const change = btcData.change24h;
           if (change !== undefined) {
             const changeEl = document.getElementById('btc-change');
             changeEl.innerHTML = '<span class="change ' + (change >= 0 ? 'up' : 'down') + '">' + formatPercent(change) + ' (24h)</span>';
+          } else {
+            document.getElementById('btc-change').innerHTML = '<span class="change">Live price</span>';
           }
         }
         
         // Fear & Greed
-        const fg = data.market?.fearGreed || data.fearGreed;
+        const fg = data.fearGreed || data.market?.fearGreed;
         if (fg) {
           const val = fg.value || fg;
           document.getElementById('fear-greed').textContent = val;
@@ -327,10 +330,11 @@ export const dashboardPageHtml = `
         }
         
         // DXY
-        const dxy = data.market?.dxy || data.dxy;
+        const dxy = data.dxy;
         if (dxy) {
-          document.getElementById('dxy').textContent = (dxy.value || dxy).toFixed(2);
-          document.getElementById('dxy-regime').textContent = dxy.regime || (dxy > 105 ? 'Strong Dollar' : dxy < 100 ? 'Weak Dollar' : 'Neutral');
+          const dxyVal = typeof dxy === 'number' ? dxy : (dxy.dxy || dxy.value || 0);
+          document.getElementById('dxy').textContent = dxyVal.toFixed ? dxyVal.toFixed(2) : dxyVal;
+          document.getElementById('dxy-regime').textContent = dxy.regime || (dxyVal > 105 ? 'Strong Dollar' : dxyVal < 100 ? 'Weak Dollar' : 'Neutral');
         }
         
         // FRED
