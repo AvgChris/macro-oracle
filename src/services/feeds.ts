@@ -25,7 +25,7 @@ function setCache<T>(key: string, data: T): void {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
-// Fetch crypto prices from CoinGecko
+// Fetch crypto prices from OKX (consistent with scanner)
 export async function fetchCryptoPrices(): Promise<{
   btc: number;
   eth: number;
@@ -36,24 +36,34 @@ export async function fetchCryptoPrices(): Promise<{
   if (cached) return cached;
 
   try {
-    const [priceRes, globalRes] = await Promise.all([
-      axios.get(`${COINGECKO_API}/simple/price`, {
-        params: {
-          ids: 'bitcoin,ethereum,solana',
-          vs_currencies: 'usd'
-        },
-        timeout: 5000
+    // Fetch from OKX for accurate, consistent pricing
+    const [btcRes, ethRes, solRes, globalRes] = await Promise.all([
+      axios.get('https://www.okx.com/api/v5/market/ticker', {
+        params: { instId: 'BTC-USDT' },
+        timeout: 5000,
+        headers: { 'User-Agent': 'MacroOracle/2.0' }
       }),
-      axios.get(`${COINGECKO_API}/global`, { timeout: 5000 })
+      axios.get('https://www.okx.com/api/v5/market/ticker', {
+        params: { instId: 'ETH-USDT' },
+        timeout: 5000,
+        headers: { 'User-Agent': 'MacroOracle/2.0' }
+      }),
+      axios.get('https://www.okx.com/api/v5/market/ticker', {
+        params: { instId: 'SOL-USDT' },
+        timeout: 5000,
+        headers: { 'User-Agent': 'MacroOracle/2.0' }
+      }),
+      axios.get(`${COINGECKO_API}/global`, { timeout: 5000 }).catch(() => null)
     ]);
 
     const data = {
-      btc: priceRes.data.bitcoin?.usd || 0,
-      eth: priceRes.data.ethereum?.usd || 0,
-      sol: priceRes.data.solana?.usd || 0,
-      totalMcap: globalRes.data.data?.total_market_cap?.usd || 0
+      btc: parseFloat(btcRes.data.data?.[0]?.last) || 0,
+      eth: parseFloat(ethRes.data.data?.[0]?.last) || 0,
+      sol: parseFloat(solRes.data.data?.[0]?.last) || 0,
+      totalMcap: globalRes?.data?.data?.total_market_cap?.usd || 2.4e12
     };
 
+    console.log('Fetched crypto prices from OKX:', data);
     setCache('crypto_prices', data);
     return data;
   } catch (error) {
