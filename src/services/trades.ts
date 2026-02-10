@@ -126,6 +126,20 @@ const trades: TradeCall[] = [
     exitTimestamp: '2026-02-10T10:55:00Z',
     pnlPercent: 0,
     outcome: 'win'
+  },
+  {
+    id: 'trade-006',
+    timestamp: '2026-02-10T16:19:00Z',
+    symbol: 'ZRO',
+    direction: 'LONG',
+    entry: 1.7675,
+    stopLoss: 1.70,
+    takeProfit1: 1.94,
+    takeProfit2: 2.15,
+    confidence: 80,
+    reasoning: 'Re-entry after flush to $1.61. MACD bullish cross, price above 20/50 EMA, Extreme Fear (F&G 9). 5x leverage.',
+    indicators: ['MACD Bullish', 'Bullish Trend', 'Extreme Fear (F&G 9)'],
+    status: 'open',
   }
 ];
 
