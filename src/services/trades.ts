@@ -108,6 +108,20 @@ const trades: TradeCall[] = [
     reasoning: '95% confidence setup. MACD bullish + Extreme Fear (F&G 14) + RSI bullish divergence + MACD bullish divergence. 5x leverage.',
     indicators: ['MACD Bullish', 'Extreme Fear (F&G 14)', 'RSI Bullish Divergence', 'MACD Bullish Divergence'],
     status: 'open',
+  },
+  {
+    id: 'trade-005',
+    timestamp: '2026-02-10T08:47:00Z',
+    symbol: 'ZRO',
+    direction: 'LONG',
+    entry: 1.9375,
+    stopLoss: 1.74,
+    takeProfit1: 2.30,
+    takeProfit2: 2.71,
+    confidence: 80,
+    reasoning: 'MACD bullish cross, price above 20/50 EMA, Extreme Fear (F&G 9). 5x leverage.',
+    indicators: ['MACD Bullish', 'Bullish Trend', 'Extreme Fear (F&G 9)'],
+    status: 'open',
   }
 ];
 
