@@ -67,6 +67,7 @@ import {
   fetchCurrentFearGreed
 } from '../services/historical.js';
 import { OracleStatus } from '../types.js';
+import { scanMarket, scanSymbol, getBestSignal } from '../services/scanner.js';
 
 const router = Router();
 const startTime = Date.now();
@@ -1130,6 +1131,41 @@ router.get('/auto-trader/log', (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to get trade log' });
+  }
+});
+
+// === LIVE SCANNER ENDPOINTS ===
+// Real-time technical analysis scan using OKX market data
+// Note: Full scans take ~10-60s depending on limit (200ms per coin for rate limiting)
+
+// GET /scanner — Full market scan
+// Query params: limit (1-100, default 50), symbol (scan single coin)
+router.get('/scanner', async (req: Request, res: Response) => {
+  try {
+    const symbolParam = req.query.symbol as string;
+    
+    if (symbolParam) {
+      const result = await scanSymbol(symbolParam);
+      res.json(result);
+      return;
+    }
+    
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 100);
+    const result = await scanMarket(limit);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Scanner failed' });
+  }
+});
+
+// GET /scanner/top — Best signal only
+router.get('/scanner/top', async (req: Request, res: Response) => {
+  try {
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 100);
+    const result = await getBestSignal(limit);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Scanner failed' });
   }
 });
 

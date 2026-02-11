@@ -675,9 +675,9 @@ export const landingPageHtml = `
           <div class="monitor-card">
             <div class="monitor-icon">🎯</div>
             <h3>Trade Signals</h3>
-            <p>Scans 100+ coins for high-confidence setups using RSI, MACD, EMA, and divergences.</p>
+            <p>Live scanner API — scans 100+ coins for high-confidence setups using RSI, MACD (3/10/16), EMA, volume, Fear & Greed, and divergences. Call <code>/api/scanner</code> for real-time signals.</p>
             <div class="monitor-meta">
-              <span class="meta-tag frequency">Every 2h</span>
+              <span class="meta-tag frequency">Real-time API</span>
               <span class="meta-tag">OKX</span>
             </div>
           </div>
@@ -918,6 +918,63 @@ node scripts/etf-monitor.js</code></pre>
       </div>
     </section>
   </main>
+
+    <section id="scanner-api" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Live Scanner API</h2>
+          <p>Real-time technical analysis across 100+ coins. Returns trade signals with entry, SL, TP, confidence, and indicator reasoning.</p>
+        </div>
+
+        <div class="code-section">
+          <div class="code-header">
+            <span>Scanner Endpoints</span>
+          </div>
+          <div class="code-content">
+<pre><code><span class="code-comment"># Scan top 50 coins by volume (default)</span>
+curl https://macro-oracle-production.up.railway.app/api/scanner
+
+<span class="code-comment"># Scan top 100 coins</span>
+curl https://macro-oracle-production.up.railway.app/api/scanner?limit=100
+
+<span class="code-comment"># Scan a specific symbol</span>
+curl https://macro-oracle-production.up.railway.app/api/scanner?symbol=SOL
+
+<span class="code-comment"># Get only the best signal</span>
+curl https://macro-oracle-production.up.railway.app/api/scanner/top</code></pre>
+          </div>
+        </div>
+
+        <div class="code-section">
+          <div class="code-header">
+            <span>Response Example</span>
+          </div>
+          <div class="code-content">
+<pre><code>{
+  <span class="code-string">"timestamp"</span>: <span class="code-number">1739273400000</span>,
+  <span class="code-string">"fearGreed"</span>: { <span class="code-string">"value"</span>: <span class="code-number">11</span>, <span class="code-string">"classification"</span>: <span class="code-string">"Extreme Fear"</span> },
+  <span class="code-string">"scanned"</span>: <span class="code-number">50</span>,
+  <span class="code-string">"signalCount"</span>: <span class="code-number">5</span>,
+  <span class="code-string">"signals"</span>: [{
+    <span class="code-string">"symbol"</span>: <span class="code-string">"ASTER"</span>,
+    <span class="code-string">"side"</span>: <span class="code-string">"LONG"</span>,
+    <span class="code-string">"entry"</span>: <span class="code-number">0.65</span>,
+    <span class="code-string">"stopLoss"</span>: <span class="code-number">0.56</span>,
+    <span class="code-string">"takeProfit1"</span>: <span class="code-number">0.84</span>,
+    <span class="code-string">"takeProfit2"</span>: <span class="code-number">1.02</span>,
+    <span class="code-string">"confidence"</span>: <span class="code-number">0.95</span>,
+    <span class="code-string">"indicators"</span>: [<span class="code-string">"MACD Bullish"</span>, <span class="code-string">"F&G Bullish"</span>, <span class="code-string">"RSI Bullish Div"</span>],
+    <span class="code-string">"reasoning"</span>: <span class="code-string">"MACD bullish cross. Extreme Fear (contrarian bullish)."</span>
+  }],
+  <span class="code-string">"usage"</span>: {
+    <span class="code-string">"indicators"</span>: [<span class="code-string">"RSI"</span>, <span class="code-string">"MACD (3/10/16)"</span>, <span class="code-string">"EMA 20/50/200"</span>, <span class="code-string">"Volume"</span>, <span class="code-string">"Fear & Greed"</span>, <span class="code-string">"Divergences"</span>],
+    <span class="code-string">"riskWarning"</span>: <span class="code-string">"DYOR - signals, not financial advice"</span>
+  }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
 
   <footer>
     <div class="container">
