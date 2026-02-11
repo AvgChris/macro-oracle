@@ -11,20 +11,20 @@ export const landingPageHtml = `
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-primary: #0f0f1a;
-      --bg-secondary: #1a1a2e;
-      --bg-card: #252540;
-      --bg-card-hover: #2f2f4a;
-      --purple-primary: #7c3aed;
-      --purple-secondary: #8b5cf6;
-      --purple-dark: #6d28d9;
-      --purple-glow: rgba(124, 58, 237, 0.15);
-      --gradient-purple: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
-      --gradient-bg: linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 100%);
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0b8;
-      --text-muted: #6b6b80;
-      --border-color: #3a3a52;
+      --bg-primary: #25343F;
+      --bg-secondary: #1e2b34;
+      --bg-card: #2e4150;
+      --bg-card-hover: #375060;
+      --purple-primary: #FF9B51;
+      --purple-secondary: #FFB07A;
+      --purple-dark: #E88538;
+      --purple-glow: rgba(255, 155, 81, 0.15);
+      --gradient-purple: linear-gradient(135deg, #FFB07A 0%, #FF9B51 50%, #E88538 100%);
+      --gradient-bg: linear-gradient(180deg, #25343F 0%, #1e2b34 100%);
+      --text-primary: #EAEFEF;
+      --text-secondary: #BFC9D1;
+      --text-muted: #8A9AA6;
+      --border-color: #3D5565;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
@@ -51,7 +51,7 @@ export const landingPageHtml = `
       right: -10%;
       width: 600px;
       height: 600px;
-      background: radial-gradient(circle, rgba(124, 58, 237, 0.06) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255, 155, 81, 0.06) 0%, transparent 70%);
       pointer-events: none;
       z-index: 0;
     }
@@ -62,7 +62,7 @@ export const landingPageHtml = `
       left: -10%;
       width: 500px;
       height: 500px;
-      background: radial-gradient(circle, rgba(139, 92, 246, 0.04) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255, 176, 122, 0.04) 0%, transparent 70%);
       pointer-events: none;
       z-index: 0;
     }
@@ -82,7 +82,7 @@ export const landingPageHtml = `
       backdrop-filter: blur(10px);
       position: sticky;
       top: 0;
-      background: rgba(15, 15, 26, 0.95);
+      background: rgba(37, 52, 63, 0.95);
       z-index: 100;
     }
 
@@ -146,7 +146,7 @@ export const landingPageHtml = `
       gap: 8px;
       padding: 8px 16px;
       background: var(--purple-glow);
-      border: 1px solid rgba(171, 159, 242, 0.2);
+      border: 1px solid rgba(255, 155, 81, 0.2);
       border-radius: 100px;
       font-size: 14px;
       color: var(--purple-primary);
@@ -158,7 +158,7 @@ export const landingPageHtml = `
       font-weight: 700;
       line-height: 1.1;
       margin-bottom: 24px;
-      background: linear-gradient(135deg, #ffffff 0%, #a0a0b8 100%);
+      background: linear-gradient(135deg, #EAEFEF 0%, #BFC9D1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -195,7 +195,7 @@ export const landingPageHtml = `
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(171, 159, 242, 0.3);
+      box-shadow: 0 8px 30px rgba(255, 155, 81, 0.3);
     }
 
     .btn-secondary {
@@ -231,7 +231,7 @@ export const landingPageHtml = `
     .stat-card:hover {
       border-color: var(--purple-primary);
       transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(124, 58, 237, 0.12);
+      box-shadow: 0 8px 24px rgba(255, 155, 81, 0.12);
     }
 
     .stat-value {
@@ -288,7 +288,7 @@ export const landingPageHtml = `
       border-color: var(--purple-primary);
       background: var(--bg-card-hover);
       transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(124, 58, 237, 0.12);
+      box-shadow: 0 12px 32px rgba(255, 155, 81, 0.12);
     }
 
     .monitor-icon {
@@ -380,7 +380,7 @@ export const landingPageHtml = `
 
     /* Code Block */
     .code-section {
-      background: #1e1e2e;
+      background: #1a2830;
       border: 1px solid var(--border-color);
       border-radius: 16px;
       overflow: hidden;
@@ -392,8 +392,8 @@ export const landingPageHtml = `
       justify-content: space-between;
       align-items: center;
       padding: 16px 20px;
-      background: #16161e;
-      border-bottom: 1px solid #2a2a3a;
+      background: #162028;
+      border-bottom: 1px solid #2a3e4a;
     }
     
     .code-header span {
@@ -560,8 +560,8 @@ export const landingPageHtml = `
         </div>
         <h1>Market signals that<br>actually matter</h1>
         <p>15+ automated monitors tracking price action, orderbook depth, on-chain activity, macro events, funding rates, sentiment, stablecoins, predictions, and institutional flows — plus autonomous trade execution.</p>
-        <div style="margin: 20px 0; padding: 16px 24px; background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); border-radius: 12px; display: inline-block;">
-          <span style="font-size: 1.1em;">🎯 <strong>NEW: Live Scanner API</strong> — Scan any coin for trade signals in real-time. <a href="#scanner-api" style="color: #8b5cf6; text-decoration: underline;">Try it →</a></span>
+        <div style="margin: 20px 0; padding: 16px 24px; background: rgba(255, 155, 81, 0.15); border: 1px solid rgba(255, 155, 81, 0.3); border-radius: 12px; display: inline-block;">
+          <span style="font-size: 1.1em;">🎯 <strong>NEW: Live Scanner API</strong> — Scan any coin for trade signals in real-time. <a href="#scanner-api" style="color: #FFB07A; text-decoration: underline;">Try it →</a></span>
         </div>
         <div class="hero-buttons">
           <a href="/api/dashboard" class="btn btn-primary">Live Dashboard →</a>

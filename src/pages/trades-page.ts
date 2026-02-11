@@ -11,16 +11,16 @@ export const tradesPageHtml = `
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg-primary: #0f0f1a;
-      --bg-secondary: #1a1a2e;
-      --bg-card: #252540;
-      --purple-primary: #7c3aed;
-      --purple-secondary: #8b5cf6;
-      --purple-glow: rgba(124, 58, 237, 0.15);
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0b8;
-      --text-muted: #6b6b80;
-      --border-color: #3a3a52;
+      --bg-primary: #25343F;
+      --bg-secondary: #1e2b34;
+      --bg-card: #2e4150;
+      --purple-primary: #FF9B51;
+      --purple-secondary: #FFB07A;
+      --purple-glow: rgba(255, 155, 81, 0.15);
+      --text-primary: #EAEFEF;
+      --text-secondary: #BFC9D1;
+      --text-muted: #8A9AA6;
+      --border-color: #3D5565;
       --success: #10b981;
       --success-bg: rgba(16, 185, 129, 0.1);
       --warning: #f59e0b;
@@ -55,7 +55,7 @@ export const tradesPageHtml = `
     .logo-icon {
       width: 40px;
       height: 40px;
-      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      background: linear-gradient(135deg, #FFB07A, #FF9B51);
       border-radius: 12px;
       display: flex;
       align-items: center;
@@ -690,8 +690,8 @@ export const tradesPageHtml = `
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { grid: { color: '#3a3a52' }, ticks: { color: '#6b6b80' } },
-            y: { grid: { color: '#3a3a52' }, ticks: { color: '#6b6b80' } }
+            x: { grid: { color: '#3D5565' }, ticks: { color: '#6b6b80' } },
+            y: { grid: { color: '#3D5565' }, ticks: { color: '#6b6b80' } }
           }
         }
       });
