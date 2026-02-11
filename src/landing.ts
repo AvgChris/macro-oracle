@@ -539,6 +539,7 @@ export const landingPageHtml = `
         <nav class="nav-links">
           <a href="/api">API</a>
           <a href="/dashboard">Dashboard</a>
+          <a href="#scanner-api" style="color: #10b981;">🎯 Scanner</a>
           <a href="/signal">Signal</a>
           <a href="/backtest">Backtest</a>
           <a href="/trades">Trades</a>
