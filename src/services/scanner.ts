@@ -628,3 +628,62 @@ export async function getBestSignal(limit: number = 50): Promise<ScanResult> {
     signals: result.signals.slice(0, 1)
   };
 }
+
+// ═══════════════════════════════════════
+// Scan History — stores last N scan results
+// ═══════════════════════════════════════
+
+const MAX_HISTORY = 48; // ~4 days of 2h scans
+const scanHistory: ScanResult[] = [];
+let autoScanInterval: NodeJS.Timeout | null = null;
+
+/** Add a scan result to history */
+function recordScan(result: ScanResult): void {
+  scanHistory.unshift(result); // newest first
+  if (scanHistory.length > MAX_HISTORY) {
+    scanHistory.length = MAX_HISTORY;
+  }
+}
+
+/** Get scan history */
+export function getScanHistory(limit: number = 24): ScanResult[] {
+  return scanHistory.slice(0, limit);
+}
+
+/** Get latest scan (most recent) */
+export function getLatestScan(): ScanResult | null {
+  return scanHistory[0] || null;
+}
+
+/** Run a scheduled scan and record it */
+async function runScheduledScan(): Promise<void> {
+  console.log(`[Scanner] Running scheduled 2h scan at ${new Date().toISOString()}`);
+  try {
+    const result = await scanMarket(100);
+    recordScan(result);
+    console.log(`[Scanner] Scan complete: ${result.signalCount} signals from ${result.scanned} coins`);
+  } catch (err: any) {
+    console.error(`[Scanner] Scheduled scan failed:`, err.message);
+  }
+}
+
+/** Start the auto-scan interval (every 2 hours) */
+export function startAutoScan(): void {
+  if (autoScanInterval) return; // already running
+  
+  console.log('[Scanner] Starting auto-scan (every 2 hours)');
+  
+  // Run immediately on startup
+  runScheduledScan();
+  
+  // Then every 2 hours
+  autoScanInterval = setInterval(runScheduledScan, 2 * 60 * 60 * 1000);
+}
+
+/** Stop auto-scan */
+export function stopAutoScan(): void {
+  if (autoScanInterval) {
+    clearInterval(autoScanInterval);
+    autoScanInterval = null;
+  }
+}

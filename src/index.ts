@@ -5,6 +5,7 @@ import express from 'express';
 import apiRoutes from './routes/api.js';
 import { startLiveFeeds } from './services/feeds.js';
 import { refreshLiveData } from './services/market.js';
+import { startAutoScan } from './services/scanner.js';
 import { landingPageHtml } from './landing.js';
 import { apiDocsHtml } from './api-docs.js';
 import { signalPageHtml } from './pages/signal-page.js';
@@ -20,6 +21,9 @@ startLiveFeeds(120000);
 
 // Initial data fetch
 refreshLiveData().catch(console.error);
+
+// Start auto-scanner (runs every 2 hours, records history)
+startAutoScan();
 
 // Middleware
 app.use(express.json());

@@ -67,7 +67,7 @@ import {
   fetchCurrentFearGreed
 } from '../services/historical.js';
 import { OracleStatus } from '../types.js';
-import { scanMarket, scanSymbol, getBestSignal } from '../services/scanner.js';
+import { scanMarket, scanSymbol, getBestSignal, getScanHistory, getLatestScan } from '../services/scanner.js';
 
 const router = Router();
 const startTime = Date.now();
@@ -1155,6 +1155,35 @@ router.get('/scanner', async (req: Request, res: Response) => {
     res.json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message || 'Scanner failed' });
+  }
+});
+
+// GET /scanner/history — Recent scan results (2h intervals)
+router.get('/scanner/history', (req: Request, res: Response) => {
+  try {
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 24, 1), 48);
+    const history = getScanHistory(limit);
+    res.json({
+      count: history.length,
+      interval: '2 hours',
+      scans: history
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to fetch scan history' });
+  }
+});
+
+// GET /scanner/latest — Most recent scan without triggering new one
+router.get('/scanner/latest', (req: Request, res: Response) => {
+  try {
+    const latest = getLatestScan();
+    if (!latest) {
+      res.json({ message: 'No scans recorded yet. First scan runs on startup.' });
+      return;
+    }
+    res.json(latest);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to fetch latest scan' });
   }
 });
 
