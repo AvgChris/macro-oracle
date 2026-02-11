@@ -137,9 +137,13 @@ const trades: TradeCall[] = [
     takeProfit1: 1.94,
     takeProfit2: 2.15,
     confidence: 80,
-    reasoning: 'Re-entry after flush to $1.61. MACD bullish cross, price above 20/50 EMA, Extreme Fear (F&G 9). 5x leverage.',
+    reasoning: 'Re-entry after flush to $1.61. MACD bullish cross, price above 20/50 EMA, Extreme Fear (F&G 9). 5x leverage. TP1 & TP2 smashed — hit $2.163.',
     indicators: ['MACD Bullish', 'Bullish Trend', 'Extreme Fear (F&G 9)'],
-    status: 'open',
+    status: 'tp2_hit',
+    exitPrice: 2.15,
+    exitTimestamp: '2026-02-11T01:02:00Z',
+    pnlPercent: 21.6,
+    outcome: 'win'
   }
 ];
 
