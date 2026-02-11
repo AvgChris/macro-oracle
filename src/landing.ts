@@ -556,8 +556,12 @@ export const landingPageHtml = `
         </div>
         <h1>Market signals that<br>actually matter</h1>
         <p>15+ automated monitors tracking price action, orderbook depth, on-chain activity, macro events, funding rates, sentiment, stablecoins, predictions, and institutional flows — plus autonomous trade execution.</p>
+        <div style="margin: 20px 0; padding: 16px 24px; background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); border-radius: 12px; display: inline-block;">
+          <span style="font-size: 1.1em;">🎯 <strong>NEW: Live Scanner API</strong> — Scan any coin for trade signals in real-time. <a href="#scanner-api" style="color: #8b5cf6; text-decoration: underline;">Try it →</a></span>
+        </div>
         <div class="hero-buttons">
           <a href="/api/dashboard" class="btn btn-primary">Live Dashboard →</a>
+          <a href="#scanner-api" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">🎯 Scanner API</a>
           <a href="/api" class="btn btn-secondary">API Docs</a>
         </div>
       </div>
@@ -917,7 +921,6 @@ node scripts/etf-monitor.js</code></pre>
         </div>
       </div>
     </section>
-  </main>
 
     <section id="scanner-api" class="section">
       <div class="container">
@@ -975,6 +978,7 @@ curl https://macro-oracle-production.up.railway.app/api/scanner/top</code></pre>
         </div>
       </div>
     </section>
+  </main>
 
   <footer>
     <div class="container">
@@ -986,6 +990,7 @@ curl https://macro-oracle-production.up.railway.app/api/scanner/top</code></pre>
           <a href="/api">API</a>
           <a href="/api/signal">Signal</a>
           <a href="/api/dashboard">Dashboard</a>
+          <a href="#scanner-api">Scanner</a>
           <a href="https://github.com/AvgChris/macro-oracle">GitHub</a>
         </div>
       </div>
