@@ -46,6 +46,11 @@ app.get('/skill.json', (req, res) => {
   res.sendFile('skill.json', { root: process.cwd() });
 });
 
+// Logo
+app.get('/logo.jpg', (req, res) => {
+  res.type('image/jpeg').sendFile('logo.jpg', { root: process.cwd() });
+});
+
 // API docs page (beautiful HTML documentation)
 app.get('/api', (req, res) => {
   res.type('html').send(apiDocsHtml);

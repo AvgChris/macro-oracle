@@ -4,6 +4,7 @@ export const apiDocsHtml = `
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/jpeg" href="/logo.jpg">
   <title>API Documentation — Macro Oracle</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -353,7 +354,7 @@ export const apiDocsHtml = `
     <div class="container">
       <div class="header-content">
         <a href="/" class="logo">
-          <div class="logo-icon">📊</div>
+          <div class="logo-icon"><img src="/logo.jpg" alt="Macro Oracle" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
           <span class="logo-text">Macro Oracle</span>
         </a>
         <nav>

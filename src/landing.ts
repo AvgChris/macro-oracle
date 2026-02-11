@@ -4,6 +4,7 @@ export const landingPageHtml = `
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/jpeg" href="/logo.jpg">
   <title>Macro Oracle — Real-time Market Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -101,12 +102,14 @@ export const landingPageHtml = `
     .logo-icon {
       width: 40px;
       height: 40px;
-      background: var(--gradient-purple);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .logo-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .logo-text {
@@ -533,8 +536,8 @@ export const landingPageHtml = `
     <div class="container">
       <div class="header-content">
         <a href="#" class="logo">
-          <div class="logo-icon">📊</div>
-          <span class="logo-text">Macro Signals</span>
+          <div class="logo-icon"><img src="/logo.jpg" alt="Macro Oracle"></div>
+          <span class="logo-text">Macro Oracle</span>
         </a>
         <nav class="nav-links">
           <a href="#scanner-api">Scanner</a>
@@ -984,7 +987,8 @@ curl https://macro-oracle-production.up.railway.app/api/scanner/top</code></pre>
   <footer>
     <div class="container">
       <div class="footer-content">
-        <div class="footer-text">
+        <div class="footer-text" style="display: flex; align-items: center; gap: 10px;">
+          <img src="/logo.jpg" alt="Macro Oracle" style="width: 28px; height: 28px; border-radius: 50%;">
           Built by Mistah 🎩 — Macro intelligence for the agent economy.
         </div>
         <div class="footer-links">

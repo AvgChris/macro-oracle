@@ -4,6 +4,7 @@ export const backtestPageHtml = `
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/jpeg" href="/logo.jpg">
   <title>Backtest Results — Macro Oracle</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -368,7 +369,7 @@ export const backtestPageHtml = `
   <div class="container">
     <header>
       <a href="/" class="logo">
-        <div class="logo-icon">📊</div>
+        <div class="logo-icon"><img src="/logo.jpg" alt="Macro Oracle" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
         <span class="logo-text">Macro Oracle</span>
       </a>
       <nav>
