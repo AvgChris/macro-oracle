@@ -561,10 +561,12 @@ export const landingPageHtml = `
         <h1>Solana-native macro<br>intelligence for agents</h1>
         <p>The intelligence layer for autonomous Solana trading agents. 15+ monitors, Pyth oracle integration, backtested signals, and autonomous execution — all through a free API. No keys needed.</p>
         <div style="margin: 20px 0; padding: 16px 24px; background: rgba(255, 155, 81, 0.15); border: 1px solid rgba(255, 155, 81, 0.3); border-radius: 12px; display: inline-block;">
-          <span style="font-size: 1.1em;">🎯 <strong>NEW: Birdeye DEX + On-Chain Signals</strong> — Solana-native analytics, DEX prices & on-chain signal publishing. <a href="/api/birdeye/market" style="color: #FFB07A; text-decoration: underline;">Try it →</a></span>
+          <span style="font-size: 1.1em;">⛓️ <strong>LIVE ON SOLANA MAINNET</strong> — On-chain signal publishing active. Every signal verifiable on-chain. <a href="https://solscan.io/account/6LLmNhpwSYVHtLNMpURqLjDjbAq3FdPiP4ndqyc7ZCeP" style="color: #00ffa3; text-decoration: underline;" target="_blank">View signals on Solscan →</a></span>
         </div>
         <div class="hero-buttons">
           <a href="/api/pyth/feeds" class="btn btn-primary">◎ Pyth Oracle →</a>
+          <a href="/api/birdeye/market" class="btn btn-primary" style="background: linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%);">🐦 Birdeye DEX →</a>
+          <a href="https://solscan.io/account/6LLmNhpwSYVHtLNMpURqLjDjbAq3FdPiP4ndqyc7ZCeP" class="btn btn-primary" style="background: linear-gradient(135deg, #00ffa3 0%, #00cc82 100%); color: #000;" target="_blank">⛓️ On-Chain Proof →</a>
           <a href="#scanner-api" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">🎯 Scanner API</a>
           <a href="/api" class="btn btn-secondary">API Docs</a>
         </div>
@@ -722,8 +724,8 @@ export const landingPageHtml = `
 
           <div class="monitor-card" style="border-color: rgba(0, 255, 163, 0.4); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0, 255, 163, 0.05) 100%);">
             <div class="monitor-icon">⛓️</div>
-            <h3>On-Chain Signal Publishing</h3>
-            <p>Signals published as Solana memo transactions — verifiable on-chain. Every macro snapshot, trade signal, and learning epoch is permanently recorded on Solana mainnet.</p>
+            <h3>On-Chain Signal Publishing <span style="color: #00ffa3; font-size: 0.7em;">● LIVE</span></h3>
+            <p>Signals published as Solana memo transactions — verifiable on-chain. Every signal is permanently recorded on Solana mainnet. <a href="https://solscan.io/account/6LLmNhpwSYVHtLNMpURqLjDjbAq3FdPiP4ndqyc7ZCeP" target="_blank" style="color: #00ffa3;">View on Solscan →</a></p>
             <div class="monitor-meta">
               <span class="meta-tag frequency">Per Signal</span>
               <span class="meta-tag">Solana / Memo</span>
@@ -911,32 +913,38 @@ export const landingPageHtml = `
     <section id="api" class="section">
       <div class="container">
         <div class="section-header">
-          <h2>Running Manually</h2>
-          <p>Execute any monitor script directly to get current readings.</p>
+          <h2>API Endpoints</h2>
+          <p>Free, no authentication required. All endpoints return JSON.</p>
         </div>
 
         <div class="code-section">
           <div class="code-header">
-            <span>Terminal</span>
+            <span>Quick Start</span>
           </div>
           <div class="code-content">
-<pre><code><span class="code-comment"># Check current BTC price + recent moves</span>
-node scripts/btc-price-monitor.js
+<pre><code><span class="code-comment"># Get a trading signal</span>
+curl https://macro-oracle-production.up.railway.app/api/signal/json
 
-<span class="code-comment"># Check whale/liquidation events</span>
-node scripts/onchain-monitor.js
+<span class="code-comment"># Solana DEX prices via Birdeye</span>
+curl https://macro-oracle-production.up.railway.app/api/birdeye/price/SOL
 
-<span class="code-comment"># Check upcoming macro events</span>
-node scripts/macro-monitor.js
+<span class="code-comment"># Pyth oracle price with confidence</span>
+curl https://macro-oracle-production.up.railway.app/api/pyth/price/SOL
 
-<span class="code-comment"># Check funding rates</span>
-node scripts/funding-monitor.js
+<span class="code-comment"># Solana market summary (top movers, volume)</span>
+curl https://macro-oracle-production.up.railway.app/api/birdeye/market
 
-<span class="code-comment"># Check fear & greed</span>
-node scripts/feargreed-monitor.js
+<span class="code-comment"># Self-learning engine state</span>
+curl https://macro-oracle-production.up.railway.app/api/learning/state
 
-<span class="code-comment"># Check ETF flows</span>
-node scripts/etf-monitor.js</code></pre>
+<span class="code-comment"># On-chain signal history</span>
+curl https://macro-oracle-production.up.railway.app/api/solana/status
+
+<span class="code-comment"># Publish signal on-chain (POST)</span>
+curl -X POST https://macro-oracle-production.up.railway.app/api/solana/publish
+
+<span class="code-comment"># Backtest performance</span>
+curl https://macro-oracle-production.up.railway.app/api/backtest</code></pre>
           </div>
         </div>
 
