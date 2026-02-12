@@ -1401,4 +1401,61 @@ router.get('/pyth/compare/:symbol', async (req: Request, res: Response) => {
   }
 });
 
+// ==========================================
+// Solana On-Chain Signal Publishing
+// ==========================================
+
+import { publishSignalOnChain, publishMacroSnapshot, getWalletStatus, SignalData } from '../services/solana-signals.js';
+
+// Get wallet status and recent on-chain signals
+router.get('/solana/status', async (req: Request, res: Response) => {
+  try {
+    const status = await getWalletStatus();
+    res.json({
+      wallet: {
+        address: status.address,
+        balance: status.balanceSOL,
+        balanceLamports: status.balance,
+        funded: status.balance > 10000,
+      },
+      onChainSignals: {
+        totalPublished: status.signalsPublished,
+        recent: status.recentSignals,
+      },
+      explorer: status.address ? `https://solscan.io/account/${status.address}` : null,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Publish current macro snapshot on-chain
+router.post('/solana/publish', async (req: Request, res: Response) => {
+  try {
+    const result = await publishMacroSnapshot();
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Publish custom signal on-chain
+router.post('/solana/publish/custom', async (req: Request, res: Response) => {
+  try {
+    const signal: SignalData = {
+      type: req.body.type || 'macro_signal',
+      symbol: req.body.symbol,
+      direction: req.body.direction,
+      confidence: req.body.confidence,
+      indicators: req.body.indicators,
+      timestamp: Date.now(),
+      source: 'macro-oracle',
+    };
+    const result = await publishSignalOnChain(signal);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
