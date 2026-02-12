@@ -68,6 +68,7 @@ import {
 } from '../services/historical.js';
 import { OracleStatus } from '../types.js';
 import { scanMarket, scanSymbol, getBestSignal, getScanHistory, getLatestScan } from '../services/scanner.js';
+import { fetchPythPrice, fetchPythPrices, searchPythFeed, getSupportedPythFeeds } from '../services/pyth.js';
 
 const router = Router();
 const startTime = Date.now();
@@ -1195,6 +1196,155 @@ router.get('/scanner/top', async (req: Request, res: Response) => {
     res.json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message || 'Scanner failed' });
+  }
+});
+
+// === PYTH NETWORK (SOLANA ORACLE) ENDPOINTS ===
+
+// GET /pyth/price/:symbol — Real-time price from Pyth Network (Solana oracle)
+router.get('/pyth/price/:symbol', async (req: Request, res: Response) => {
+  try {
+    const symbol = req.params.symbol.toUpperCase();
+    const pythPrice = await fetchPythPrice(symbol);
+    
+    if (!pythPrice) {
+      res.status(404).json({ 
+        error: `No Pyth feed found for ${symbol}`,
+        supported: getSupportedPythFeeds(),
+        hint: 'Use /api/pyth/search?q=SYMBOL to find feed IDs'
+      });
+      return;
+    }
+
+    res.json({
+      source: 'pyth-network',
+      network: 'solana',
+      description: 'Real-time price from Pyth Network oracle on Solana',
+      data: pythPrice
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Pyth fetch failed' });
+  }
+});
+
+// GET /pyth/prices — Multi-asset prices from Pyth (query: ?symbols=BTC,ETH,SOL)
+router.get('/pyth/prices', async (req: Request, res: Response) => {
+  try {
+    const symbolsParam = req.query.symbols as string;
+    const symbols = symbolsParam 
+      ? symbolsParam.split(',').map(s => s.trim().toUpperCase())
+      : ['BTC', 'ETH', 'SOL']; // Default to majors
+
+    const prices = await fetchPythPrices(symbols);
+
+    res.json({
+      source: 'pyth-network',
+      network: 'solana',
+      count: prices.length,
+      requested: symbols.length,
+      timestamp: new Date().toISOString(),
+      prices
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Pyth multi-fetch failed' });
+  }
+});
+
+// GET /pyth/feeds — List all supported Pyth price feeds
+router.get('/pyth/feeds', (req: Request, res: Response) => {
+  const feeds = getSupportedPythFeeds();
+  res.json({
+    source: 'pyth-network',
+    network: 'solana',
+    description: 'Pyth Network provides real-time oracle prices on Solana, published by institutional market makers',
+    count: feeds.length,
+    feeds: feeds.map(symbol => ({
+      symbol,
+      endpoint: `/api/pyth/price/${symbol}`
+    }))
+  });
+});
+
+// GET /pyth/search — Search for Pyth price feed by name
+router.get('/pyth/search', async (req: Request, res: Response) => {
+  try {
+    const query = req.query.q as string;
+    if (!query) {
+      res.status(400).json({ error: 'Missing query parameter ?q=SYMBOL' });
+      return;
+    }
+
+    const results = await searchPythFeed(query);
+    res.json({
+      source: 'pyth-network',
+      query,
+      count: results.length,
+      feeds: results
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Pyth search failed' });
+  }
+});
+
+// GET /pyth/compare/:symbol — Compare Pyth oracle price vs OKX spot price
+router.get('/pyth/compare/:symbol', async (req: Request, res: Response) => {
+  try {
+    const symbol = req.params.symbol.toUpperCase();
+    const pythPrice = await fetchPythPrice(symbol);
+    
+    if (!pythPrice) {
+      res.status(404).json({ error: `No Pyth feed for ${symbol}` });
+      return;
+    }
+
+    // Fetch OKX price for comparison
+    let okxPrice: number | null = null;
+    try {
+      const https = await import('https');
+      const okxData: string = await new Promise((resolve, reject) => {
+        https.get(`https://www.okx.com/api/v5/market/ticker?instId=${symbol}-USDT`, {
+          headers: { 'User-Agent': 'MacroOracle/2.0' }
+        }, (res: any) => {
+          let d = '';
+          res.on('data', (c: string) => d += c);
+          res.on('end', () => resolve(d));
+        }).on('error', reject);
+      });
+      const okxJson = JSON.parse(okxData);
+      if (okxJson.code === '0' && okxJson.data?.[0]) {
+        okxPrice = parseFloat(okxJson.data[0].last);
+      }
+    } catch {}
+
+    const spread = okxPrice ? Math.abs(pythPrice.price - okxPrice) : null;
+    const spreadPercent = okxPrice ? (spread! / okxPrice) * 100 : null;
+
+    res.json({
+      symbol,
+      pyth: {
+        price: pythPrice.price,
+        confidence: pythPrice.confidence,
+        emaPrice: pythPrice.emaPrice,
+        publishTime: pythPrice.publishTime,
+        source: 'Pyth Network (Solana oracle)'
+      },
+      okx: okxPrice ? {
+        price: okxPrice,
+        source: 'OKX spot'
+      } : null,
+      comparison: spread !== null ? {
+        absoluteSpread: spread,
+        spreadPercent: spreadPercent,
+        note: spreadPercent! < 0.1 
+          ? 'Prices tightly aligned — oracle healthy'
+          : spreadPercent! < 0.5
+          ? 'Minor spread — normal market conditions'
+          : 'Significant spread — potential arbitrage or stale oracle'
+      } : null,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Comparison failed' });
   }
 });
 
