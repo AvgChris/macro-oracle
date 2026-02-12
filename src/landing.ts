@@ -700,6 +700,16 @@ export const landingPageHtml = `
             </div>
           </div>
 
+          <div class="monitor-card" style="border-color: rgba(16, 185, 129, 0.4); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 185, 129, 0.05) 100%);">
+            <div class="monitor-icon">🧠</div>
+            <h3>Self-Learning Engine</h3>
+            <p>Analyzes trade outcomes to dynamically adjust indicator weights. Winning indicators get boosted, losing ones reduced. The strategy improves with every trade.</p>
+            <div class="monitor-meta">
+              <span class="meta-tag frequency">Continuous</span>
+              <span class="meta-tag">Autonomous</span>
+            </div>
+          </div>
+
           <div class="monitor-card">
             <div class="monitor-icon">🤖</div>
             <h3>Auto-Trader</h3>
