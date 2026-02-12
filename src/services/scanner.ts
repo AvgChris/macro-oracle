@@ -473,16 +473,20 @@ function generateSignal(
 
   if (!side || confidence < 0.45) return null;
 
-  // For 2H LONGs: require extra confluence (backtest shows 8-17% WR for longs in fear)
-  if (bar === '2H' && side === 'LONG' && bullishSignals.length < 4) return null;
+  // 2H: SHORTS ONLY + require divergence (deep backtest: PF 2.13, 52% WR)
+  if (bar === '2H') {
+    if (side === 'LONG') return null;
+    const hasDivergence = bearishSignals.some(s => s.includes('Div'));
+    if (!hasDivergence) return null;
+  }
 
   let stopLoss: number, takeProfit1: number, takeProfit2: number;
 
   if (bar === '2H') {
-    // Percent-based for 2H — backtested optimal: 2% SL, 5% TP (PF 1.63)
-    stopLoss = Math.max(side === 'LONG' ? price * 0.98 : price * 1.02, 0);
-    takeProfit1 = Math.max(side === 'LONG' ? price * 1.05 : price * 0.95, 0);
-    takeProfit2 = Math.max(side === 'LONG' ? price * 1.10 : price * 0.90, 0);
+    // Percent-based for 2H — backtested optimal: 2% SL, 4% TP (PF 2.13)
+    stopLoss = Math.max(price * 1.02, 0);
+    takeProfit1 = Math.max(price * 0.96, 0);
+    takeProfit2 = Math.max(price * 0.92, 0);
   } else {
     // ATR-based for daily
     const atr = calculateATR([price, ind.ema20, ind.ema50]);
