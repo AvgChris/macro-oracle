@@ -69,6 +69,7 @@ import {
 import { OracleStatus } from '../types.js';
 import { scanMarket, scanSymbol, getBestSignal, getScanHistory, getLatestScan } from '../services/scanner.js';
 import { fetchPythPrice, fetchPythPrices, searchPythFeed, getSupportedPythFeeds } from '../services/pyth.js';
+import { getLearningState, runLearningEpoch, getWeightDiff, getCurrentWeights, getBaselineWeights } from '../services/learning.js';
 
 const router = Router();
 const startTime = Date.now();
@@ -1197,6 +1198,58 @@ router.get('/scanner/top', async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({ error: error.message || 'Scanner failed' });
   }
+});
+
+// === SELF-LEARNING ENGINE ENDPOINTS ===
+
+// GET /learning/state — Current learning state (weights, performance, insights)
+router.get('/learning/state', (req: Request, res: Response) => {
+  const state = getLearningState();
+  res.json({
+    description: 'Self-learning strategy engine — analyzes trade outcomes to dynamically adjust indicator weights',
+    state
+  });
+});
+
+// POST /learning/epoch — Trigger a new learning epoch (re-analyze all trades)
+router.post('/learning/epoch', (req: Request, res: Response) => {
+  const state = runLearningEpoch();
+  res.json({
+    message: `Learning epoch #${state.epochs} complete`,
+    tradesAnalyzed: state.totalTradesAnalyzed,
+    insights: state.strategyInsights,
+    weightChanges: getWeightDiff().filter(d => d.change !== '+0.0%')
+  });
+});
+
+// GET /learning/weights — Current dynamic weights vs baseline
+router.get('/learning/weights', (req: Request, res: Response) => {
+  res.json({
+    description: 'Dynamic indicator weights — adjusted by the self-learning engine based on trade outcomes',
+    baseline: getBaselineWeights(),
+    current: getCurrentWeights(),
+    diff: getWeightDiff(),
+    note: 'Weights > baseline = indicator performed well historically. Weights < baseline = underperformed.'
+  });
+});
+
+// GET /learning/insights — Strategy insights and improvement log
+router.get('/learning/insights', (req: Request, res: Response) => {
+  const state = getLearningState();
+  res.json({
+    epochs: state.epochs,
+    lastUpdated: state.lastUpdated,
+    insights: state.strategyInsights,
+    improvements: state.improvements,
+    indicatorRanking: state.indicatorPerformance.map(p => ({
+      indicator: p.indicator,
+      winRate: `${p.winRate}%`,
+      avgPnl: `${p.avgPnlWhenPresent > 0 ? '+' : ''}${p.avgPnlWhenPresent}%`,
+      weightChange: `${p.weightChange > 0 ? '+' : ''}${p.weightChange}%`,
+      trades: p.totalTrades,
+      confidence: `${p.confidence}%`
+    }))
+  });
 });
 
 // === PYTH NETWORK (SOLANA ORACLE) ENDPOINTS ===
