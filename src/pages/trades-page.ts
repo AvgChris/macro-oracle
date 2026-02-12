@@ -11,16 +11,16 @@ export const tradesPageHtml = `
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg-primary: #0f0f1a;
-      --bg-secondary: #1a1a2e;
-      --bg-card: #252540;
-      --purple-primary: #7c3aed;
-      --purple-secondary: #8b5cf6;
-      --purple-glow: rgba(124, 58, 237, 0.15);
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0b8;
-      --text-muted: #6b6b80;
-      --border-color: #3a3a52;
+      --bg-primary: #25343F;
+      --bg-secondary: #1e2b34;
+      --bg-card: #2e4150;
+      --purple-primary: #FF9B51;
+      --purple-secondary: #FFB07A;
+      --purple-glow: rgba(255, 155, 81, 0.15);
+      --text-primary: #EAEFEF;
+      --text-secondary: #BFC9D1;
+      --text-muted: #8A9AA6;
+      --border-color: #3D5565;
       --success: #10b981;
       --success-bg: rgba(16, 185, 129, 0.1);
       --warning: #f59e0b;
@@ -55,7 +55,7 @@ export const tradesPageHtml = `
     .logo-icon {
       width: 40px;
       height: 40px;
-      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      background: linear-gradient(135deg, #FFB07A, #FF9B51);
       border-radius: 12px;
       display: flex;
       align-items: center;
@@ -414,6 +414,42 @@ export const tradesPageHtml = `
       <!-- Loaded dynamically -->
     </div>
 
+    <!-- Latest Calls -->
+    <h2 class="section-title">🎯 Latest Calls <span style="font-size:13px;color:var(--text-muted);font-weight:400;margin-left:8px;">Auto-scanned every 2 hours</span></h2>
+    <div id="calls-section" style="margin-bottom: 40px;">
+      <div id="calls-loading" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:20px;padding:32px;text-align:center;color:var(--text-muted);">Loading scanner data...</div>
+      <div id="calls-content" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span id="calls-time" style="color:var(--text-muted);font-size:13px;"></span>
+            <span id="calls-fg" style="font-size:12px;padding:3px 10px;border-radius:6px;"></span>
+          </div>
+          <span id="calls-count" style="color:var(--text-muted);font-size:13px;"></span>
+        </div>
+        <div class="history-card" style="margin-bottom:16px;">
+          <table class="history-table" id="calls-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Side</th>
+                <th>Entry</th>
+                <th>Stop Loss</th>
+                <th>TP1</th>
+                <th>TP2</th>
+                <th>Confidence</th>
+                <th>Indicators</th>
+              </tr>
+            </thead>
+            <tbody id="calls-body"></tbody>
+          </table>
+        </div>
+        <div id="calls-history-toggle" style="text-align:center;">
+          <a href="#" id="toggle-history-btn" style="color:var(--purple-primary);text-decoration:none;font-size:14px;">Show previous scans ▼</a>
+        </div>
+        <div id="calls-history" style="display:none;margin-top:16px;"></div>
+      </div>
+    </div>
+
     <!-- Charts -->
     <div class="charts-grid">
       <div class="chart-card">
@@ -654,8 +690,8 @@ export const tradesPageHtml = `
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { grid: { color: '#3a3a52' }, ticks: { color: '#6b6b80' } },
-            y: { grid: { color: '#3a3a52' }, ticks: { color: '#6b6b80' } }
+            x: { grid: { color: '#3D5565' }, ticks: { color: '#6b6b80' } },
+            y: { grid: { color: '#3D5565' }, ticks: { color: '#6b6b80' } }
           }
         }
       });
@@ -727,6 +763,149 @@ export const tradesPageHtml = `
     setInterval(() => {
       fetch('/api/trades').then(r => r.json()).then(fetchPrices);
     }, 900000);
+
+    // ═══════════════════════════════════
+    // Latest Calls (Scanner History)
+    // ═══════════════════════════════════
+    function fmtCallPrice(n) {
+      if (n >= 1000) return '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+      if (n >= 1) return '$' + n.toFixed(4);
+      return '$' + n.toPrecision(4);
+    }
+    
+    function callTimeAgo(ts) {
+      var diff = Date.now() - ts;
+      var mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return mins + 'm ago';
+      var hrs = Math.floor(mins / 60);
+      if (hrs < 24) return hrs + 'h ' + (mins % 60) + 'm ago';
+      return Math.floor(hrs / 24) + 'd ago';
+    }
+
+    function renderCallRows(signals, tbody) {
+      tbody.innerHTML = '';
+      if (!signals || signals.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:24px;">No signals in this scan</td></tr>';
+        return;
+      }
+      signals.forEach(function(s) {
+        var conf = Math.round(s.confidence * 100);
+        var confColor = conf >= 80 ? 'var(--success)' : conf >= 60 ? 'var(--warning)' : 'var(--text-muted)';
+        var sideColor = s.side === 'LONG' ? 'var(--success)' : 'var(--danger)';
+        var slPct = ((s.stopLoss - s.entry) / s.entry * 100).toFixed(1);
+        var tp1Pct = ((s.takeProfit1 - s.entry) / s.entry * 100).toFixed(1);
+        var tp2Pct = ((s.takeProfit2 - s.entry) / s.entry * 100).toFixed(1);
+        var row = document.createElement('tr');
+        row.innerHTML =
+          '<td class="symbol">' + s.symbol + '</td>' +
+          '<td><span class="direction-badge ' + s.side.toLowerCase() + '">' + s.side + '</span></td>' +
+          '<td class="mono">' + fmtCallPrice(s.entry) + '</td>' +
+          '<td class="mono" style="color:var(--danger);">' + fmtCallPrice(s.stopLoss) + ' <span style="font-size:11px;color:var(--text-muted);">(' + slPct + '%)</span></td>' +
+          '<td class="mono" style="color:var(--success);">' + fmtCallPrice(s.takeProfit1) + ' <span style="font-size:11px;color:var(--text-muted);">(+' + tp1Pct + '%)</span></td>' +
+          '<td class="mono" style="color:var(--success);">' + fmtCallPrice(s.takeProfit2) + ' <span style="font-size:11px;color:var(--text-muted);">(+' + tp2Pct + '%)</span></td>' +
+          '<td><span style="color:' + confColor + ';font-weight:600;">' + conf + '%</span></td>' +
+          '<td style="font-size:12px;color:var(--text-secondary);">' + s.indicators.join(', ') + '</td>';
+        tbody.appendChild(row);
+      });
+    }
+
+    function loadLatestCalls() {
+      fetch('/api/scanner/history?limit=12')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          document.getElementById('calls-loading').style.display = 'none';
+          if (!data.scans || data.scans.length === 0) {
+            document.getElementById('calls-loading').style.display = 'block';
+            document.getElementById('calls-loading').textContent = 'First scan running — check back in a few minutes.';
+            return;
+          }
+          document.getElementById('calls-content').style.display = 'block';
+          
+          var latest = data.scans[0];
+          var d = new Date(latest.timestamp);
+          document.getElementById('calls-time').textContent = callTimeAgo(latest.timestamp) + ' · ' + d.toUTCString().slice(0, -4) + ' UTC';
+          document.getElementById('calls-count').textContent = latest.signalCount + ' signals / ' + latest.scanned + ' coins scanned';
+          
+          // F&G badge
+          var fgEl = document.getElementById('calls-fg');
+          if (latest.fearGreed) {
+            var fgColor = latest.fearGreed.value <= 25 ? 'var(--danger)' : latest.fearGreed.value >= 75 ? 'var(--success)' : 'var(--warning)';
+            fgEl.style.background = 'rgba(0,0,0,0.3)';
+            fgEl.style.border = '1px solid ' + fgColor;
+            fgEl.style.color = fgColor;
+            fgEl.textContent = 'F&G: ' + latest.fearGreed.value + ' (' + latest.fearGreed.classification + ')';
+          }
+          
+          renderCallRows(latest.signals, document.getElementById('calls-body'));
+          
+          // Previous scans toggle
+          if (data.scans.length > 1) {
+            var histDiv = document.getElementById('calls-history');
+            var toggleBtn = document.getElementById('toggle-history-btn');
+            var showing = false;
+            toggleBtn.onclick = function(e) {
+              e.preventDefault();
+              showing = !showing;
+              histDiv.style.display = showing ? 'block' : 'none';
+              toggleBtn.textContent = showing ? 'Hide previous scans ▲' : 'Show previous scans ▼';
+              
+              if (showing && !histDiv.hasChildNodes()) {
+                data.scans.slice(1).forEach(function(scan) {
+                  var card = document.createElement('div');
+                  card.style.cssText = 'background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s;';
+                  card.onmouseenter = function() { this.style.borderColor = 'var(--purple-primary)'; };
+                  card.onmouseleave = function() { this.style.borderColor = 'var(--border-color)'; };
+                  
+                  var fgVal = scan.fearGreed ? scan.fearGreed.value : '?';
+                  var fgC = fgVal <= 25 ? 'var(--danger)' : fgVal >= 75 ? 'var(--success)' : 'var(--warning)';
+                  var symbols = scan.signals.map(function(s) { return s.symbol; }).join(', ');
+                  
+                  card.innerHTML =
+                    '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">' +
+                      '<div style="display:flex;align-items:center;gap:12px;">' +
+                        '<span style="color:var(--text-muted);font-size:13px;">' + callTimeAgo(scan.timestamp) + '</span>' +
+                        '<span style="color:' + fgC + ';font-size:12px;">F&G: ' + fgVal + '</span>' +
+                      '</div>' +
+                      '<div style="display:flex;align-items:center;gap:12px;">' +
+                        '<span style="color:var(--text-secondary);font-size:13px;">' + scan.signalCount + ' signals</span>' +
+                        (symbols ? '<span style="color:var(--purple-primary);font-size:12px;">' + symbols + '</span>' : '') +
+                      '</div>' +
+                    '</div>' +
+                    '<div class="hist-detail" style="display:none;margin-top:12px;overflow-x:auto;"></div>';
+                  
+                  card.onclick = function() {
+                    var det = this.querySelector('.hist-detail');
+                    if (det.style.display === 'none') {
+                      det.style.display = 'block';
+                      if (!det.querySelector('table')) {
+                        var tbl = document.createElement('table');
+                        tbl.className = 'history-table';
+                        tbl.innerHTML = '<thead><tr><th>Symbol</th><th>Side</th><th>Entry</th><th>SL</th><th>TP1</th><th>TP2</th><th>Conf</th><th>Indicators</th></tr></thead><tbody></tbody>';
+                        det.appendChild(tbl);
+                        renderCallRows(scan.signals, tbl.querySelector('tbody'));
+                      }
+                    } else {
+                      det.style.display = 'none';
+                    }
+                  };
+                  histDiv.appendChild(card);
+                });
+              }
+            };
+          } else {
+            document.getElementById('calls-history-toggle').style.display = 'none';
+          }
+        })
+        .catch(function(err) {
+          document.getElementById('calls-loading').textContent = 'Failed to load scanner data.';
+          console.error('Scanner history error:', err);
+        });
+    }
+    
+    loadLatestCalls();
+    // Refresh calls every 5 minutes
+    setInterval(loadLatestCalls, 300000);
   </script>
 </body>
 </html>
