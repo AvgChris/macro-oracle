@@ -110,8 +110,7 @@ const trades: TradeCall[] = [
     status: 'closed',
     exitPrice: 0.74,
     exitTimestamp: '2026-02-12T11:00:00Z',
-    pnl: 23.33,
-    result: 'TP1 hit at $0.74 — +23.33% win',
+    pnlPercent: 23.33,
   },
   {
     id: 'trade-005',
