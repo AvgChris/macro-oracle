@@ -157,8 +157,15 @@ export async function getWalletStatus(): Promise<{
   balanceSOL: number;
   signalsPublished: number;
   recentSignals: typeof publishedSignals;
+  debug?: any;
 }> {
-  const keypair = await getKeypair();
+  let keypairError: string | undefined;
+  let keypair: Keypair | null = null;
+  try {
+    keypair = await getKeypair();
+  } catch (e: any) {
+    keypairError = e.message;
+  }
   if (!keypair) {
     return {
       address: null,
@@ -166,6 +173,11 @@ export async function getWalletStatus(): Promise<{
       balanceSOL: 0,
       signalsPublished: 0,
       recentSignals: [],
+      debug: {
+        hasEnvKey: !!SOLANA_SECRET_KEY,
+        envKeyLength: SOLANA_SECRET_KEY.length,
+        error: keypairError || 'getKeypair returned null',
+      },
     };
   }
 
