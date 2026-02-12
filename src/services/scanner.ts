@@ -369,7 +369,8 @@ function generateSignal(
   price: number,
   ind: Indicators,
   fgSignal: FGSignal,
-  divergence: DivergenceResult
+  divergence: DivergenceResult,
+  bar: string = '1D'
 ): ScannerSignal | null {
   const bullishSignals: string[] = [];
   const bearishSignals: string[] = [];
@@ -472,14 +473,25 @@ function generateSignal(
 
   if (!side || confidence < 0.45) return null;
 
-  // SL/TP based on ATR
-  const atr = calculateATR([price, ind.ema20, ind.ema50]);
-  const slDist = atr * 1.5;
-  const tpDist = atr * 3;
+  // For 2H LONGs: require extra confluence (backtest shows 8-17% WR for longs in fear)
+  if (bar === '2H' && side === 'LONG' && bullishSignals.length < 4) return null;
 
-  const stopLoss = Math.max(side === 'LONG' ? price - slDist : price + slDist, 0);
-  const takeProfit1 = Math.max(side === 'LONG' ? price + tpDist : price - tpDist, 0);
-  const takeProfit2 = Math.max(side === 'LONG' ? price + tpDist * 2 : price - tpDist * 2, 0);
+  let stopLoss: number, takeProfit1: number, takeProfit2: number;
+
+  if (bar === '2H') {
+    // Percent-based for 2H — backtested optimal: 2% SL, 5% TP (PF 1.63)
+    stopLoss = Math.max(side === 'LONG' ? price * 0.98 : price * 1.02, 0);
+    takeProfit1 = Math.max(side === 'LONG' ? price * 1.05 : price * 0.95, 0);
+    takeProfit2 = Math.max(side === 'LONG' ? price * 1.10 : price * 0.90, 0);
+  } else {
+    // ATR-based for daily
+    const atr = calculateATR([price, ind.ema20, ind.ema50]);
+    const slDist = atr * 1.5;
+    const tpDist = atr * 3;
+    stopLoss = Math.max(side === 'LONG' ? price - slDist : price + slDist, 0);
+    takeProfit1 = Math.max(side === 'LONG' ? price + tpDist : price - tpDist, 0);
+    takeProfit2 = Math.max(side === 'LONG' ? price + tpDist * 2 : price - tpDist * 2, 0);
+  }
 
   return {
     symbol,
@@ -490,7 +502,7 @@ function generateSignal(
     takeProfit2,
     confidence,
     indicators: signals,
-    reasoning: reasoning.join('. ') + '.',
+    reasoning: reasoning.join('. ') + (bar === '2H' ? ' [2H].' : '.'),
     timestamp: Date.now()
   };
 }
@@ -525,7 +537,7 @@ async function analyzeCoin(
   const macdSeries = calculateMACDSeries(prices);
   const divergence = detectDivergences(prices, rsiSeries, macdSeries);
 
-  return generateSignal(symbol, price, indicators, fgSignal, divergence);
+  return generateSignal(symbol, price, indicators, fgSignal, divergence, bar);
 }
 
 /**
