@@ -5,7 +5,7 @@ export const landingPageHtml = `
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/jpeg" href="/logo.jpg">
-  <title>Macro Oracle — Real-time Market Intelligence</title>
+  <title>Macro Oracle — Solana-Native Macro Intelligence for Agents</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -555,16 +555,16 @@ export const landingPageHtml = `
     <section class="hero">
       <div class="container">
         <div class="hero-badge">
-          <span>⚡</span>
-          <span>Real-time market intelligence</span>
+          <span>◎</span>
+          <span>Built on Solana — Powered by Pyth Network</span>
         </div>
-        <h1>Market signals that<br>actually matter</h1>
-        <p>15+ automated monitors tracking price action, orderbook depth, on-chain activity, macro events, funding rates, sentiment, stablecoins, predictions, and institutional flows — plus autonomous trade execution.</p>
+        <h1>Solana-native macro<br>intelligence for agents</h1>
+        <p>The intelligence layer for autonomous Solana trading agents. 15+ monitors, Pyth oracle integration, backtested signals, and autonomous execution — all through a free API. No keys needed.</p>
         <div style="margin: 20px 0; padding: 16px 24px; background: rgba(255, 155, 81, 0.15); border: 1px solid rgba(255, 155, 81, 0.3); border-radius: 12px; display: inline-block;">
-          <span style="font-size: 1.1em;">🎯 <strong>NEW: Live Scanner API</strong> — Scan any coin for trade signals in real-time. <a href="#scanner-api" style="color: #FFB07A; text-decoration: underline;">Try it →</a></span>
+          <span style="font-size: 1.1em;">🎯 <strong>NEW: Pyth Oracle + Scanner API</strong> — Real-time Solana oracle prices & trade signals. <a href="#scanner-api" style="color: #FFB07A; text-decoration: underline;">Try it →</a></span>
         </div>
         <div class="hero-buttons">
-          <a href="/api/dashboard" class="btn btn-primary">Live Dashboard →</a>
+          <a href="/api/pyth/feeds" class="btn btn-primary">◎ Pyth Oracle →</a>
           <a href="#scanner-api" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">🎯 Scanner API</a>
           <a href="/api" class="btn btn-secondary">API Docs</a>
         </div>
@@ -690,13 +690,13 @@ export const landingPageHtml = `
             </div>
           </div>
 
-          <div class="monitor-card">
-            <div class="monitor-icon">🔮</div>
-            <h3>Prediction Markets</h3>
-            <p>Tracks Polymarket odds for Fed decisions, elections, and macro events.</p>
+          <div class="monitor-card" style="border-color: rgba(255, 155, 81, 0.4); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 155, 81, 0.05) 100%);">
+            <div class="monitor-icon">◎</div>
+            <h3>Pyth Network Oracle</h3>
+            <p>Real-time Solana oracle prices from institutional market makers. Confidence intervals, EMA prices, and oracle-vs-spot spread detection. 18 feeds.</p>
             <div class="monitor-meta">
-              <span class="meta-tag frequency">Every 30m</span>
-              <span class="meta-tag">Polymarket</span>
+              <span class="meta-tag frequency">Real-time</span>
+              <span class="meta-tag">Solana / Pyth</span>
             </div>
           </div>
 
@@ -989,7 +989,7 @@ curl https://macro-oracle-production.up.railway.app/api/scanner/top</code></pre>
       <div class="footer-content">
         <div class="footer-text" style="display: flex; align-items: center; gap: 10px;">
           <img src="/logo.jpg" alt="Macro Oracle" style="width: 28px; height: 28px; border-radius: 50%;">
-          Built by Mistah 🎩 — Macro intelligence for the agent economy.
+          Built by Mistah 🎩 — Solana-native macro intelligence for autonomous agents.
         </div>
         <div class="footer-links">
           <a href="/api">API</a>
