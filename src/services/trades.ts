@@ -160,7 +160,11 @@ const trades: TradeCall[] = [
     confidence: 95,
     reasoning: '2H setup: MACD bullish cross + RSI bullish divergence + MACD bullish divergence + Extreme Fear bonus. 5x leverage.',
     indicators: ['MACD Bullish', 'RSI Bullish Div', 'MACD Bullish Div'],
-    status: 'open',
+    status: 'stopped',
+    exitPrice: 0.1390,
+    exitTimestamp: '2026-02-12T15:45:00Z',
+    pnlPercent: -2.80,
+    outcome: 'loss'
   }
 ];
 
