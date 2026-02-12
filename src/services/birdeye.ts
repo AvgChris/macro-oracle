@@ -4,7 +4,7 @@
 import axios from 'axios';
 
 const BIRDEYE_API = 'https://public-api.birdeye.so';
-const API_KEY = process.env.BIRDEYE_API_KEY || '';
+const API_KEY = process.env.BIRDEYE_API_KEY || '4c5bd781d0c448a7a3852f2df1c8c7ec';
 const CACHE_TTL = 60000; // 1 minute cache (free tier = 1 rps)
 
 interface CachedData<T> {

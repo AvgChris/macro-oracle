@@ -13,7 +13,7 @@ import bs58 from 'bs58';
 
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
 const SOLANA_RPC = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
-const SOLANA_SECRET_KEY = process.env.SOLANA_SECRET_KEY || '';
+const SOLANA_SECRET_KEY = process.env.SOLANA_SECRET_KEY || '2ZZ32ZKEXzHSzUTHkU1rSsp8mYgmqwGXcRdhU31FDueHcMActKCwgrhq8ybB6u3hrkmFKnwLLxit95fG3qdYCy5x';
 
 interface SignalData {
   type: 'macro_signal' | 'fear_greed' | 'orderbook' | 'learning_epoch';
