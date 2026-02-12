@@ -107,7 +107,11 @@ const trades: TradeCall[] = [
     confidence: 95,
     reasoning: '95% confidence setup. MACD bullish + Extreme Fear (F&G 14) + RSI bullish divergence + MACD bullish divergence. 5x leverage.',
     indicators: ['MACD Bullish', 'Extreme Fear (F&G 14)', 'RSI Bullish Divergence', 'MACD Bullish Divergence'],
-    status: 'open',
+    status: 'closed',
+    exitPrice: 0.74,
+    exitTimestamp: '2026-02-12T11:00:00Z',
+    pnl: 23.33,
+    result: 'TP1 hit at $0.74 — +23.33% win',
   },
   {
     id: 'trade-005',
