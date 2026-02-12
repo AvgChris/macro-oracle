@@ -1402,6 +1402,127 @@ router.get('/pyth/compare/:symbol', async (req: Request, res: Response) => {
 });
 
 // ==========================================
+// Birdeye - Solana Token Data
+// ==========================================
+
+import {
+  getTokenPrice,
+  getMultipleTokenPrices,
+  getTokenOverview,
+  getTopTokens,
+  getTokenOHLCV,
+  getTokenTrades,
+  getSolanaMarketSummary,
+  SOLANA_TOKENS,
+  isConfigured as isBirdeyeConfigured,
+} from '../services/birdeye.js';
+
+// Solana market summary (top movers, volume, SOL price)
+router.get('/birdeye/market', async (req: Request, res: Response) => {
+  if (!isBirdeyeConfigured()) {
+    return res.status(503).json({ error: 'Birdeye API not configured' });
+  }
+  try {
+    const summary = await getSolanaMarketSummary();
+    res.json({ success: true, data: summary });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get price for a token (by symbol or address)
+router.get('/birdeye/price/:token', async (req: Request, res: Response) => {
+  if (!isBirdeyeConfigured()) {
+    return res.status(503).json({ error: 'Birdeye API not configured' });
+  }
+  try {
+    const price = await getTokenPrice(req.params.token);
+    res.json({ success: true, data: price });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get multiple token prices
+router.get('/birdeye/prices', async (req: Request, res: Response) => {
+  if (!isBirdeyeConfigured()) {
+    return res.status(503).json({ error: 'Birdeye API not configured' });
+  }
+  try {
+    const symbols = (req.query.symbols as string || 'SOL,USDC,JUP,BONK,WIF,RAY').split(',');
+    const prices = await getMultipleTokenPrices(symbols);
+    res.json({ success: true, data: prices });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get full token overview
+router.get('/birdeye/token/:token', async (req: Request, res: Response) => {
+  if (!isBirdeyeConfigured()) {
+    return res.status(503).json({ error: 'Birdeye API not configured' });
+  }
+  try {
+    const overview = await getTokenOverview(req.params.token);
+    res.json({ success: true, data: overview });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get top tokens by volume
+router.get('/birdeye/top', async (req: Request, res: Response) => {
+  if (!isBirdeyeConfigured()) {
+    return res.status(503).json({ error: 'Birdeye API not configured' });
+  }
+  try {
+    const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
+    const tokens = await getTopTokens(limit);
+    res.json({ success: true, data: tokens });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get OHLCV candle data
+router.get('/birdeye/ohlcv/:token', async (req: Request, res: Response) => {
+  if (!isBirdeyeConfigured()) {
+    return res.status(503).json({ error: 'Birdeye API not configured' });
+  }
+  try {
+    const timeframe = (req.query.timeframe as string || '1H') as any;
+    const limit = Math.min(parseInt(req.query.limit as string) || 24, 100);
+    const candles = await getTokenOHLCV(req.params.token, timeframe, limit);
+    res.json({ success: true, data: candles });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get recent trades for a token
+router.get('/birdeye/trades/:token', async (req: Request, res: Response) => {
+  if (!isBirdeyeConfigured()) {
+    return res.status(503).json({ error: 'Birdeye API not configured' });
+  }
+  try {
+    const limit = Math.min(parseInt(req.query.limit as string) || 20, 50);
+    const trades = await getTokenTrades(req.params.token, limit);
+    res.json({ success: true, data: trades });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// List supported token symbols
+router.get('/birdeye/tokens', (req: Request, res: Response) => {
+  res.json({
+    success: true,
+    data: Object.entries(SOLANA_TOKENS).map(([symbol, address]) => ({ symbol, address })),
+    note: 'You can also pass any Solana token mint address directly',
+  });
+});
+
+// ==========================================
 // Solana On-Chain Signal Publishing
 // ==========================================
 

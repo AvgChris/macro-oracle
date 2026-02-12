@@ -561,7 +561,7 @@ export const landingPageHtml = `
         <h1>Solana-native macro<br>intelligence for agents</h1>
         <p>The intelligence layer for autonomous Solana trading agents. 15+ monitors, Pyth oracle integration, backtested signals, and autonomous execution — all through a free API. No keys needed.</p>
         <div style="margin: 20px 0; padding: 16px 24px; background: rgba(255, 155, 81, 0.15); border: 1px solid rgba(255, 155, 81, 0.3); border-radius: 12px; display: inline-block;">
-          <span style="font-size: 1.1em;">🎯 <strong>NEW: Pyth Oracle + Scanner API</strong> — Real-time Solana oracle prices & trade signals. <a href="#scanner-api" style="color: #FFB07A; text-decoration: underline;">Try it →</a></span>
+          <span style="font-size: 1.1em;">🎯 <strong>NEW: Birdeye DEX + On-Chain Signals</strong> — Solana-native analytics, DEX prices & on-chain signal publishing. <a href="/api/birdeye/market" style="color: #FFB07A; text-decoration: underline;">Try it →</a></span>
         </div>
         <div class="hero-buttons">
           <a href="/api/pyth/feeds" class="btn btn-primary">◎ Pyth Oracle →</a>
@@ -707,6 +707,26 @@ export const landingPageHtml = `
             <div class="monitor-meta">
               <span class="meta-tag frequency">Continuous</span>
               <span class="meta-tag">Autonomous</span>
+            </div>
+          </div>
+
+          <div class="monitor-card" style="border-color: rgba(255, 107, 53, 0.4); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 107, 53, 0.05) 100%);">
+            <div class="monitor-icon">🐦</div>
+            <h3>Birdeye DEX Analytics</h3>
+            <p>Solana-native token data powered by Birdeye. Real-time DEX prices, top tokens by volume, OHLCV candles, trade history, and market summaries for 14+ tokens.</p>
+            <div class="monitor-meta">
+              <span class="meta-tag frequency">Real-time</span>
+              <span class="meta-tag">Solana / DEX</span>
+            </div>
+          </div>
+
+          <div class="monitor-card" style="border-color: rgba(0, 255, 163, 0.4); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0, 255, 163, 0.05) 100%);">
+            <div class="monitor-icon">⛓️</div>
+            <h3>On-Chain Signal Publishing</h3>
+            <p>Signals published as Solana memo transactions — verifiable on-chain. Every macro snapshot, trade signal, and learning epoch is permanently recorded on Solana mainnet.</p>
+            <div class="monitor-meta">
+              <span class="meta-tag frequency">Per Signal</span>
+              <span class="meta-tag">Solana / Memo</span>
             </div>
           </div>
 
@@ -864,6 +884,24 @@ export const landingPageHtml = `
               <td>Daily loss limit</td>
               <td><span class="threshold-value">5% max</span></td>
               <td>Daily</td>
+            </tr>
+            <tr>
+              <td>Birdeye</td>
+              <td>SOL DEX prices</td>
+              <td><span class="threshold-value">14+ tokens</span></td>
+              <td>Real-time</td>
+            </tr>
+            <tr>
+              <td>Birdeye</td>
+              <td>Top tokens / volume</td>
+              <td><span class="threshold-value">Top 50</span></td>
+              <td>1 min</td>
+            </tr>
+            <tr>
+              <td>Solana</td>
+              <td>On-chain signals</td>
+              <td><span class="threshold-value">Memo tx</span></td>
+              <td>Per signal</td>
             </tr>
           </tbody>
         </table>
