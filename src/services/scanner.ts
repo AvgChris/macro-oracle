@@ -118,7 +118,7 @@ function getFearGreedSignal(value: number): FGSignal {
 // OKX API
 // ═══════════════════════════════════════
 
-const STABLECOINS = ['USDT', 'USDC', 'BUSD', 'DAI', 'TUSD', 'USDD', 'USDP'];
+const STABLECOINS = ['USDT', 'USDC', 'BUSD', 'DAI', 'TUSD', 'USDD', 'USDP', 'PYUSD', 'FDUSD', 'EURT', 'USDE', 'FRAX', 'LUSD', 'GUSD', 'CRVUSD', 'GHO', 'SUSD', 'MIM', 'UST', 'ALUSD', 'DOLA', 'EURC', 'WBTC', 'STETH', 'WETH', 'CBETH', 'RETH'];
 
 async function fetchOKXTopCoins(limit: number): Promise<CoinInfo[]> {
   try {
