@@ -147,6 +147,20 @@ const trades: TradeCall[] = [
     exitTimestamp: '2026-02-11T01:02:00Z',
     pnlPercent: 21.6,
     outcome: 'win'
+  },
+  {
+    id: 'trade-007',
+    timestamp: '2026-02-12T11:50:00Z',
+    symbol: 'JUP',
+    direction: 'LONG',
+    entry: 0.143,
+    stopLoss: 0.1390,
+    takeProfit1: 0.1516,
+    takeProfit2: 0.1600,
+    confidence: 95,
+    reasoning: '2H setup: MACD bullish cross + RSI bullish divergence + MACD bullish divergence + Extreme Fear bonus. 5x leverage.',
+    indicators: ['MACD Bullish', 'RSI Bullish Div', 'MACD Bullish Div'],
+    status: 'open',
   }
 ];
 
