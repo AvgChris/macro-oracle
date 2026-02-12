@@ -176,6 +176,9 @@ export async function getWalletStatus(): Promise<{
       debug: {
         hasEnvKey: !!SOLANA_SECRET_KEY,
         envKeyLength: SOLANA_SECRET_KEY.length,
+        envKeyPrefix: SOLANA_SECRET_KEY.substring(0, 4),
+        rawEnvCheck: !!process.env.SOLANA_SECRET_KEY,
+        rawEnvLength: (process.env.SOLANA_SECRET_KEY || '').length,
         error: keypairError || 'getKeypair returned null',
       },
     };
