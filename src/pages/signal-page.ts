@@ -148,6 +148,7 @@ export const signalPageHtml = `
         <a href="/">Home</a>
         <a href="/api">API</a>
         <a href="/dashboard">Dashboard</a>
+        <a href="/signal">Signal</a>
         <a href="/backtest">Backtest</a>
         <a href="/trades">Trades</a>
       </nav>
