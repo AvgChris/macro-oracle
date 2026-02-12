@@ -40,7 +40,7 @@ const publishedSignals: Array<{
   publishedAt: string;
 }> = [];
 
-function getKeypair(): Keypair | null {
+async function getKeypair(): Promise<Keypair | null> {
   try {
     if (SOLANA_SECRET_KEY) {
       const secretKey = bs58.decode(SOLANA_SECRET_KEY);
@@ -48,8 +48,8 @@ function getKeypair(): Keypair | null {
     }
     
     // Fallback: try local file
-    const fs = require('fs');
-    const path = require('path');
+    const fs = await import('node:fs');
+    const path = await import('node:path');
     // Check multiple possible locations
     const possiblePaths = [
       path.join(process.env.HOME || '/home/node', 'clawd', '.secrets', 'solana-keypair.json'),
@@ -75,7 +75,7 @@ function getConnection(): Connection {
 }
 
 export async function publishSignalOnChain(signal: SignalData): Promise<PublishResult> {
-  const keypair = getKeypair();
+  const keypair = await getKeypair();
   if (!keypair) {
     return { success: false, error: 'No Solana keypair configured' };
   }
@@ -158,7 +158,7 @@ export async function getWalletStatus(): Promise<{
   signalsPublished: number;
   recentSignals: typeof publishedSignals;
 }> {
-  const keypair = getKeypair();
+  const keypair = await getKeypair();
   if (!keypair) {
     return {
       address: null,
@@ -189,9 +189,9 @@ export async function getWalletStatus(): Promise<{
 export async function publishMacroSnapshot(): Promise<PublishResult> {
   // Import market data services
   try {
-    const { getFearGreedIndex } = require('./market');
+    const { fetchCurrentFearGreed } = await import('./historical.js');
     
-    const fg = await getFearGreedIndex();
+    const fg = await fetchCurrentFearGreed();
     
     const signal: SignalData = {
       type: 'fear_greed',
