@@ -285,6 +285,24 @@ export const dashboardPageHtml = `
     </div>
   </div>
 
+  <!-- Live Scanner Signals -->
+  <div class="container" style="margin-top: 2rem;">
+    <h2 style="color: var(--purple-primary); margin-bottom: 1rem;">🎯 Live Scanner Signals</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>📊 Daily (1D) Signals</h3>
+        <div id="signals-1d" style="min-height: 80px;"><span style="color: #888;">Loading...</span></div>
+      </div>
+      <div class="card">
+        <h3>⚡ 2-Hour (2H) Signals</h3>
+        <div id="signals-2h" style="min-height: 80px;"><span style="color: #888;">Loading...</span></div>
+      </div>
+    </div>
+    <div style="text-align: center; margin-top: 0.5rem; color: #666; font-size: 0.85rem;">
+      Scanner runs every 2 hours • <a href="/api/scanner?bar=1D&limit=20">1D API</a> • <a href="/api/scanner?bar=2H&limit=20">2H API</a>
+    </div>
+  </div>
+
   <script>
     function formatPrice(val) {
       if (!val) return '—';
@@ -392,6 +410,50 @@ export const dashboardPageHtml = `
     
     fetchDashboard();
     setInterval(fetchDashboard, 120000);
+
+    function renderSignals(signals, containerId, timeframe) {
+      const el = document.getElementById(containerId);
+      if (!signals || signals.length === 0) {
+        el.innerHTML = '<span style="color: #888;">No signals found</span>';
+        return;
+      }
+      el.innerHTML = signals.slice(0, 5).map(s => {
+        const color = s.side === 'LONG' ? '#22c55e' : '#ef4444';
+        const arrow = s.side === 'LONG' ? '▲' : '▼';
+        const conf = Math.round(s.confidence * 100);
+        return \`<div style="padding: 8px; margin-bottom: 6px; border-radius: 6px; background: rgba(255,255,255,0.03); border-left: 3px solid \${color};">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="color: \${color};">\${arrow} \${s.symbol} \${s.side}</strong>
+            <span style="color: \${color}; font-weight: bold;">\${conf}%</span>
+          </div>
+          <div style="font-size: 0.85em; color: #aaa; margin-top: 4px;">
+            Entry: $\${s.entry} · SL: $\${s.stopLoss.toFixed(4)} · TP1: $\${s.takeProfit1.toFixed(4)}
+          </div>
+          <div style="font-size: 0.8em; color: #666; margin-top: 2px;">\${s.indicators.join(', ')}</div>
+        </div>\`;
+      }).join('');
+    }
+
+    async function fetchSignals() {
+      try {
+        const [res1d, res2h] = await Promise.allSettled([
+          fetch('/api/scanner?bar=1D&limit=20'),
+          fetch('/api/scanner?bar=2H&limit=20')
+        ]);
+        if (res1d.status === 'fulfilled') {
+          const d = await res1d.value.json();
+          renderSignals(d.signals, 'signals-1d', '1D');
+        }
+        if (res2h.status === 'fulfilled') {
+          const d = await res2h.value.json();
+          renderSignals(d.signals, 'signals-2h', '2H');
+        }
+      } catch (e) {
+        console.error('Failed to fetch scanner signals:', e);
+      }
+    }
+
+    fetchSignals();
   </script>
 </body>
 </html>

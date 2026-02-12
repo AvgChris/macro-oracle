@@ -1141,20 +1141,21 @@ router.get('/auto-trader/log', (req: Request, res: Response) => {
 // Note: Full scans take ~10-60s depending on limit (200ms per coin for rate limiting)
 
 // GET /scanner — Full market scan
-// Query params: limit (1-100, default 50), symbol (scan single coin)
+// Query params: limit (1-100, default 50), symbol (scan single coin), bar (1D|2H|4H, default 1D)
 router.get('/scanner', async (req: Request, res: Response) => {
   try {
     const symbolParam = req.query.symbol as string;
+    const bar = (['1D', '2H', '4H', '1H'].includes(req.query.bar as string) ? req.query.bar as string : '1D');
     
     if (symbolParam) {
-      const result = await scanSymbol(symbolParam);
-      res.json(result);
+      const result = await scanSymbol(symbolParam, bar);
+      res.json({ ...result, timeframe: bar });
       return;
     }
     
     const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 50, 1), 100);
-    const result = await scanMarket(limit);
-    res.json(result);
+    const result = await scanMarket(limit, bar);
+    res.json({ ...result, timeframe: bar });
   } catch (error: any) {
     res.status(500).json({ error: error.message || 'Scanner failed' });
   }

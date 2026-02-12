@@ -154,13 +154,13 @@ interface CandleData {
   volumes: number[];
 }
 
-async function fetchOKXCandles(symbol: string, days: number = 90): Promise<CandleData> {
+async function fetchOKXCandles(symbol: string, days: number = 90, bar: string = '1D'): Promise<CandleData> {
   const instId = `${symbol}-USDT`;
   const limit = Math.min(days, 100);
 
   try {
     const { data } = await axios.get('https://www.okx.com/api/v5/market/candles', {
-      params: { instId, bar: '1D', limit },
+      params: { instId, bar, limit },
       timeout: 10000,
       headers: { 'User-Agent': 'MacroOracle/2.0' }
     });
@@ -513,9 +513,10 @@ function sleep(ms: number): Promise<void> {
 async function analyzeCoin(
   symbol: string,
   price: number,
-  fgSignal: FGSignal
+  fgSignal: FGSignal,
+  bar: string = '1D'
 ): Promise<ScannerSignal | null> {
-  const { prices, volumes } = await fetchOKXCandles(symbol, 90);
+  const { prices, volumes } = await fetchOKXCandles(symbol, 90, bar);
 
   if (prices.length < 50) return null;
 
@@ -530,7 +531,7 @@ async function analyzeCoin(
 /**
  * Scan top N coins by volume, return all signals
  */
-export async function scanMarket(limit: number = 50): Promise<ScanResult> {
+export async function scanMarket(limit: number = 50, bar: string = '1D'): Promise<ScanResult> {
   const clampedLimit = Math.min(Math.max(limit, 1), 100);
 
   const fearGreed = await getFearGreedIndex();
@@ -540,7 +541,7 @@ export async function scanMarket(limit: number = 50): Promise<ScanResult> {
 
   for (const coin of coins) {
     try {
-      const signal = await analyzeCoin(coin.symbol, coin.price, fgSignal);
+      const signal = await analyzeCoin(coin.symbol, coin.price, fgSignal, bar);
       if (signal) signals.push(signal);
       // Rate limit: OKX allows 20 req/2sec
       await sleep(200);
@@ -564,7 +565,7 @@ export async function scanMarket(limit: number = 50): Promise<ScanResult> {
 /**
  * Scan a specific symbol
  */
-export async function scanSymbol(symbol: string): Promise<ScanResult> {
+export async function scanSymbol(symbol: string, bar: string = '1D'): Promise<ScanResult> {
   const upper = symbol.toUpperCase();
 
   const fearGreed = await getFearGreedIndex();
@@ -602,7 +603,7 @@ export async function scanSymbol(symbol: string): Promise<ScanResult> {
 
   const signals: ScannerSignal[] = [];
   try {
-    const signal = await analyzeCoin(upper, price, fgSignal);
+    const signal = await analyzeCoin(upper, price, fgSignal, bar);
     if (signal) signals.push(signal);
   } catch (err: any) {
     console.error(`Scanner error on ${upper}:`, err.message);
