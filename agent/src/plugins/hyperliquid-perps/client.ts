@@ -102,6 +102,24 @@ export class HyperliquidPerpsClient {
         `[HyperliquidPerps] 🐔 Opening ${direction} on ${symbol}: $${sizeUsd} @ ${leverage}x`
       );
 
+      // Resolve symbol for Hyperliquid
+      let resolved: string;
+      try {
+        resolved = await this.resolveSymbol(symbol);
+      } catch {
+        return {
+          success: false,
+          symbol,
+          direction,
+          size: 0,
+          price: 0,
+          leverage,
+          error: `Symbol ${symbol} not available on Hyperliquid ${this.isTestnet ? 'testnet' : 'mainnet'}`,
+        };
+      }
+
+      console.log(`[HyperliquidPerps] 🐔 Resolved ${symbol} → ${resolved}`);
+
       // Set leverage for the symbol
       await this.setLeverage(symbol, leverage);
 
@@ -124,7 +142,7 @@ export class HyperliquidPerpsClient {
 
       // Place market order
       const orderResult = await this.sdk.exchange.placeOrder({
-        coin: symbol,
+        coin: resolved,
         is_buy: isBuy,
         sz: parseFloat(sizeInAsset.toFixed(6)),
         limit_px: isBuy
@@ -146,7 +164,7 @@ export class HyperliquidPerpsClient {
           : price * (1 + stopLossPercent / 100);
 
         await this.sdk.exchange.placeOrder({
-          coin: symbol,
+          coin: resolved,
           is_buy: !isBuy, // Opposite direction to close
           sz: parseFloat(sizeInAsset.toFixed(6)),
           limit_px: parseFloat(slPrice.toFixed(6)),
@@ -172,7 +190,7 @@ export class HyperliquidPerpsClient {
           : price * (1 - takeProfitPercent / 100);
 
         await this.sdk.exchange.placeOrder({
-          coin: symbol,
+          coin: resolved,
           is_buy: !isBuy,
           sz: parseFloat(sizeInAsset.toFixed(6)),
           limit_px: parseFloat(tpPrice.toFixed(6)),
@@ -358,14 +376,30 @@ export class HyperliquidPerpsClient {
   }
 
   /**
+   * Resolve symbol to Hyperliquid format (e.g. "BTC" → "BTC-PERP" on testnet)
+   */
+  private async resolveSymbol(symbol: string): Promise<string> {
+    const upper = symbol.toUpperCase();
+    // Try direct match first, then with -PERP suffix
+    const mids = await (this.sdk.info as any).getAllMids();
+    if (mids[upper]) return upper;
+    if (mids[`${upper}-PERP`]) return `${upper}-PERP`;
+    // Try without -PERP if already suffixed
+    if (upper.endsWith('-PERP') && mids[upper.replace('-PERP', '')]) return upper.replace('-PERP', '');
+    throw new Error(`Symbol ${symbol} not found on Hyperliquid ${this.isTestnet ? 'testnet' : 'mainnet'}`);
+  }
+
+  /**
    * Get the mark price for a symbol
    */
   async getMarkPrice(symbol: string): Promise<number | null> {
     await this.ensureConnected();
 
     try {
-      const allMids = await (this.sdk.info.perpetuals as any).getAllMids();
-      const price = allMids[symbol.toUpperCase()];
+      const allMids = await (this.sdk.info as any).getAllMids();
+      const upper = symbol.toUpperCase();
+      // Try both formats
+      const price = allMids[upper] || allMids[`${upper}-PERP`];
       return price ? parseFloat(String(price)) : null;
     } catch (error) {
       console.error(
@@ -383,13 +417,14 @@ export class HyperliquidPerpsClient {
     await this.ensureConnected();
 
     try {
+      const resolved = await this.resolveSymbol(symbol);
       await (this.sdk.exchange as any).updateLeverage({
-        coin: symbol,
+        coin: resolved,
         leverage,
         is_cross: true, // Use cross margin
       });
       console.log(
-        `[HyperliquidPerps] 🐔 Leverage set to ${leverage}x for ${symbol}`
+        `[HyperliquidPerps] 🐔 Leverage set to ${leverage}x for ${resolved}`
       );
     } catch (error) {
       console.error(
