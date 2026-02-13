@@ -54,9 +54,9 @@ export const executeSignalAction: Action = {
     "Execute a trade on Drift Protocol based on a Macro Oracle signal. Fetches the latest signal data and places a perpetual futures position.",
 
   validate: async (runtime: IAgentRuntime): Promise<boolean> => {
-    const hasKey = !!(runtime.getSetting("HYPERLIQUID_PRIVATE_KEY") || process.env.HYPERLIQUID_PRIVATE_KEY);
+    const hasKey = !!(runtime.getSetting("DRIFT_PRIVATE_KEY") || process.env.DRIFT_PRIVATE_KEY);
     if (!hasKey) {
-      console.warn("[ExecuteSignal] No HYPERLIQUID_PRIVATE_KEY configured");
+      console.warn("[ExecuteSignal] No DRIFT_PRIVATE_KEY configured");
     }
     return hasKey;
   },
@@ -117,8 +117,8 @@ export const executeSignalAction: Action = {
         };
       }
 
-      // Execute via Hyperliquid perps plugin
-      // The actual trade execution is delegated to the hyperliquid-perps plugin
+      // Execute via Drift Protocol perps plugin
+      // The actual trade execution is delegated to the drift-perps plugin
       const tradeResult = {
         symbol: validated.symbol,
         direction: validated.direction,

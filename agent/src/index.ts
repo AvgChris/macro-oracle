@@ -20,8 +20,8 @@ export const projectAgent: ProjectAgent = {
     console.log(
       `🐔 Macro Oracle API: ${String(runtime.getSetting("MACRO_ORACLE_API_URL") || "https://macro-oracle-production.up.railway.app")}`
     );
-    const testnetVal = String(runtime.getSetting("HYPERLIQUID_TESTNET") ?? process.env.HYPERLIQUID_TESTNET ?? "true");
-    console.log(`🐔 Hyperliquid Testnet: ${testnetVal !== "false" ? "YES" : "NO"}`);
+    const devnetVal = String(runtime.getSetting("DRIFT_DEVNET") ?? process.env.DRIFT_DEVNET ?? "true");
+    console.log(`🐔 Drift Protocol Devnet: ${devnetVal !== "false" ? "YES" : "NO"}`);
     console.log("🐔 Ready to trade. Cluck cluck. 📈");
   },
 
