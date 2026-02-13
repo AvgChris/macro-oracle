@@ -15,9 +15,9 @@ interface TwitterConfig {
 
 function getConfig(): TwitterConfig | null {
   const apiKey = process.env.TWITTER_API_KEY;
-  const apiSecret = process.env.TWITTER_API_SECRET;
+  const apiSecret = process.env.TWITTER_API_SECRET_KEY || process.env.TWITTER_API_SECRET;
   const accessToken = process.env.TWITTER_ACCESS_TOKEN;
-  const accessSecret = process.env.TWITTER_ACCESS_SECRET;
+  const accessSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET || process.env.TWITTER_ACCESS_SECRET;
   
   if (!apiKey || !apiSecret || !accessToken || !accessSecret) {
     return null;
