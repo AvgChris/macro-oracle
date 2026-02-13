@@ -672,6 +672,16 @@ router.get('/derivatives/liquidations', async (req: Request, res: Response) => {
 
 // === HISTORICAL DATA ENDPOINTS ===
 
+// Fear & Greed — short alias
+router.get('/fear-greed', async (req: Request, res: Response) => {
+  try {
+    const current = await fetchCurrentFearGreed();
+    res.json(current);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch Fear & Greed data' });
+  }
+});
+
 // Fear & Greed historical performance
 router.get('/historical/fear-greed', async (req: Request, res: Response) => {
   try {
