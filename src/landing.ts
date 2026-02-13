@@ -734,6 +734,7 @@ export const landingPageHtml = `
           <a href="/signal">Signal</a>
           <a href="/backtest">Backtest</a>
           <a href="/trades">Trades</a>
+          <a href="#roadmap">Roadmap</a>
           <a href="#chicken-buffett" style="color: #FFD700;">🐔 Agent</a>
         </nav>
       </div>
@@ -1258,6 +1259,109 @@ curl https://macro-oracle-production.up.railway.app/api/scanner/top</code></pre>
   }
 }</code></pre>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="roadmap" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Roadmap</h2>
+          <p>From hackathon proof of concept to a self-sustaining financial intelligence layer.</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 32px; position: relative; padding-left: 40px;">
+          <!-- Timeline line -->
+          <div style="position: absolute; left: 15px; top: 10px; bottom: 10px; width: 2px; background: linear-gradient(180deg, var(--purple-primary) 0%, var(--purple-dark) 50%, var(--border-color) 100%);"></div>
+
+          <!-- Phase 1 -->
+          <div style="position: relative;">
+            <div style="position: absolute; left: -40px; top: 6px; width: 32px; height: 32px; background: var(--gradient-purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; box-shadow: 0 0 20px rgba(255, 155, 81, 0.4);">1</div>
+            <div class="monitor-card" style="border-color: rgba(255, 155, 81, 0.4); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 155, 81, 0.05) 100%);">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                <span style="font-size: 28px;">🧬</span>
+                <div>
+                  <h3 style="margin-bottom: 2px;">Phase 1: The Genesis</h3>
+                  <span style="font-size: 13px; color: var(--success); font-weight: 600;">✅ COMPLETE — Hackathon & Proof of Concept</span>
+                </div>
+              </div>
+              <p style="color: var(--text-secondary); margin-bottom: 16px;">Macro Oracle began as an exploration into the synergy between advanced AI and financial markets. While most strategies rely solely on technical indicators, we identified a critical gap: the absence of real-time fundamental context.</p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text-secondary);">
+                  <span style="color: var(--success);">✓</span>
+                  <span><strong style="color: var(--text-primary);">Core Engine:</strong> Developed a hybrid model that integrates Macroeconomic indicators with traditional Technical Analysis (TA).</span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text-secondary);">
+                  <span style="color: var(--success);">✓</span>
+                  <span><strong style="color: var(--text-primary);">Backtesting:</strong> Validated a weightage-based strategy against the last 12 months of market volatility, ensuring resilience in "black swan" environments.</span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text-secondary);">
+                  <span style="color: var(--success);">✓</span>
+                  <span><strong style="color: var(--text-primary);">Risk Management:</strong> Implemented a proprietary Confidence Rating system, allowing users to calibrate their risk-to-reward ratios.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phase 2 -->
+          <div style="position: relative;">
+            <div style="position: absolute; left: -40px; top: 6px; width: 32px; height: 32px; background: var(--bg-card); border: 2px solid var(--purple-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--purple-primary);">2</div>
+            <div class="monitor-card" style="border-color: rgba(59, 130, 246, 0.4); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(59, 130, 246, 0.05) 100%);">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                <span style="font-size: 28px;">🤖</span>
+                <div>
+                  <h3 style="margin-bottom: 2px;">Phase 2: Optimization & Agent Autonomy</h3>
+                  <span style="font-size: 13px; color: var(--info); font-weight: 600;">🔄 IN PROGRESS</span>
+                </div>
+              </div>
+              <p style="color: var(--text-secondary); margin-bottom: 16px;">Our immediate focus is refining the brain of the Oracle and transitioning into a scalable service.</p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text-secondary);">
+                  <span style="color: var(--info);">◎</span>
+                  <span><strong style="color: var(--text-primary);">Refining the Rating System:</strong> Enhancing the AI logic to increase the accuracy of trade confidence scores by incorporating deeper sentiment analysis.</span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text-secondary);">
+                  <span style="color: var(--info);">◎</span>
+                  <span><strong style="color: var(--text-primary);">The AI Agent Layer:</strong> Deploying a fully autonomous Agent to manage the ecosystem, from data ingestion to subscription gatekeeping.</span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text-secondary);">
+                  <span style="color: var(--info);">◎</span>
+                  <span><strong style="color: var(--text-primary);">API Commercialization:</strong> Launching a subscription-based API model for institutional and retail integration.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phase 3 -->
+          <div style="position: relative;">
+            <div style="position: absolute; left: -40px; top: 6px; width: 32px; height: 32px; background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--text-muted);">3</div>
+            <div class="monitor-card">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                <span style="font-size: 28px;">🔄</span>
+                <div>
+                  <h3 style="margin-bottom: 2px;">Phase 3: The Economic Flywheel</h3>
+                  <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">⏳ UPCOMING</span>
+                </div>
+              </div>
+              <p style="color: var(--text-secondary); margin-bottom: 16px;">We believe in a "Value-Back" ecosystem. The project's success is directly tied to the performance of its tools.</p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text-secondary);">
+                  <span style="color: var(--text-muted);">○</span>
+                  <span><strong style="color: var(--text-primary);">Revenue Recycling:</strong> 100% of API subscription fees are autonomously routed to market-buy the native token.</span>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text-secondary);">
+                  <span style="color: var(--text-muted);">○</span>
+                  <span><strong style="color: var(--text-primary);">Sustainability:</strong> Creating a deflationary pressure through utility — as more traders use the Oracle to make money, the ecosystem strengthens.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vision callout -->
+        <div style="margin-top: 48px; padding: 32px 40px; background: linear-gradient(135deg, rgba(255, 155, 81, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%); border: 1px solid rgba(255, 155, 81, 0.25); border-radius: 16px; text-align: center;">
+          <p style="font-size: 20px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">🎯 The Vision</p>
+          <p style="font-size: 17px; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">We aren't just building a tool — we're building a self-sustaining financial intelligence layer. The mission is simple: <strong style="color: var(--purple-primary);">Make money by helping others make money.</strong></p>
         </div>
       </div>
     </section>
