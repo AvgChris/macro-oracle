@@ -959,7 +959,7 @@ export const landingPageHtml = `
           <div class="monitor-card">
             <div class="monitor-icon">🤖</div>
             <h3>Auto-Trader</h3>
-            <p>Autonomous execution on Drift Protocol (Solana) with Kelly sizing, risk limits, and SL/TP management.</p>
+            <p>Autonomous execution on Drift Protocol (Solana) with confidence-based sizing, risk limits, and SL/TP management.</p>
             <div class="monitor-meta">
               <span class="meta-tag frequency">Real-time</span>
               <span class="meta-tag">Drift Protocol</span>
