@@ -104,19 +104,31 @@ export class SignalWatcherService extends Service {
   private async checkForSignals(): Promise<void> {
     try {
       const apiUrl = getApiUrl(this.runtime);
-      const { data: scannerHistory } = await axios.get<ScannerResult[]>(
+      const { data: scannerResponse } = await axios.get(
         `${apiUrl}/api/scanner/history`,
         { timeout: 15000 }
       );
 
-      if (!scannerHistory || scannerHistory.length === 0) {
+      // API returns { scans: [{ signals: [...] }] }
+      const scans = (scannerResponse as any)?.scans || [];
+      if (!scans.length || !scans[0]?.signals?.length) {
         console.log("[SignalWatcher] 🐔 No scanner results available");
         return;
       }
 
-      // Process each result
-      for (const signal of scannerHistory) {
-        const signalKey = `${signal.symbol}:${signal.direction}:${signal.timestamp}`;
+      const latestScan = scans[0];
+      const signals = latestScan.signals || [];
+
+      console.log(`[SignalWatcher] 🐔 Processing ${signals.length} signals from latest scan`);
+
+      // Process each signal
+      for (const signal of signals) {
+        // Normalize: API uses 'side' not 'direction', confidence is 0-1 not 0-100
+        signal.direction = signal.side || signal.direction;
+        signal.confidence = signal.confidence > 1 ? signal.confidence : signal.confidence * 100;
+        signal.price = signal.entry || signal.price;
+
+        const signalKey = `${signal.symbol}:${signal.direction}:${latestScan.timestamp}`;
 
         // Skip if already executed
         if (this.executedSignals.has(signalKey)) {
