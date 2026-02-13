@@ -441,7 +441,7 @@ export function getHyperliquidClient(
 ): HyperliquidPerpsClient | null {
   if (clientInstance) return clientInstance;
 
-  const privateKey = runtime.getSetting("HYPERLIQUID_PRIVATE_KEY");
+  const privateKey = runtime.getSetting("HYPERLIQUID_PRIVATE_KEY") || process.env.HYPERLIQUID_PRIVATE_KEY;
   if (!privateKey) {
     console.warn(
       "[HyperliquidPerps] 🐔 No HYPERLIQUID_PRIVATE_KEY set — trading disabled"
@@ -449,7 +449,7 @@ export function getHyperliquidClient(
     return null;
   }
 
-  const testnet = String(runtime.getSetting("HYPERLIQUID_TESTNET") ?? "") !== "false";
+  const testnet = String(runtime.getSetting("HYPERLIQUID_TESTNET") ?? process.env.HYPERLIQUID_TESTNET ?? "true") !== "false";
   clientInstance = new HyperliquidPerpsClient(String(privateKey), testnet);
   return clientInstance;
 }

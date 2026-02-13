@@ -54,7 +54,7 @@ export const executeSignalAction: Action = {
     "Execute a trade on Hyperliquid based on a Macro Oracle signal. Fetches the latest signal data and places a perpetual futures position.",
 
   validate: async (runtime: IAgentRuntime): Promise<boolean> => {
-    const hasKey = !!runtime.getSetting("HYPERLIQUID_PRIVATE_KEY");
+    const hasKey = !!(runtime.getSetting("HYPERLIQUID_PRIVATE_KEY") || process.env.HYPERLIQUID_PRIVATE_KEY);
     if (!hasKey) {
       console.warn("[ExecuteSignal] No HYPERLIQUID_PRIVATE_KEY configured");
     }

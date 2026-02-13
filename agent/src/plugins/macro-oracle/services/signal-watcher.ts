@@ -44,7 +44,7 @@ export class SignalWatcherService extends Service {
   static async start(runtime: IAgentRuntime): Promise<SignalWatcherService> {
     const service = new SignalWatcherService(runtime);
 
-    const autoTrade = String(runtime.getSetting("AUTO_TRADE_ENABLED") ?? "");
+    const autoTrade = String(runtime.getSetting("AUTO_TRADE_ENABLED") ?? process.env.AUTO_TRADE_ENABLED ?? "");
     if (autoTrade !== "true") {
       console.log(
         "[SignalWatcher] 🐔 Auto-trading disabled. Set AUTO_TRADE_ENABLED=true to enable."
