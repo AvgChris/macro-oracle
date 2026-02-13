@@ -1,7 +1,7 @@
 import { type Project, type ProjectAgent } from "@elizaos/core";
 import { character } from "./character.ts";
 import macroOraclePlugin from "./plugins/macro-oracle/index.ts";
-import hyperliquidPerpsPlugin from "./plugins/hyperliquid-perps/index.ts";
+import driftPerpsPlugin from "./plugins/drift-perps/index.ts";
 import socialPlugin from "./plugins/social/index.ts";
 
 /**
@@ -25,7 +25,7 @@ export const projectAgent: ProjectAgent = {
     console.log("🐔 Ready to trade. Cluck cluck. 📈");
   },
 
-  plugins: [macroOraclePlugin, hyperliquidPerpsPlugin, socialPlugin],
+  plugins: [macroOraclePlugin, driftPerpsPlugin, socialPlugin],
 };
 
 const project: Project = {

@@ -355,7 +355,50 @@ Tweet:`;
   private lastSeenTradeTimestamp: number = Date.now();
 
   private async checkPendingTweets(): Promise<void> {
-    // Poll the Macro Oracle auto-trader for new executed trades
+    // Check for pending tweets from signal watcher (stored in cache)
+    try {
+      const cacheManager = (this.runtime as any).cacheManager;
+      if (!cacheManager) return;
+
+      // Scan for pending tweet keys
+      const prefixes = ["pending_tweet:trade_alert:", "pending_tweet:trade_close:"];
+      for (const prefix of prefixes) {
+        // Try recent timestamps (last 5 minutes)
+        const now = Date.now();
+        for (let offset = 0; offset < 300000; offset += 30000) {
+          const ts = now - offset;
+          // Cache keys are approximate — try to get any cached tweet
+          const key = `${prefix}${ts}`;
+          try {
+            const cached = await cacheManager.get(key);
+            if (!cached) continue;
+
+            const tweet = JSON.parse(cached);
+            if (!tweet?.text) continue;
+
+            console.log(`[SocialPoster] 🐔 Found pending tweet: ${tweet.type}`);
+
+            // Post via ElizaOS Twitter plugin
+            await this.runtime.createMemory({
+              userId: this.runtime.agentId,
+              agentId: this.runtime.agentId,
+              roomId: this.runtime.agentId,
+              content: { text: tweet.text, source: "trade-alert" },
+            }, "tweets");
+            console.log(`[SocialPoster] 🐔 Tweet posted: ${tweet.text.slice(0, 80)}...`);
+
+            // Delete from cache so we don't double-post
+            await cacheManager.delete(key);
+          } catch {
+            // Key doesn't exist or invalid — skip
+          }
+        }
+      }
+    } catch (error) {
+      // Silent fail
+    }
+
+    // Also poll the Macro Oracle auto-trader log as fallback
     try {
       const apiUrl = String(
         this.runtime.getSetting("MACRO_ORACLE_API_URL") ||
@@ -363,26 +406,23 @@ Tweet:`;
           "https://macro-oracle-production.up.railway.app"
       );
       const { data } = await axios.get(`${apiUrl}/api/auto-trader/log`, { timeout: 10000 });
-      
+
       if (!data?.trades?.length) return;
-      
-      // Find trades newer than last seen
+
       const newTrades = data.trades.filter(
         (t: any) => t.success && t.action === "executed" && t.timestamp > this.lastSeenTradeTimestamp
       );
-      
+
       if (newTrades.length === 0) return;
-      
+
       for (const trade of newTrades) {
         const s = trade.signal;
-        const filled = trade.order?.filled;
-        const avgPx = filled?.avgPx || s.entry;
+        const avgPx = trade.order?.filled?.avgPx || s.entry;
         const side = s.direction?.toUpperCase() || "LONG";
         const emoji = side === "LONG" ? "🟢" : "🔴";
         const slPct = (Math.abs(s.entry - s.stopLoss) / s.entry * 100).toFixed(1);
         const tpPct = (Math.abs(s.takeProfit1 - s.entry) / s.entry * 100).toFixed(1);
-        
-        // Generate thesis based on indicators
+
         const indicators = s.indicators || [];
         const thesisParts: string[] = [];
         if (indicators.some((i: string) => i.includes("Fear"))) thesisParts.push("Market fear is extreme — historically a buy zone");
@@ -390,26 +430,23 @@ Tweet:`;
         if (indicators.some((i: string) => i.includes("MACD Bearish"))) thesisParts.push("momentum shifting bearish");
         if (indicators.some((i: string) => i.includes("Divergence"))) thesisParts.push("divergence detected");
         const thesis = thesisParts.length > 0 ? thesisParts.join(", ") + "." : (s.reasoning || "").slice(0, 150);
-        
+
         const tweetText = [
           `${emoji} NEW TRADE: $${s.symbol} ${side}`,
           ``,
           `Entry: $${avgPx}`,
           `SL: $${s.stopLoss} (-${slPct}%)`,
           `TP1: $${s.takeProfit1} (+${tpPct}%)`,
-          `Margin: $${trade.size?.recommended ? (trade.size.recommended / trade.size.leverage).toFixed(0) : "100"} @ ${trade.size?.leverage || "?"}x`,
           `Confidence: ${s.confidence}%`,
           ``,
           `🧠 ${thesis}`,
           ``,
-          `#crypto #trading #${s.symbol}`
+          `Drift Protocol (devnet) | #crypto #${s.symbol} #Solana`
         ].join("\n");
-        
-        // Queue for the Twitter plugin to post
-        console.log(`[SocialPoster] 🐔 New trade detected: ${s.symbol} ${side}. Tweeting...`);
-        
+
+        console.log(`[SocialPoster] 🐔 New trade from API: ${s.symbol} ${side}. Tweeting...`);
+
         try {
-          // Use the ElizaOS runtime to create a message that triggers the Twitter plugin
           await this.runtime.createMemory({
             userId: this.runtime.agentId,
             agentId: this.runtime.agentId,
@@ -420,7 +457,7 @@ Tweet:`;
         } catch (err) {
           console.error("[SocialPoster] 🐔 Failed to queue trade tweet:", (err as Error).message);
         }
-        
+
         this.lastSeenTradeTimestamp = trade.timestamp;
       }
     } catch (error) {
