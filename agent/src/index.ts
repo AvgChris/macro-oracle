@@ -18,10 +18,10 @@ export const projectAgent: ProjectAgent = {
   init: async (runtime) => {
     console.log("🐔 Chicken Buffett is suiting up...");
     console.log(
-      `🐔 Macro Oracle API: ${runtime.getSetting("MACRO_ORACLE_API_URL") || "https://macro-oracle-production.up.railway.app"}`
+      `🐔 Macro Oracle API: ${String(runtime.getSetting("MACRO_ORACLE_API_URL") || "https://macro-oracle-production.up.railway.app")}`
     );
     console.log(
-      `🐔 Hyperliquid Testnet: ${runtime.getSetting("HYPERLIQUID_TESTNET") === "true" ? "YES" : "NO"}`
+      `🐔 Hyperliquid Testnet: ${String(runtime.getSetting("HYPERLIQUID_TESTNET")) === "true" ? "YES" : "NO"}`
     );
     console.log("🐔 Ready to trade. Cluck cluck. 📈");
   },

@@ -44,21 +44,19 @@ export class SocialPosterService extends Service {
 
   private postTimer: ReturnType<typeof setTimeout> | null = null;
   private pendingTweetTimer: ReturnType<typeof setInterval> | null = null;
-  private runtime: IAgentRuntime;
   private lastPostType: TweetType | null = null;
   private lastFearGreedValue: number | null = null;
   private postCount: number = 0;
 
   constructor(runtime: IAgentRuntime) {
     super(runtime);
-    this.runtime = runtime;
   }
 
   static async start(runtime: IAgentRuntime): Promise<SocialPosterService> {
     const service = new SocialPosterService(runtime);
 
     const twitterEnabled = !!runtime.getSetting("TWITTER_API_KEY");
-    const postEnabled = runtime.getSetting("TWITTER_ENABLE_POST") === "true";
+    const postEnabled = String(runtime.getSetting("TWITTER_ENABLE_POST")) === "true";
 
     if (!twitterEnabled || !postEnabled) {
       console.log(
@@ -84,7 +82,7 @@ export class SocialPosterService extends Service {
   static async stop(runtime: IAgentRuntime): Promise<void> {
     const service = runtime.getService(
       SocialPosterService.serviceType
-    ) as SocialPosterService | undefined;
+    ) as unknown as SocialPosterService | undefined;
     if (service) {
       await service.stop();
     }
@@ -106,10 +104,10 @@ export class SocialPosterService extends Service {
 
   private scheduleNextPost(): void {
     const minInterval =
-      parseInt(this.runtime.getSetting("SOCIAL_POST_MIN_INTERVAL_MS") || "") ||
+      parseInt(String(this.runtime.getSetting("SOCIAL_POST_MIN_INTERVAL_MS") || "")) ||
       DEFAULT_MIN_INTERVAL_MS;
     const maxInterval =
-      parseInt(this.runtime.getSetting("SOCIAL_POST_MAX_INTERVAL_MS") || "") ||
+      parseInt(String(this.runtime.getSetting("SOCIAL_POST_MAX_INTERVAL_MS") || "")) ||
       DEFAULT_MAX_INTERVAL_MS;
 
     const delay =
@@ -137,8 +135,8 @@ export class SocialPosterService extends Service {
 
       // Fetch live data for context
       const apiUrl =
-        this.runtime.getSetting("MACRO_ORACLE_API_URL") ||
-        "https://macro-oracle-production.up.railway.app";
+        String(this.runtime.getSetting("MACRO_ORACLE_API_URL") ||
+        "https://macro-oracle-production.up.railway.app");
 
       const [fearGreed, tradeStats, scannerHistory] = await Promise.all([
         this.fetchSafe<FearGreedData>(`${apiUrl}/api/fear-greed`, {
@@ -176,7 +174,7 @@ export class SocialPosterService extends Service {
 
       // Ensure tweet is within length limit
       const maxLength =
-        parseInt(this.runtime.getSetting("TWITTER_MAX_TWEET_LENGTH") || "") ||
+        parseInt(String(this.runtime.getSetting("TWITTER_MAX_TWEET_LENGTH") || "")) ||
         280;
       if (tweet.length > maxLength) {
         tweet = tweet.substring(0, maxLength - 3) + "...";
@@ -186,7 +184,7 @@ export class SocialPosterService extends Service {
 
       // Queue the tweet for the Twitter plugin to pick up
       // The @elizaos/plugin-twitter handles actual posting
-      await this.runtime.cacheManager?.set(
+      await (this.runtime as any).cacheManager?.set(
         `pending_tweet:scheduled:${Date.now()}`,
         JSON.stringify({ type: tweetType, text: tweet }),
         { expires: Date.now() + 24 * 60 * 60 * 1000 }

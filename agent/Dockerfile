@@ -28,9 +28,6 @@ FROM base AS runner
 
 ENV NODE_ENV=production
 
-# Install ElizaOS CLI globally
-RUN npm install -g @elizaos/cli@1.7.2
-
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -42,5 +39,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 EXPOSE 3000
 
-# Start Chicken Buffett
-CMD ["elizaos", "start"]
+# Start Chicken Buffett via npx (avoids global install issues with ollama postinstall)
+CMD ["npx", "elizaos", "start"]

@@ -6,7 +6,6 @@ import {
   type State,
   type HandlerCallback,
   ModelType,
-  generateObjectDeprecated,
 } from "@elizaos/core";
 import { z } from "zod";
 import { getHyperliquidClient } from "../client.ts";
@@ -73,18 +72,20 @@ export const closePerpAction: Action = {
         return { text: "Hyperliquid not configured", success: false, data: {} };
       }
 
-      // Extract parameters
+      // Extract parameters using LLM
       const context = EXTRACT_TEMPLATE.replace(
         "{{recentMessages}}",
         message.content.text || ""
       );
 
-      const extracted = (await generateObjectDeprecated({
-        runtime,
-        context,
-        modelClass: ModelType.TEXT_SMALL,
-      })) as z.infer<typeof ClosePerpSchema>;
+      const llmResult = await runtime.useModel(ModelType.TEXT_SMALL, {
+        prompt: context,
+        maxTokens: 200,
+        temperature: 0.1,
+      });
 
+      const jsonStr = String(llmResult).replace(/```json?\n?/g, "").replace(/```/g, "").trim();
+      const extracted = JSON.parse(jsonStr);
       const params = ClosePerpSchema.parse(extracted);
 
       // Get position info before closing (for P&L reporting)
@@ -140,7 +141,7 @@ ${position.unrealizedPnl >= 0 ? "Another egg in the basket." : "Small loss. Risk
             actions: ["CLOSE_PERP"],
           });
         }
-        return { text: `Failed: ${result.error}`, success: false, data: result };
+        return { text: `Failed: ${result.error}`, success: false, data: result as any };
       }
     } catch (error) {
       const errMsg = (error as Error).message;

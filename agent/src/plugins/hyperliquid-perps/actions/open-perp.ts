@@ -6,7 +6,6 @@ import {
   type State,
   type HandlerCallback,
   ModelType,
-  generateObjectDeprecated,
 } from "@elizaos/core";
 import { z } from "zod";
 import { getHyperliquidClient } from "../client.ts";
@@ -86,18 +85,20 @@ export const openPerpAction: Action = {
         return { text: "Hyperliquid not configured", success: false, data: {} };
       }
 
-      // Extract parameters from conversation
+      // Extract parameters from conversation using LLM
       const context = EXTRACT_TEMPLATE.replace(
         "{{recentMessages}}",
         message.content.text || ""
       );
 
-      const extracted = (await generateObjectDeprecated({
-        runtime,
-        context,
-        modelClass: ModelType.TEXT_SMALL,
-      })) as z.infer<typeof OpenPerpSchema>;
+      const llmResult = await runtime.useModel(ModelType.TEXT_SMALL, {
+        prompt: context,
+        maxTokens: 200,
+        temperature: 0.1,
+      });
 
+      const jsonStr = String(llmResult).replace(/```json?\n?/g, "").replace(/```/g, "").trim();
+      const extracted = JSON.parse(jsonStr);
       const params = OpenPerpSchema.parse(extracted);
 
       // Execute the trade
@@ -127,14 +128,14 @@ export const openPerpAction: Action = {
 💵 Entry: ~$${result.price.toFixed(2)}${slText}${tpText}
 
 Order ID: ${result.orderId}
-Network: ${runtime.getSetting("HYPERLIQUID_TESTNET") !== "false" ? "TESTNET" : "MAINNET"}
+Network: ${String(runtime.getSetting("HYPERLIQUID_TESTNET") ?? "") !== "false" ? "TESTNET" : "MAINNET"}
 
 Position is live. This chicken is in the trade. 🐔📈`,
             actions: ["OPEN_PERP"],
           });
         }
 
-        return { text: "Position opened successfully", success: true, data: result };
+        return { text: "Position opened successfully", success: true, data: result as any };
       } else {
         if (callback) {
           await callback({
@@ -142,7 +143,7 @@ Position is live. This chicken is in the trade. 🐔📈`,
             actions: ["OPEN_PERP"],
           });
         }
-        return { text: `Failed: ${result.error}`, success: false, data: result };
+        return { text: `Failed: ${result.error}`, success: false, data: result as any };
       }
     } catch (error) {
       const errMsg = (error as Error).message;

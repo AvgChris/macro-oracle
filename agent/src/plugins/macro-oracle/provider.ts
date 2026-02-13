@@ -38,7 +38,7 @@ interface SignalData {
 // ─── Helper ──────────────────────────────────────────────────────────
 
 function getApiUrl(runtime: IAgentRuntime): string {
-  return (
+  return String(
     runtime.getSetting("MACRO_ORACLE_API_URL") ||
     "https://macro-oracle-production.up.railway.app"
   );

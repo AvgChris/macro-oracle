@@ -7,7 +7,6 @@ import {
   type HandlerCallback,
   ModelType,
   composePrompt,
-  generateObjectDeprecated,
 } from "@elizaos/core";
 import { z } from "zod";
 import { getApiUrl, fetchSafe, type ScannerResult } from "../provider.ts";
@@ -85,17 +84,20 @@ export const executeSignalAction: Action = {
         )
         .join("\n");
 
-      // Extract trade parameters from conversation
+      // Extract trade parameters from conversation using LLM
       const context = EXTRACT_TEMPLATE.replace(
         "{{recentMessages}}",
         message.content.text || ""
       ).replace("{{scannerData}}", scannerData || "No scanner data available");
 
-      const params = (await generateObjectDeprecated({
-        runtime,
-        context,
-        modelClass: ModelType.TEXT_SMALL,
-      })) as ExecuteSignalParams;
+      const llmResult = await runtime.useModel(ModelType.TEXT_SMALL, {
+        prompt: context,
+        maxTokens: 300,
+        temperature: 0.1,
+      });
+
+      const jsonStr = String(llmResult).replace(/```json?\n?/g, "").replace(/```/g, "").trim();
+      const params = JSON.parse(jsonStr);
 
       // Validate extracted params
       const validated = ExecuteSignalSchema.parse(params);
@@ -129,7 +131,7 @@ export const executeSignalAction: Action = {
 
       // Store in runtime memory for the signal watcher
       const tradeKey = `trade:${validated.symbol}:${Date.now()}`;
-      await runtime.cacheManager?.set(tradeKey, JSON.stringify(tradeResult), {
+      await (runtime as any).cacheManager?.set(tradeKey, JSON.stringify(tradeResult), {
         expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
       });
 

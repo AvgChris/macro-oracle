@@ -56,7 +56,7 @@ export const getPositionsAction: Action = {
 
 💰 Account Value: $${accountSummary.accountValue || "N/A"}
 💵 Withdrawable: $${accountSummary.withdrawable || "N/A"}
-🌐 Network: ${runtime.getSetting("HYPERLIQUID_TESTNET") !== "false" ? "TESTNET" : "MAINNET"}
+🌐 Network: ${String(runtime.getSetting("HYPERLIQUID_TESTNET") ?? "") !== "false" ? "TESTNET" : "MAINNET"}
 
 Dry powder ready. Waiting for the next signal. 🐔`,
             actions: ["GET_POSITIONS"],
@@ -95,7 +95,7 @@ ${positionLines.join("\n\n")}
 
 ${totalPnlEmoji} Total Unrealized P&L: $${totalPnl >= 0 ? "+" : ""}${totalPnl.toFixed(2)}
 💰 Account Value: $${accountSummary.accountValue || "N/A"}
-🌐 Network: ${runtime.getSetting("HYPERLIQUID_TESTNET") !== "false" ? "TESTNET" : "MAINNET"}
+🌐 Network: ${String(runtime.getSetting("HYPERLIQUID_TESTNET") ?? "") !== "false" ? "TESTNET" : "MAINNET"}
 
 The numbers are in. This chicken is ${totalPnl >= 0 ? "winning" : "managing risk"}. 🐔`,
           actions: ["GET_POSITIONS"],

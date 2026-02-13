@@ -194,7 +194,7 @@ export class HyperliquidPerpsClient {
       return {
         success: true,
         orderId:
-          (orderResult as Record<string, unknown>)?.response?.data?.statuses?.[0]?.resting?.oid ??
+          (orderResult as any)?.response?.data?.statuses?.[0]?.resting?.oid ??
           `order-${Date.now()}`,
         symbol,
         direction,
@@ -328,7 +328,7 @@ export class HyperliquidPerpsClient {
           const entryPrice = parseFloat(String(pos.entryPx || "0"));
           const markPrice = parseFloat(String(pos.positionValue || "0")) / Math.abs(size || 1);
           const unrealizedPnl = parseFloat(String(pos.unrealizedPnl || "0"));
-          const leverage = parseFloat(String(pos.leverage?.value || "1"));
+          const leverage = parseFloat(String(((pos as any).leverage as any)?.value || "1"));
 
           return {
             symbol: String(pos.coin || ""),
@@ -364,7 +364,7 @@ export class HyperliquidPerpsClient {
     await this.ensureConnected();
 
     try {
-      const allMids = await this.sdk.info.perpetuals.getAllMids();
+      const allMids = await (this.sdk.info.perpetuals as any).getAllMids();
       const price = allMids[symbol.toUpperCase()];
       return price ? parseFloat(String(price)) : null;
     } catch (error) {
@@ -383,7 +383,7 @@ export class HyperliquidPerpsClient {
     await this.ensureConnected();
 
     try {
-      await this.sdk.exchange.updateLeverage({
+      await (this.sdk.exchange as any).updateLeverage({
         coin: symbol,
         leverage,
         is_cross: true, // Use cross margin
@@ -449,7 +449,7 @@ export function getHyperliquidClient(
     return null;
   }
 
-  const testnet = runtime.getSetting("HYPERLIQUID_TESTNET") !== "false";
-  clientInstance = new HyperliquidPerpsClient(privateKey, testnet);
+  const testnet = String(runtime.getSetting("HYPERLIQUID_TESTNET") ?? "") !== "false";
+  clientInstance = new HyperliquidPerpsClient(String(privateKey), testnet);
   return clientInstance;
 }

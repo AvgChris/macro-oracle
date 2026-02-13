@@ -9,12 +9,12 @@
 // ─── Trade Alert Templates ───────────────────────────────────────────
 
 export const tradeAlertTemplates = [
-  `🐔 {{symbol}} {{direction}} @ ${{price}} | {{confidence}}% confidence. {{indicatorCount}} indicators confirming. This chicken is in. ${{symbol}}`,
+  `🐔 {{symbol}} {{direction}} @ \${{price}} | {{confidence}}% confidence. {{indicatorCount}} indicators confirming. This chicken is in. \${{symbol}}`,
 
   `🐔 TRADE ALERT: {{symbol}} {{direction}} @ {{leverage}}x
 
-Entry: ${{price}} | Confidence: {{confidence}}%
-Size: ${{sizeUsd}}
+Entry: \${{price}} | Confidence: {{confidence}}%
+Size: \${{sizeUsd}}
 
 When the Macro Oracle speaks, I listen. {{emoji}}🐔`,
 
@@ -29,7 +29,7 @@ SL set. TP set. Risk managed.
 
 Let's see how this egg hatches. 🐔`,
 
-  `{{symbol}} {{direction}} @ ${{price}}. {{confidence}}% confidence.
+  `{{symbol}} {{direction}} @ \${{price}}. {{confidence}}% confidence.
 
 Most traders hesitate. This chicken executes. 🐔`,
 ];

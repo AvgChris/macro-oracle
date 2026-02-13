@@ -36,17 +36,15 @@ export class SignalWatcherService extends Service {
   private positionTimer: ReturnType<typeof setInterval> | null = null;
   private executedSignals: Set<string> = new Set();
   private openTrades: Map<string, ExecutedTrade> = new Map();
-  private runtime: IAgentRuntime;
 
   constructor(runtime: IAgentRuntime) {
     super(runtime);
-    this.runtime = runtime;
   }
 
   static async start(runtime: IAgentRuntime): Promise<SignalWatcherService> {
     const service = new SignalWatcherService(runtime);
 
-    const autoTrade = runtime.getSetting("AUTO_TRADE_ENABLED");
+    const autoTrade = String(runtime.getSetting("AUTO_TRADE_ENABLED") ?? "");
     if (autoTrade !== "true") {
       console.log(
         "[SignalWatcher] 🐔 Auto-trading disabled. Set AUTO_TRADE_ENABLED=true to enable."
@@ -83,7 +81,7 @@ export class SignalWatcherService extends Service {
   static async stop(runtime: IAgentRuntime): Promise<void> {
     const service = runtime.getService(
       SignalWatcherService.serviceType
-    ) as SignalWatcherService | undefined;
+    ) as unknown as SignalWatcherService | undefined;
     if (service) {
       await service.stop();
     }
@@ -168,10 +166,10 @@ export class SignalWatcherService extends Service {
   private async executeTrade(signal: ScannerResult): Promise<void> {
     try {
       const leverage =
-        parseInt(this.runtime.getSetting("DEFAULT_LEVERAGE") || "") ||
+        parseInt(String(this.runtime.getSetting("DEFAULT_LEVERAGE") || "")) ||
         DEFAULT_LEVERAGE;
       const sizeUsd =
-        parseFloat(this.runtime.getSetting("DEFAULT_SIZE_USD") || "") ||
+        parseFloat(String(this.runtime.getSetting("DEFAULT_SIZE_USD") || "")) ||
         DEFAULT_SIZE_USD;
 
       const trade: ExecutedTrade = {
@@ -253,7 +251,7 @@ Size: $${trade.sizeUsd}
 When the Macro Oracle speaks, this chicken listens. ${emoji}🐔`;
 
       // Store tweet for the social poster to pick up
-      await this.runtime.cacheManager?.set(
+      await (this.runtime as any).cacheManager?.set(
         `pending_tweet:trade_alert:${Date.now()}`,
         JSON.stringify({ type: "trade_alert", text: tweet, trade }),
         { expires: Date.now() + 24 * 60 * 60 * 1000 }
@@ -279,7 +277,7 @@ When the Macro Oracle speaks, this chicken listens. ${emoji}🐔`;
 P&L: ${pnl > 0 ? "+" : ""}${pnl.toFixed(2)}% ${emoji}
 ${won ? "Another golden egg for the portfolio." : "Small scratch. Risk was managed. Moving on."} 🐔`;
 
-      await this.runtime.cacheManager?.set(
+      await (this.runtime as any).cacheManager?.set(
         `pending_tweet:trade_close:${Date.now()}`,
         JSON.stringify({ type: "trade_close", text: tweet, trade }),
         { expires: Date.now() + 24 * 60 * 60 * 1000 }
@@ -299,7 +297,7 @@ ${won ? "Another golden egg for the portfolio." : "Small scratch. Risk was manag
   private async cacheTrade(trade: ExecutedTrade): Promise<void> {
     try {
       const key = `executed_trade:${trade.symbol}:${trade.executedAt}`;
-      await this.runtime.cacheManager?.set(key, JSON.stringify(trade), {
+      await (this.runtime as any).cacheManager?.set(key, JSON.stringify(trade), {
         expires: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days
       });
     } catch (error) {
