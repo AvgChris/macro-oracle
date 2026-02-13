@@ -1,0 +1,21 @@
+{
+  "name": "chicken-buffett",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "bun build.ts",
+    "start": "elizaos start",
+    "dev": "elizaos start --dev"
+  },
+  "dependencies": {
+    "@elizaos/core": "^1.7.3",
+    "@elizaos/cli": "^1.7.3",
+    "@elizaos/plugin-bootstrap": "^1.7.3",
+    "@elizaos/plugin-sql": "^1.7.3",
+    "@elizaos/plugin-openai": "^1.7.3",
+    "@elizaos/plugin-twitter": "^1.7.3",
+    "hyperliquid": "^1.5.6",
+    "axios": "^1.7.0",
+    "zod": "^3.22.0"
+  }
+}
