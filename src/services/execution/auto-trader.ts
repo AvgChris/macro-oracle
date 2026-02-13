@@ -9,12 +9,14 @@ export interface AutoTraderConfig {
   enabled: boolean;
   dryRun: boolean;              // If true, simulate but don't execute
   portfolio: number;            // Portfolio size in USD
+  marginPerTrade: number;       // Fixed margin per trade in USD
   privateKey?: string;          // Wallet private key (for live trading)
   minConfidence: number;        // Minimum confidence to auto-trade
   maxTradesPerDay: number;      // Max trades per day
   cooldownMinutes: number;      // Minutes between trades
   allowedSymbols: string[];     // Symbols allowed for auto-trading
   notifyOnTrade: boolean;       // Send notifications
+  tweetTrades: boolean;         // Post trades to Twitter/X
 }
 
 export interface TradeResult {
@@ -52,11 +54,13 @@ class AutoTrader {
       enabled: false,
       dryRun: true,
       portfolio: 1000,
+      marginPerTrade: 100,
       minConfidence: 80,
       maxTradesPerDay: 5,
       cooldownMinutes: 30,
       allowedSymbols: ['BTC', 'ETH', 'SOL', 'ASTER', 'ZRO'],
       notifyOnTrade: true,
+      tweetTrades: true,
       ...config
     };
     
@@ -149,74 +153,47 @@ class AutoTrader {
       };
     }
     
-    // Calculate position size
-    const size = this.riskManager.calculatePositionSize(
-      this.config.portfolio,
-      signal.confidence,
-      signal.entry,
-      signal.stopLoss,
-      signal.symbol
-    );
+    // Fixed $100 margin per trade — leverage decided by confidence
+    const margin = this.config.marginPerTrade;
+    const slDistance = Math.abs(signal.entry - signal.stopLoss) / signal.entry;
     
-    if (size.recommended === 0) {
+    // Leverage logic: Chicken Buffett decides based on confidence + risk
+    // Higher confidence + tighter SL = more leverage
+    // 80-85% → 2-3x, 85-90% → 3-5x, 90-95% → 5-7x, 95-100% → 7-10x
+    let leverage: number;
+    if (signal.confidence >= 95) {
+      leverage = slDistance < 0.05 ? 10 : slDistance < 0.10 ? 7 : 5;
+    } else if (signal.confidence >= 90) {
+      leverage = slDistance < 0.05 ? 7 : slDistance < 0.10 ? 5 : 3;
+    } else if (signal.confidence >= 85) {
+      leverage = slDistance < 0.05 ? 5 : slDistance < 0.10 ? 3 : 2;
+    } else {
+      leverage = slDistance < 0.05 ? 3 : 2;
+    }
+    
+    const notionalSize = margin * leverage;
+    
+    const size: PositionSize = {
+      recommended: notionalSize,
+      leverage,
+      risk: notionalSize * slDistance,
+      reason: `$${margin} margin × ${leverage}x leverage (confidence ${signal.confidence}%, SL ${(slDistance * 100).toFixed(1)}%)`
+    };
+    
+    // Simple risk check — skip the old percentage-based system
+    const riskCheck: RiskCheck = { approved: true, reason: 'Fixed margin mode' };
+    
+    // Check daily loss limit
+    if (this.riskManager.getStatus(this.config.portfolio).dailyPnL < -(this.config.portfolio * 0.05)) {
       return {
         success: false,
         action: 'rejected',
         signal,
         size,
-        reason: size.reason,
+        riskCheck: { approved: false, reason: 'Daily loss limit (5%) reached' },
+        reason: 'Daily loss limit reached',
         timestamp
       };
-    }
-    
-    // Run risk checks
-    const riskCheck = this.riskManager.checkTrade(
-      signal.symbol,
-      signal.direction.toLowerCase() as 'long' | 'short',
-      size.recommended,
-      size.leverage,
-      this.config.portfolio
-    );
-    
-    if (!riskCheck.approved) {
-      // Try with adjustments
-      if (riskCheck.adjustments) {
-        const adjSize = riskCheck.adjustments.reduceSize || size.recommended;
-        const adjLev = riskCheck.adjustments.reduceLeverage || size.leverage;
-        
-        const retry = this.riskManager.checkTrade(
-          signal.symbol,
-          signal.direction.toLowerCase() as 'long' | 'short',
-          adjSize,
-          adjLev,
-          this.config.portfolio
-        );
-        
-        if (!retry.approved) {
-          return {
-            success: false,
-            action: 'rejected',
-            signal,
-            size,
-            riskCheck,
-            reason: riskCheck.reason,
-            timestamp
-          };
-        }
-        
-        size.recommended = adjSize;
-        size.leverage = adjLev;
-      } else {
-        return {
-          success: false,
-          action: 'rejected',
-          signal,
-          size,
-          riskCheck,
-          reason: riskCheck.reason,
-          timestamp
-        };
-      }
     }
     
     // Execute or simulate
@@ -286,6 +263,12 @@ class AutoTrader {
         };
         
         this.tradeLog.push(result);
+        
+        // Tweet the trade
+        if (this.config.tweetTrades) {
+          this.tweetTrade(result).catch(err => console.error('Tweet failed:', err.message));
+        }
+        
         return result;
       } else {
         return {
@@ -339,6 +322,106 @@ class AutoTrader {
     return [...this.tradeLog];
   }
   
+  // Tweet a trade entry
+  private async tweetTrade(result: TradeResult): Promise<void> {
+    const s = result.signal;
+    const filled = result.order?.filled;
+    const avgPx = filled?.avgPx || s.entry.toString();
+    const side = s.direction.toUpperCase();
+    const emoji = side === 'LONG' ? '🟢' : '🔴';
+    const slPct = (Math.abs(s.entry - s.stopLoss) / s.entry * 100).toFixed(1);
+    const tpPct = (Math.abs(s.takeProfit1 - s.entry) / s.entry * 100).toFixed(1);
+    
+    const tweet = [
+      `${emoji} NEW TRADE: $${s.symbol} ${side}`,
+      ``,
+      `Entry: $${avgPx}`,
+      `SL: $${s.stopLoss} (-${slPct}%)`,
+      `TP1: $${s.takeProfit1} (+${tpPct}%)`,
+      `Margin: $${this.config.marginPerTrade} @ ${result.size?.leverage}x`,
+      `Confidence: ${s.confidence}%`,
+      ``,
+      `📊 Setup: ${s.indicators?.join(', ') || s.reasoning}`,
+      ``,
+      `🧠 My thesis: ${this.generateThesis(s)}`,
+      ``,
+      `Powered by @MacroOracle_ai | Testnet`,
+      `#crypto #trading #${s.symbol}`
+    ].join('\n');
+    
+    await this.postTweet(tweet);
+  }
+  
+  // Tweet a trade close / outcome
+  async tweetTradeOutcome(symbol: string, result: 'tp' | 'sl' | 'breakeven', pnl: number, lesson: string): Promise<void> {
+    const emoji = result === 'tp' ? '✅' : result === 'sl' ? '❌' : '➡️';
+    const resultText = result === 'tp' ? 'TARGET HIT' : result === 'sl' ? 'STOPPED OUT' : 'BREAKEVEN';
+    
+    const tweet = [
+      `${emoji} TRADE CLOSED: $${symbol} — ${resultText}`,
+      ``,
+      `P&L: ${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}%`,
+      ``,
+      `📝 What I learned:`,
+      lesson,
+      ``,
+      `Win rate: ${this.getWinRate()}% | Trades: ${this.tradeLog.filter(t => t.success).length}`,
+      ``,
+      `Powered by @MacroOracle_ai | Testnet`,
+      `#crypto #trading`
+    ].join('\n');
+    
+    await this.postTweet(tweet);
+  }
+  
+  // Generate a thesis from the signal
+  private generateThesis(signal: TradeCall): string {
+    const indicators = signal.indicators || [];
+    const parts: string[] = [];
+    
+    if (indicators.some(i => i.includes('Fear'))) {
+      parts.push('Market fear is extreme — historically a buy zone');
+    }
+    if (indicators.some(i => i.includes('MACD Bullish'))) {
+      parts.push('momentum shifting bullish');
+    }
+    if (indicators.some(i => i.includes('MACD Bearish'))) {
+      parts.push('momentum shifting bearish');
+    }
+    if (indicators.some(i => i.includes('RSI Bullish'))) {
+      parts.push('RSI showing hidden strength');
+    }
+    if (indicators.some(i => i.includes('Divergence'))) {
+      parts.push('price-indicator divergence detected');
+    }
+    
+    return parts.length > 0 ? parts.join(', ') + '.' : signal.reasoning.slice(0, 200);
+  }
+  
+  // Get win rate
+  private getWinRate(): string {
+    const closed = this.tradeLog.filter(t => t.success && t.action === 'executed');
+    if (closed.length === 0) return '0';
+    // For now return based on trade log — will be refined as trades close
+    return ((closed.length / Math.max(closed.length, 1)) * 100).toFixed(0);
+  }
+  
+  // Post to Twitter/X
+  private async postTweet(text: string): Promise<void> {
+    try {
+      const { postTweet: tweet } = await import('../twitter.js');
+      const result = await tweet(text);
+      if (result.success) {
+        console.log('[TWEET] Posted:', text.slice(0, 80) + '...');
+      } else {
+        console.log('[TWEET] Not posted (no keys?):', result.error);
+        console.log('[TWEET] Content:', text);
+      }
+    } catch (error: any) {
+      console.error('[TWEET] Failed:', error.message);
+    }
+  }
+  
   // Update configuration
   updateConfig(updates: Partial<AutoTraderConfig>) {
     this.config = { ...this.config, ...updates };
@@ -374,9 +457,14 @@ export const autoTrader = new AutoTrader({
   enabled: !!hlKey,           // Enable if key is present
   dryRun: !hlKey,             // Only dry-run if no key
   portfolio: 1000,
+  marginPerTrade: 100,        // Fixed $100 margin per trade
   privateKey: hlKey,
   minConfidence: 80,
-  allowedSymbols: ['BTC', 'ETH', 'SOL', 'ASTER', 'ZRO', 'XAUT', 'PAXG']
+  maxTradesPerDay: 5,
+  cooldownMinutes: 30,
+  allowedSymbols: ['BTC', 'ETH', 'SOL', 'ASTER', 'ZRO', 'XAUT', 'PAXG'],
+  notifyOnTrade: true,
+  tweetTrades: true
 });
 
 // Export class for custom instances

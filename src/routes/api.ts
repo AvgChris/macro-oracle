@@ -1136,6 +1136,48 @@ router.get('/auto-trader/log', (req: Request, res: Response) => {
   }
 });
 
+// === TWITTER ENDPOINTS ===
+
+import { postTweet, postThread, isTwitterConfigured } from '../services/twitter.js';
+
+// Post a tweet
+router.post('/tweet', async (req: Request, res: Response) => {
+  try {
+    const { text } = req.body;
+    if (!text) {
+      res.status(400).json({ error: 'text is required' });
+      return;
+    }
+    const result = await postTweet(text);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Post a thread
+router.post('/tweet/thread', async (req: Request, res: Response) => {
+  try {
+    const { tweets } = req.body;
+    if (!tweets || !Array.isArray(tweets)) {
+      res.status(400).json({ error: 'tweets array is required' });
+      return;
+    }
+    const result = await postThread(tweets);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Check Twitter status
+router.get('/tweet/status', (req: Request, res: Response) => {
+  res.json({
+    configured: isTwitterConfigured(),
+    account: '@ChickenBuffett'
+  });
+});
+
 // === LIVE SCANNER ENDPOINTS ===
 // Real-time technical analysis scan using OKX market data
 // Note: Full scans take ~10-60s depending on limit (200ms per coin for rate limiting)
