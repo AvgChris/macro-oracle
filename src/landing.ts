@@ -808,7 +808,7 @@ export const landingPageHtml = `
               <div class="chicken-feature"><span>⛓️</span> Signals verified on Solana mainnet</div>
             </div>
             <div class="chicken-buttons">
-              <a href="https://chicken-buffett-production.up.railway.app" target="_blank" class="btn-chicken btn-chicken-primary">🐔 Visit Agent</a>
+              <a href="https://x.com/ChickenBuffett" target="_blank" class="btn-chicken btn-chicken-primary">🐔 Visit Agent on 𝕏</a>
               <a href="https://x.com/ChickenBuffett" target="_blank" class="btn-chicken btn-chicken-twitter">𝕏 Follow on Twitter</a>
               <a href="/api/scanner" class="btn-chicken btn-chicken-secondary">📡 Try the API</a>
             </div>

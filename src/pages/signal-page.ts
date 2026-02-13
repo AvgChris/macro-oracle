@@ -151,6 +151,7 @@ export const signalPageHtml = `
         <a href="/signal">Signal</a>
         <a href="/backtest">Backtest</a>
         <a href="/trades">Trades</a>
+        <a href="/#chicken-buffett" style="color: #FFD700;">🐔 Agent</a>
       </nav>
     </header>
 
