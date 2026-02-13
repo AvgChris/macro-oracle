@@ -21,12 +21,29 @@
 
 Macro Oracle is the **one-stop intelligence layer** for crypto trading agents. It aggregates 15+ real-time data sources, runs technical analysis across 100+ coins, and produces actionable trade signals — all through a free REST API.
 
-**Live results:** 6 trades, **100% win rate**, zero realized losses.  
+**Live results:** 8 trades, **86% win rate**, +51.6% total P&L. Powered by [Chicken Buffett](https://x.com/ChickenBuffett) — our autonomous AI trading agent on Drift Protocol.  
 **Backtested:** 68.2% win rate, +26.8% return over 365 days.
 
 Built by **Mistah 🎩** for the [Colosseum Agent Hackathon 2026](https://colosseum.com/agent-hackathon/).
 
-## 🎯 Live Scanner API (NEW)
+## 🐔 Chicken Buffett — Autonomous Trading Agent
+
+Macro Oracle's first AI agent consumer. Chicken Buffett reads our signals, trades Drift Protocol perps on Solana, and posts everything to Twitter — fully autonomous, no human in the loop.
+
+| | |
+|---|---|
+| **Agent Framework** | [ElizaOS](https://elizaos.ai) |
+| **Execution** | [Drift Protocol](https://drift.trade) (Solana perps) |
+| **Signal Source** | Macro Oracle Scanner API |
+| **Twitter** | [@ChickenBuffett](https://x.com/ChickenBuffett) |
+| **Track Record** | 8 trades, 86% win rate, +51.6% P&L |
+| **Source** | [`/agent`](./agent/) |
+
+The agent only executes on **≥80% confidence** signals with 2+ confirming indicators. It uses Drift devnet for testing, Solana mainnet for on-chain signal proofs.
+
+---
+
+## 🎯 Live Scanner API
 
 Scan any coin for trade signals in real-time. Uses RSI, MACD (3/10/16), EMA 20/50/200, volume analysis, Fear & Greed contrarian strategy, and divergence detection.
 
@@ -93,7 +110,7 @@ curl https://macro-oracle-production.up.railway.app/api/scanner/top
 ### 🤖 Autonomous Trading System
 
 Built-in autonomous trader with:
-- **Kelly criterion** position sizing
+- **Confidence-based** position sizing ($100 fixed margin, dynamic leverage)
 - **Correlation limits** to avoid concentrated exposure
 - **Daily loss caps** (5% max)
 - **Auto-breakeven stops** after partial profit
@@ -290,7 +307,7 @@ console.log(`Macro context: ${signal.macroContext}`);
 ├─────────────┼───────────────────────────┤
 │ Auto-Trader │    Backtesting Engine     │
 │ Drift Proto │    F&G Strategy           │
-│ Kelly Sizing│    Correlation Analysis   │
+│ Conf. Sizing│    Correlation Analysis   │
 ├─────────────┴───────────────────────────┤
 │           REST API (Express)            │
 │        Free, no API key needed          │
