@@ -60,7 +60,7 @@ class AutoTrader {
       ...config
     };
     
-    this.hlClient = new HyperliquidClient(config?.privateKey);
+    this.hlClient = new HyperliquidClient(config?.privateKey, true); // testnet
     this.riskManager = new RiskManager({
       minConfidence: this.config.minConfidence
     });
@@ -344,7 +344,7 @@ class AutoTrader {
     this.config = { ...this.config, ...updates };
     
     if (updates.privateKey) {
-      this.hlClient = new HyperliquidClient(updates.privateKey);
+      this.hlClient = new HyperliquidClient(updates.privateKey, true); // testnet
     }
     
     if (updates.minConfidence) {
@@ -368,11 +368,13 @@ class AutoTrader {
   }
 }
 
-// Export singleton
+// Export singleton — reads config from env
+const hlKey = process.env.HL_PRIVATE_KEY;
 export const autoTrader = new AutoTrader({
-  enabled: false,
-  dryRun: true,
+  enabled: !!hlKey,           // Enable if key is present
+  dryRun: !hlKey,             // Only dry-run if no key
   portfolio: 1000,
+  privateKey: hlKey,
   minConfidence: 80,
   allowedSymbols: ['BTC', 'ETH', 'SOL', 'ASTER', 'ZRO', 'XAUT', 'PAXG']
 });

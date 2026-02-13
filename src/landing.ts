@@ -810,7 +810,7 @@ export const landingPageHtml = `
             </div>
             <div class="chicken-buttons">
               <a href="https://x.com/ChickenBuffett" target="_blank" class="btn-chicken btn-chicken-primary">🐔 Visit Agent on 𝕏</a>
-              <a href="https://app.hyperliquid-testnet.xyz/explorer/0x603306B7AF29EFA2688D7b7f4dCC9Bf9D0EeaD97" target="_blank" class="btn-chicken btn-chicken-twitter">💹 Live Trades</a>
+              <a href="https://app.hyperliquid-testnet.xyz/explorer/0x603306B7AF29EFA2688D7b7f4dCC9Bf9D0EeaD97" target="_blank" class="btn-chicken btn-chicken-twitter">💹 Testnet Trades</a>
               <a href="/api/scanner" class="btn-chicken btn-chicken-secondary">📡 Try the API</a>
             </div>
           </div>
