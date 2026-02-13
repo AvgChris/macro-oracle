@@ -29,7 +29,7 @@ FROM base AS runner
 ENV NODE_ENV=production
 
 # Install ElizaOS CLI globally
-RUN npm install -g @elizaos/cli@latest
+RUN npm install -g @elizaos/cli@1.7.2
 
 WORKDIR /app
 
