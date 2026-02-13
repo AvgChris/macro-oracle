@@ -1,7 +1,7 @@
 import { Service, type IAgentRuntime } from "@elizaos/core";
 import axios from "axios";
 import { getApiUrl, type ScannerResult } from "../provider.ts";
-import { getHyperliquidClient } from "../../../plugins/hyperliquid-perps/client.ts";
+import { getDriftClient } from "../../../plugins/drift-perps/client.ts";
 
 // ─── Constants ───────────────────────────────────────────────────────
 
@@ -30,7 +30,7 @@ interface ExecutedTrade {
 export class SignalWatcherService extends Service {
   static serviceType = "signal-watcher";
   capabilityDescription =
-    "Monitors Macro Oracle signals and auto-executes trades on Hyperliquid when high-confidence opportunities appear";
+    "Monitors Macro Oracle signals and auto-executes trades on Drift Protocol when high-confidence opportunities appear";
 
   private pollTimer: ReturnType<typeof setInterval> | null = null;
   private positionTimer: ReturnType<typeof setInterval> | null = null;
@@ -208,9 +208,9 @@ export class SignalWatcherService extends Service {
         status: "OPEN",
       };
 
-      // Execute via Hyperliquid perps client
-      const hlClient = getHyperliquidClient(this.runtime);
-      if (hlClient) {
+      // Execute via Drift Protocol perps client
+      const driftClient = getDriftClient(this.runtime);
+      if (driftClient) {
         const slPercent = signal.stopLoss && signal.price
           ? Math.abs((signal.price - signal.stopLoss) / signal.price * 100)
           : 15;
@@ -218,7 +218,7 @@ export class SignalWatcherService extends Service {
           ? Math.abs((signal.takeProfit1 - signal.price) / signal.price * 100)
           : 30;
 
-        const result = await hlClient.openPosition({
+        const result = await driftClient.openPosition({
           symbol: signal.symbol,
           direction: signal.direction as "LONG" | "SHORT",
           sizeUsd: trade.sizeUsd,
@@ -236,11 +236,11 @@ export class SignalWatcherService extends Service {
 
         trade.entryPrice = result.price || trade.entryPrice;
         console.log(
-          `[SignalWatcher] 🐔 TRADE EXECUTED ON HYPERLIQUID: ${trade.symbol} ${trade.direction} @ ${trade.leverage}x, $${trade.sizeUsd} (price: $${result.price})`
+          `[SignalWatcher] 🐔 TRADE EXECUTED ON DRIFT: ${trade.symbol} ${trade.direction} @ ${trade.leverage}x, $${trade.sizeUsd} (price: $${result.price})`
         );
       } else {
         console.warn(
-          `[SignalWatcher] 🐔 No Hyperliquid client — trade logged but NOT executed: ${trade.symbol} ${trade.direction}`
+          `[SignalWatcher] 🐔 No Drift client — trade logged but NOT executed: ${trade.symbol} ${trade.direction}`
         );
       }
 
@@ -266,21 +266,38 @@ export class SignalWatcherService extends Service {
     if (this.openTrades.size === 0) return;
 
     try {
-      // TODO: Check positions via Hyperliquid client
-      // For each open trade, check if TP/SL was hit
-      for (const [symbol, trade] of this.openTrades.entries()) {
-        // Placeholder: check if position is still open on Hyperliquid
-        // const position = await hlClient.getPosition(symbol);
-        // if (!position || position.closed) {
-        //   trade.status = 'CLOSED';
-        //   trade.pnlPercent = position?.pnlPercent || 0;
-        //   this.openTrades.delete(symbol);
-        //   await this.postTradeClose(trade);
-        // }
+      const driftClient = getDriftClient(this.runtime);
+      if (!driftClient) return;
 
-        console.log(
-          `[SignalWatcher] 🐔 Monitoring: ${symbol} ${trade.direction} (open since ${trade.executedAt})`
+      const positions = await driftClient.getPositions();
+      const openSymbols = new Set(positions.map((p) => p.symbol.toUpperCase()));
+
+      for (const [symbol, trade] of this.openTrades.entries()) {
+        const pos = positions.find(
+          (p) => p.symbol.toUpperCase() === symbol.toUpperCase()
         );
+
+        if (!pos) {
+          // Position was closed (TP/SL hit or manually)
+          trade.status = "CLOSED";
+          const currentPrice = await driftClient.getMarkPrice(symbol);
+          if (currentPrice && trade.entryPrice) {
+            const direction = trade.direction === "LONG" ? 1 : -1;
+            trade.pnlPercent =
+              ((currentPrice - trade.entryPrice) / trade.entryPrice) *
+              100 *
+              direction;
+          }
+          this.openTrades.delete(symbol);
+          await this.postTradeClose(trade);
+          console.log(
+            `[SignalWatcher] 🐔 Position CLOSED: ${symbol} P&L: ${trade.pnlPercent?.toFixed(2)}%`
+          );
+        } else {
+          console.log(
+            `[SignalWatcher] 🐔 Monitoring: ${symbol} ${trade.direction} | PnL: ${pos.unrealizedPnlPercent.toFixed(2)}% (open since ${trade.executedAt})`
+          );
+        }
       }
     } catch (error) {
       console.error(
@@ -307,7 +324,7 @@ Confidence: ${trade.confidence}%
 
 🧠 Macro Oracle gave me a ${trade.confidence}% signal. ${trade.direction === "LONG" ? "Going long" : "Shorting"} with conviction.
 
-Testnet | #crypto #${trade.symbol}`;
+Drift Protocol (devnet) | #crypto #${trade.symbol} #Solana`;
 
       // Store tweet for the social poster to pick up
       await (this.runtime as any).cacheManager?.set(
@@ -352,7 +369,7 @@ P&L: ${pnl > 0 ? "+" : ""}${pnl.toFixed(2)}%
 
 📝 What I learned: ${lesson}
 
-Testnet | #crypto #trading`;
+Drift Protocol (devnet) | #crypto #trading #Solana`;
 
       await (this.runtime as any).cacheManager?.set(
         `pending_tweet:trade_close:${Date.now()}`,

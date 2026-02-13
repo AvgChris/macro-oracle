@@ -51,7 +51,7 @@ export const executeSignalAction: Action = {
   name: "EXECUTE_SIGNAL",
   similes: ["TRADE_SIGNAL", "FOLLOW_SIGNAL", "EXECUTE_TRADE", "TAKE_SIGNAL"],
   description:
-    "Execute a trade on Hyperliquid based on a Macro Oracle signal. Fetches the latest signal data and places a perpetual futures position.",
+    "Execute a trade on Drift Protocol based on a Macro Oracle signal. Fetches the latest signal data and places a perpetual futures position.",
 
   validate: async (runtime: IAgentRuntime): Promise<boolean> => {
     const hasKey = !!(runtime.getSetting("HYPERLIQUID_PRIVATE_KEY") || process.env.HYPERLIQUID_PRIVATE_KEY);

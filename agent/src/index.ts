@@ -9,7 +9,7 @@ import socialPlugin from "./plugins/social/index.ts";
  *
  * A Macro Oracle-powered ElizaOS agent that:
  * 1. Monitors market signals via the Macro Oracle API
- * 2. Executes perpetual futures trades on Hyperliquid
+ * 2. Executes perpetual futures trades on Drift Protocol (Solana)
  * 3. Posts trade alerts and market commentary on Twitter/X
  */
 export const projectAgent: ProjectAgent = {

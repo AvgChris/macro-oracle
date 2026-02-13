@@ -6,7 +6,7 @@
 
 ## What is Chicken Buffett?
 
-Chicken Buffett is an **autonomous AI trading agent** that consumes Macro Oracle's API signals and executes perpetual futures trades on **Hyperliquid** — without human intervention.
+Chicken Buffett is an **autonomous AI trading agent** that consumes Macro Oracle's API signals and executes perpetual futures trades on **Drift Protocol** (Solana-native perps DEX) — without human intervention.
 
 It doesn't just trade. It also **posts market analysis, trade alerts, and commentary on Twitter** in real-time, giving full transparency into its decision-making process.
 
@@ -33,8 +33,8 @@ The agent **only executes when confidence exceeds 95%** — combining multiple d
 
 ```
 ┌─────────────────┐     ┌──────────────────┐     ┌──────────────┐
-│  Macro Oracle    │────▶│  Chicken Buffett │────▶│  Hyperliquid │
-│  API (15+ feeds) │     │  (ElizaOS Agent) │     │  (Perp DEX)  │
+│  Macro Oracle    │────▶│  Chicken Buffett │────▶│ Drift Protocol│
+│  API (15+ feeds) │     │  (ElizaOS Agent) │     │ (Solana Perps)│
 └─────────────────┘     └──────────────────┘     └──────────────┘
         │                        │
         ▼                        ▼
@@ -46,7 +46,7 @@ The agent **only executes when confidence exceeds 95%** — combining multiple d
 
 - **ElizaOS Framework** — Multi-modal AI agent framework handling reasoning, memory, and action execution
 - **Macro Oracle API** — 15+ monitors, Pyth oracle integration, Birdeye DEX data, self-learning engine
-- **Hyperliquid** — Perpetual futures execution with Kelly sizing, stop-loss/take-profit management
+- **Drift Protocol** — Solana-native perpetual futures execution with Kelly sizing, stop-loss/take-profit management
 - **Solana** — On-chain signal publishing for verifiability
 - **Twitter/X** — Autonomous posting of market analysis and trade alerts
 

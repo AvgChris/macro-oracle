@@ -34,7 +34,7 @@ export const checkPositionsAction: Action = {
     "POSITION_STATUS",
   ],
   description:
-    "Check current open positions, trade history, and P&L from both Macro Oracle trade log and Hyperliquid.",
+    "Check current open positions, trade history, and P&L from both Macro Oracle trade log and Drift Protocol.",
 
   validate: async (_runtime: IAgentRuntime): Promise<boolean> => {
     return true; // Always available — shows data even without active trades

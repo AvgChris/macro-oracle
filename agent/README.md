@@ -4,14 +4,14 @@
 
 ![Status](https://img.shields.io/badge/status-alpha-yellow)
 ![Runtime](https://img.shields.io/badge/runtime-ElizaOS%201.7-blue)
-![Trading](https://img.shields.io/badge/trading-Hyperliquid%20Perps-purple)
+![Trading](https://img.shields.io/badge/trading-Drift%20Protocol%20Perps-purple)
 
 ## What is this?
 
 Chicken Buffett is an autonomous crypto trading agent that:
 
 1. **Monitors market signals** via the Macro Oracle API (RSI, MACD, Bollinger Bands, VWAP, OBV, Fear & Greed)
-2. **Executes perpetual futures trades** on Hyperliquid when high-confidence signals appear
+2. **Executes perpetual futures trades** on Drift Protocol (Solana) when high-confidence signals appear
 3. **Posts on Twitter/X** — trade alerts, market commentary, P&L updates, and strategy insights
 4. **Responds to conversations** as a data-obsessed chicken in a suit who takes trading very seriously
 
@@ -24,7 +24,7 @@ It's Warren Buffett meets KFC, and it's entirely data-driven.
 │                    ElizaOS Runtime                           │
 │                                                             │
 │  ┌─────────────────┐  ┌──────────────────┐  ┌───────────┐  │
-│  │  Macro Oracle    │  │ Hyperliquid Perps │  │  Social   │  │
+│  │  Macro Oracle    │  │ Drift Protocol    │  │  Social   │  │
 │  │  Plugin          │  │ Plugin            │  │  Plugin   │  │
 │  │                  │  │                   │  │           │  │
 │  │  • Provider      │  │  • Open Perp      │  │  • Tweet  │  │
@@ -51,8 +51,8 @@ It's Warren Buffett meets KFC, and it's entirely data-driven.
     scanner, stats)                         engagement)
          │
          ▼
-   Hyperliquid DEX
-   (perp trading)
+   Drift Protocol
+   (Solana perps)
 ```
 
 ## Quick Start
@@ -62,7 +62,7 @@ It's Warren Buffett meets KFC, and it's entirely data-driven.
 - **Node.js v23+**
 - **bun** (v1.3.4+)
 - Macro Oracle API access (free, open)
-- Hyperliquid wallet (testnet recommended to start)
+- Drift Protocol wallet (Solana devnet recommended to start)
 - Twitter API credentials (OAuth 1.0a with Read+Write)
 - OpenAI API key (or Anthropic)
 
@@ -108,8 +108,8 @@ docker run -d \
 |----------|-------------|
 | `OPENAI_API_KEY` | OpenAI API key for LLM |
 | `MACRO_ORACLE_API_URL` | Macro Oracle API endpoint |
-| `HYPERLIQUID_PRIVATE_KEY` | Wallet private key (0x prefixed) |
-| `HYPERLIQUID_TESTNET` | Use testnet (true/false) |
+| `DRIFT_PRIVATE_KEY` | Solana wallet private key |
+| `DRIFT_DEVNET` | Use devnet (true/false) |
 
 ### Optional: Twitter
 
@@ -143,15 +143,15 @@ Integrates with the Macro Oracle API:
   - `ANALYZE_MARKET` — Get full market analysis from the scanner
 - **Service**: Signal Watcher — background polling that auto-executes high-confidence signals
 
-### Hyperliquid Perps Plugin (`hyperliquid-perps`)
+### Drift Protocol Perps Plugin (`drift-perps`)
 
-Custom perpetual futures trading (the official ElizaOS Hyperliquid plugin is spot-only):
+Solana-native perpetual futures trading via Drift Protocol:
 
 - **Actions**:
   - `OPEN_PERP` — Open a perp position with leverage, SL, and TP
   - `CLOSE_PERP` — Close a position (full or partial)
   - `GET_POSITIONS` — View all open perp positions with live P&L
-- **Client**: Full Hyperliquid SDK integration for perps (market orders, leverage, cross-margin, stop loss, take profit)
+- **Client**: Full Drift Protocol SDK integration for perps (market orders, leverage, cross-margin, stop loss, take profit)
 
 ### Social Plugin (`social`)
 
@@ -172,7 +172,7 @@ Scheduled social media posting:
 │  4. Skip if position exists     │
 │                                 │
 │  If high-confidence signal:     │
-│  ├── Open perp on Hyperliquid   │
+│  ├── Open perp on Drift Protocol│
 │  ├── Set SL/TP                  │
 │  ├── Queue trade alert tweet    │
 │  └── Cache trade for tracking   │
@@ -185,7 +185,7 @@ Scheduled social media posting:
 
 ## Safety
 
-- **Always start with testnet** (`HYPERLIQUID_TESTNET=true`)
+- **Always start with devnet** (`DRIFT_DEVNET=true`)
 - Auto-trading is **off by default** (`AUTO_TRADE_ENABLED=false`)
 - Default leverage is conservative (3x)
 - Stop loss is set on every trade
@@ -198,7 +198,7 @@ Scheduled social media posting:
 - **Language**: TypeScript
 - **Package Manager**: bun
 - **LLM**: OpenAI (GPT-4) or Anthropic (Claude)
-- **Trading**: Hyperliquid DEX via `hyperliquid` npm SDK
+- **Trading**: Drift Protocol via `@drift-labs/sdk`
 - **Signals**: Macro Oracle API
 - **Social**: Twitter/X via `@elizaos/plugin-twitter`
 - **Database**: PGLite (dev) or PostgreSQL (prod)

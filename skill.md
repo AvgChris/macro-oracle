@@ -192,7 +192,7 @@ if (signal.signal.direction === 'strong_buy') {
   await clodds.trade({
     action: 'buy',
     symbol: 'BTC',
-    platform: 'hyperliquid',
+    platform: 'drift',
     confidence: signal.signal.confidence
   });
 }

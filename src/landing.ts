@@ -798,19 +798,19 @@ export const landingPageHtml = `
           <div class="chicken-info">
             <h2>🐔 Meet Chicken Buffett</h2>
             <p class="chicken-subtitle">
-              Macro Oracle's first autonomous trading agent. Chicken Buffett uses our signals to trade perpetual futures on Hyperliquid, powered by ElizaOS. It analyzes markets, posts insights to Twitter, and executes trades — all autonomously.
+              Macro Oracle's first autonomous trading agent. Chicken Buffett uses our signals to trade perpetual futures on Drift Protocol (Solana), powered by ElizaOS. It analyzes markets, posts insights to Twitter, and executes trades — all autonomously.
             </p>
             <div class="chicken-features">
               <div class="chicken-feature"><span>🤖</span> Autonomous trading via Macro Oracle signals</div>
               <div class="chicken-feature"><span>🐦</span> Live on Twitter — market analysis & trade alerts</div>
-              <div class="chicken-feature"><span>💹</span> Trades perps on Hyperliquid</div>
+              <div class="chicken-feature"><span>💹</span> Trades perps on Drift Protocol (Solana)</div>
               <div class="chicken-feature"><span>🧠</span> Powered by ElizaOS framework</div>
               <div class="chicken-feature"><span>📊</span> 95% confidence threshold for auto-execution</div>
               <div class="chicken-feature"><span>⛓️</span> Signals verified on Solana mainnet</div>
             </div>
             <div class="chicken-buttons">
               <a href="https://x.com/ChickenBuffett" target="_blank" class="btn-chicken btn-chicken-primary">🐔 Visit Agent on 𝕏</a>
-              <a href="https://app.hyperliquid-testnet.xyz/explorer/0x603306B7AF29EFA2688D7b7f4dCC9Bf9D0EeaD97" target="_blank" class="btn-chicken btn-chicken-twitter">💹 Testnet Trades</a>
+              <a href="https://drift.trade" target="_blank" class="btn-chicken btn-chicken-twitter">💹 Drift Protocol</a>
               <a href="/api/scanner" class="btn-chicken btn-chicken-secondary">📡 Try the API</a>
             </div>
           </div>
@@ -959,10 +959,10 @@ export const landingPageHtml = `
           <div class="monitor-card">
             <div class="monitor-icon">🤖</div>
             <h3>Auto-Trader</h3>
-            <p>Autonomous execution on Hyperliquid with Kelly sizing, risk limits, and SL/TP management.</p>
+            <p>Autonomous execution on Drift Protocol (Solana) with Kelly sizing, risk limits, and SL/TP management.</p>
             <div class="monitor-meta">
               <span class="meta-tag frequency">Real-time</span>
-              <span class="meta-tag">Hyperliquid</span>
+              <span class="meta-tag">Drift Protocol</span>
             </div>
           </div>
         </div>

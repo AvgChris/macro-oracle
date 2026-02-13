@@ -88,7 +88,7 @@ curl https://macro-oracle-production.up.railway.app/api/scanner/top
 | 🔮 **Prediction Markets** | Fed rate odds, macro events | Polymarket | 30 min |
 | 🏛️ **FedWatch** | Rate cut/hike probabilities | CME | Daily |
 | ⛓️ **On-Chain** | Exchange flows, active addresses | Blockchain | Real-time |
-| 🤖 **Auto-Trader** | Autonomous execution with risk management | Hyperliquid | Real-time |
+| 🤖 **Auto-Trader** | Autonomous execution with risk management | Drift Protocol | Real-time |
 
 ### 🤖 Autonomous Trading System
 
@@ -98,7 +98,7 @@ Built-in autonomous trader with:
 - **Daily loss caps** (5% max)
 - **Auto-breakeven stops** after partial profit
 - **Dry-run mode** for testing
-- Execution via **Hyperliquid** (no KYC, up to 50x leverage)
+- Execution via **Drift Protocol** (Solana-native perps DEX, up to 20x leverage)
 
 ### 📈 Backtesting Engine
 
@@ -289,7 +289,7 @@ console.log(`Macro context: ${signal.macroContext}`);
 │  Generator  │    Bid/Ask Imbalance      │
 ├─────────────┼───────────────────────────┤
 │ Auto-Trader │    Backtesting Engine     │
-│ Hyperliquid │    F&G Strategy           │
+│ Drift Proto │    F&G Strategy           │
 │ Kelly Sizing│    Correlation Analysis   │
 ├─────────────┴───────────────────────────┤
 │           REST API (Express)            │
@@ -317,7 +317,7 @@ console.log(`Macro context: ${signal.macroContext}`);
 - **Runtime:** TypeScript / Node.js
 - **Framework:** Express 5
 - **Analysis:** Custom MACD (3/10/16), RSI(14), EMA 20/50/200
-- **Execution:** Hyperliquid via Clodds
+- **Execution:** Drift Protocol on Solana
 - **Deployment:** Railway (auto-deploy from main)
 - **Data:** 12+ external APIs, zero API keys required for users
 
@@ -326,7 +326,7 @@ console.log(`Macro context: ${signal.macroContext}`);
 - [x] 15+ automated monitors
 - [x] Live scanner API (RSI, MACD, EMA, divergences, F&G)
 - [x] Orderbook depth analysis
-- [x] Autonomous trading system (Hyperliquid)
+- [x] Autonomous trading system (Drift Protocol)
 - [x] Backtesting engine
 - [x] Fear & Greed contrarian strategy
 - [x] FRED integration (official Fed data)
