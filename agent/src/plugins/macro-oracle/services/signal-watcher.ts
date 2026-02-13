@@ -1,6 +1,7 @@
 import { Service, type IAgentRuntime } from "@elizaos/core";
 import axios from "axios";
 import { getApiUrl, type ScannerResult } from "../provider.ts";
+import { getHyperliquidClient } from "../../../plugins/hyperliquid-perps/client.ts";
 
 // ─── Constants ───────────────────────────────────────────────────────
 
@@ -196,13 +197,41 @@ export class SignalWatcherService extends Service {
         status: "OPEN",
       };
 
-      // TODO: Execute via Hyperliquid perps client
-      // const hlClient = this.runtime.getService('hyperliquid-perps');
-      // const result = await hlClient.openPosition({ ... });
+      // Execute via Hyperliquid perps client
+      const hlClient = getHyperliquidClient(this.runtime);
+      if (hlClient) {
+        const slPercent = signal.stopLoss && signal.price
+          ? Math.abs((signal.price - signal.stopLoss) / signal.price * 100)
+          : 15;
+        const tpPercent = signal.takeProfit1 && signal.price
+          ? Math.abs((signal.takeProfit1 - signal.price) / signal.price * 100)
+          : 30;
 
-      console.log(
-        `[SignalWatcher] 🐔 TRADE EXECUTED: ${trade.symbol} ${trade.direction} @ ${trade.leverage}x, $${trade.sizeUsd}`
-      );
+        const result = await hlClient.openPosition({
+          symbol: signal.symbol,
+          direction: signal.direction as "LONG" | "SHORT",
+          sizeUsd: trade.sizeUsd,
+          leverage: trade.leverage,
+          stopLossPercent: slPercent,
+          takeProfitPercent: tpPercent,
+        });
+
+        if (!result.success) {
+          console.error(
+            `[SignalWatcher] 🐔 TRADE FAILED: ${trade.symbol} — ${result.error}`
+          );
+          return; // Don't track failed trades
+        }
+
+        trade.entryPrice = result.price || trade.entryPrice;
+        console.log(
+          `[SignalWatcher] 🐔 TRADE EXECUTED ON HYPERLIQUID: ${trade.symbol} ${trade.direction} @ ${trade.leverage}x, $${trade.sizeUsd} (price: $${result.price})`
+        );
+      } else {
+        console.warn(
+          `[SignalWatcher] 🐔 No Hyperliquid client — trade logged but NOT executed: ${trade.symbol} ${trade.direction}`
+        );
+      }
 
       // Track the open trade
       this.openTrades.set(signal.symbol, trade);
