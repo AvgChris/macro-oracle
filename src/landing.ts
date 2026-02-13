@@ -778,7 +778,7 @@ export const landingPageHtml = `
           <div class="stat-label">Data Sources</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">100%</div>
+          <div class="stat-value" id="win-rate-value">—%</div>
           <div class="stat-label">Win Rate</div>
         </div>
         <div class="stat-card" style="border-color: rgba(255, 215, 0, 0.4); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 215, 0, 0.05) 100%);">
@@ -1384,6 +1384,26 @@ curl https://macro-oracle-production.up.railway.app/api/scanner/top</code></pre>
       </div>
     </div>
   </footer>
+
+  <script>
+    // Fetch real trade stats from API
+    fetch('/api/trades/stats')
+      .then(r => r.json())
+      .then(stats => {
+        const el = document.getElementById('win-rate-value');
+        if (el && stats.winRate !== undefined) {
+          el.textContent = stats.winRate + '%';
+          // Color code: green if >= 60%, yellow if >= 40%, red otherwise
+          if (stats.winRate >= 60) el.style.color = '#10b981';
+          else if (stats.winRate >= 40) el.style.color = '#f59e0b';
+          else el.style.color = '#ef4444';
+        }
+      })
+      .catch(() => {
+        const el = document.getElementById('win-rate-value');
+        if (el) el.textContent = '—%';
+      });
+  </script>
 </body>
 </html>
 `;
