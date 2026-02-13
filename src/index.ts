@@ -55,6 +55,11 @@ app.get('/logo.jpg', (req, res) => {
   res.type('image/jpeg').sendFile('logo.jpg', { root: process.cwd() });
 });
 
+// Chicken Buffett avatar
+app.get('/chicken-buffett-avatar.png', (req, res) => {
+  res.type('image/png').sendFile('agent/avatar/chicken-buffett.png', { root: process.cwd() });
+});
+
 // API docs page (beautiful HTML documentation)
 app.get('/api', (req, res) => {
   res.type('html').send(apiDocsHtml);

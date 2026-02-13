@@ -213,7 +213,7 @@ export const landingPageHtml = `
     /* Stats */
     .stats {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 24px;
       padding: 60px 0;
     }
@@ -496,13 +496,201 @@ export const landingPageHtml = `
       color: var(--purple-primary);
     }
 
+    /* Chicken Buffett Showcase */
+    .chicken-section {
+      padding: 80px 0 40px;
+    }
+
+    .chicken-card {
+      position: relative;
+      background: var(--bg-secondary);
+      border: 2px solid transparent;
+      border-radius: 24px;
+      padding: 48px 56px;
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      overflow: hidden;
+      background-clip: padding-box;
+    }
+
+    .chicken-card::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #FF9B51 0%, #FFD700 30%, #FF6B35 60%, #FF9B51 100%);
+      z-index: -1;
+      animation: borderGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes borderGlow {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    }
+
+    .chicken-avatar-wrapper {
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .chicken-avatar {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--purple-primary);
+      box-shadow: 0 8px 32px rgba(255, 155, 81, 0.3);
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .live-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(16, 185, 129, 0.9);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .live-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+    }
+
+    .chicken-info h2 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #FFD700 0%, #FF9B51 50%, #FF6B35 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .chicken-info .chicken-subtitle {
+      font-size: 17px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .chicken-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .chicken-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .chicken-feature span:first-child {
+      font-size: 18px;
+    }
+
+    .chicken-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-chicken {
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-chicken-primary {
+      background: linear-gradient(135deg, #FFD700 0%, #FF9B51 100%);
+      color: #1a1a1a;
+    }
+
+    .btn-chicken-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255, 215, 0, 0.3);
+    }
+
+    .btn-chicken-twitter {
+      background: #1DA1F2;
+      color: white;
+    }
+
+    .btn-chicken-twitter:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(29, 161, 242, 0.3);
+    }
+
+    .btn-chicken-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-chicken-secondary:hover {
+      border-color: var(--purple-primary);
+      color: var(--purple-primary);
+    }
+
+    @media (max-width: 768px) {
+      .chicken-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 36px 24px;
+        gap: 28px;
+      }
+      .chicken-features {
+        grid-template-columns: 1fr;
+      }
+      .chicken-buttons {
+        justify-content: center;
+      }
+      .chicken-avatar {
+        width: 140px;
+        height: 140px;
+      }
+    }
+
     /* Responsive */
     @media (max-width: 968px) {
       .monitors-grid {
         grid-template-columns: repeat(2, 1fr);
       }
       .stats {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
       }
       .hero h1 {
         font-size: 40px;
@@ -546,6 +734,7 @@ export const landingPageHtml = `
           <a href="/signal">Signal</a>
           <a href="/backtest">Backtest</a>
           <a href="/trades">Trades</a>
+          <a href="#chicken-buffett" style="color: #FFD700;">🐔 Agent</a>
         </nav>
       </div>
     </div>
@@ -559,7 +748,7 @@ export const landingPageHtml = `
           <span>Built on Solana — Powered by Pyth Network</span>
         </div>
         <h1>Solana-native macro<br>intelligence for agents</h1>
-        <p>The intelligence layer for autonomous Solana trading agents. 15+ monitors, Pyth oracle integration, backtested signals, and autonomous execution — all through a free API. No keys needed.</p>
+        <p>The intelligence layer for autonomous Solana trading agents. 15+ monitors, Pyth oracle integration, backtested signals, autonomous execution, and now powering live AI agents — all through a free API. No keys needed.</p>
         <div style="margin: 20px 0; padding: 16px 24px; background: rgba(255, 155, 81, 0.15); border: 1px solid rgba(255, 155, 81, 0.3); border-radius: 12px; display: inline-block;">
           <span style="font-size: 1.1em;">⛓️ <strong>LIVE ON SOLANA MAINNET</strong> — On-chain signal publishing active. Every signal verifiable on-chain. <a href="https://solscan.io/account/6LLmNhpwSYVHtLNMpURqLjDjbAq3FdPiP4ndqyc7ZCeP" style="color: #00ffa3; text-decoration: underline;" target="_blank">View signals on Solscan →</a></span>
         </div>
@@ -590,6 +779,40 @@ export const landingPageHtml = `
         <div class="stat-card">
           <div class="stat-value">100%</div>
           <div class="stat-label">Win Rate</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(255, 215, 0, 0.4); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 215, 0, 0.05) 100%);">
+          <div class="stat-value" style="color: #FFD700;">1</div>
+          <div class="stat-label">Live AI Agent</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="chicken-buffett" class="chicken-section">
+      <div class="container">
+        <div class="chicken-card">
+          <div class="chicken-avatar-wrapper">
+            <img src="/chicken-buffett-avatar.png" alt="Chicken Buffett" class="chicken-avatar">
+            <div class="live-badge">Live</div>
+          </div>
+          <div class="chicken-info">
+            <h2>🐔 Meet Chicken Buffett</h2>
+            <p class="chicken-subtitle">
+              Macro Oracle's first autonomous trading agent. Chicken Buffett uses our signals to trade perpetual futures on Hyperliquid, powered by ElizaOS. It analyzes markets, posts insights to Twitter, and executes trades — all autonomously.
+            </p>
+            <div class="chicken-features">
+              <div class="chicken-feature"><span>🤖</span> Autonomous trading via Macro Oracle signals</div>
+              <div class="chicken-feature"><span>🐦</span> Live on Twitter — market analysis & trade alerts</div>
+              <div class="chicken-feature"><span>💹</span> Trades perps on Hyperliquid</div>
+              <div class="chicken-feature"><span>🧠</span> Powered by ElizaOS framework</div>
+              <div class="chicken-feature"><span>📊</span> 95% confidence threshold for auto-execution</div>
+              <div class="chicken-feature"><span>⛓️</span> Signals verified on Solana mainnet</div>
+            </div>
+            <div class="chicken-buttons">
+              <a href="https://chicken-buffett-production.up.railway.app" target="_blank" class="btn-chicken btn-chicken-primary">🐔 Visit Agent</a>
+              <a href="https://x.com/ChickenBuffett" target="_blank" class="btn-chicken btn-chicken-twitter">𝕏 Follow on Twitter</a>
+              <a href="/api/scanner" class="btn-chicken btn-chicken-secondary">📡 Try the API</a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
