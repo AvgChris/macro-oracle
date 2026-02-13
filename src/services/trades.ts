@@ -180,6 +180,20 @@ const trades: TradeCall[] = [
     reasoning: '95% confidence. MACD bullish + Extreme Fear (F&G 9) + RSI bullish divergence + MACD bullish divergence. 1D timeframe. Re-entry after previous TP1 win.',
     indicators: ['MACD Bullish', 'Extreme Fear (F&G 9)', 'RSI Bullish Divergence', 'MACD Bullish Divergence'],
     status: 'open'
+  },
+  {
+    id: 'trade-009',
+    timestamp: '2026-02-13T15:39:00Z',
+    symbol: 'HBAR',
+    direction: 'LONG',
+    entry: 0.09546,
+    stopLoss: 0.08798,
+    takeProfit1: 0.11199,
+    takeProfit2: 0.128,
+    confidence: 95,
+    reasoning: '95% confidence. MACD bullish cross + Extreme Fear (F&G 9) + RSI bullish divergence + MACD bullish divergence. 1D timeframe.',
+    indicators: ['MACD Bullish', 'Extreme Fear (F&G 9)', 'RSI Bullish Divergence', 'MACD Bullish Divergence'],
+    status: 'open'
   }
 ];
 
