@@ -264,9 +264,11 @@ class AutoTrader {
         
         this.tradeLog.push(result);
         
-        // Tweet the trade
+        // Tweet the trade (if Twitter keys are configured on this service)
+        // Note: Chicken Buffett's ElizaOS agent handles its own Twitter posting
+        // This is a fallback for the Macro Oracle API service
         if (this.config.tweetTrades) {
-          this.tweetTrade(result).catch(err => console.error('Tweet failed:', err.message));
+          this.tweetTrade(result).catch(err => console.log('[TWEET] Skipped (ElizaOS handles tweeting):', err.message));
         }
         
         return result;
