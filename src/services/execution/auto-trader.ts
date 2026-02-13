@@ -453,20 +453,19 @@ class AutoTrader {
   }
 }
 
-// Export singleton — reads config from env
-const hlKey = process.env.HL_PRIVATE_KEY;
+// Export singleton — DISABLED: Chicken Buffett (ElizaOS) handles all trading
+// Macro Oracle is the scanner/signals API only
 export const autoTrader = new AutoTrader({
-  enabled: !!hlKey,           // Enable if key is present
-  dryRun: !hlKey,             // Only dry-run if no key
+  enabled: false,             // Trading done by Chicken Buffett, not Macro Oracle
+  dryRun: true,
   portfolio: 1000,
-  marginPerTrade: 100,        // Fixed $100 margin per trade
-  privateKey: hlKey,
+  marginPerTrade: 100,
   minConfidence: 80,
   maxTradesPerDay: 5,
   cooldownMinutes: 30,
   allowedSymbols: ['BTC', 'ETH', 'SOL', 'ASTER', 'ZRO', 'XAUT', 'PAXG'],
-  notifyOnTrade: true,
-  tweetTrades: true
+  notifyOnTrade: false,
+  tweetTrades: false
 });
 
 // Export class for custom instances

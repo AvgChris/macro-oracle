@@ -8,8 +8,7 @@ import { getHyperliquidClient } from "../../../plugins/hyperliquid-perps/client.
 const POLL_INTERVAL_MS = 2 * 60 * 60 * 1000; // 2 hours
 const POSITION_CHECK_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 const MIN_CONFIDENCE_THRESHOLD = 80;
-const DEFAULT_LEVERAGE = 3;
-const DEFAULT_SIZE_USD = 100;
+const MARGIN_PER_TRADE = 100; // Fixed $100 margin per trade
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -178,12 +177,24 @@ export class SignalWatcherService extends Service {
 
   private async executeTrade(signal: ScannerResult): Promise<void> {
     try {
-      const leverage =
-        parseInt(String(this.runtime.getSetting("DEFAULT_LEVERAGE") || "")) ||
-        DEFAULT_LEVERAGE;
-      const sizeUsd =
-        parseFloat(String(this.runtime.getSetting("DEFAULT_SIZE_USD") || "")) ||
-        DEFAULT_SIZE_USD;
+      // Calculate SL distance for leverage decision
+      const slDistance = signal.stopLoss && signal.price
+        ? Math.abs(signal.price - signal.stopLoss) / signal.price
+        : 0.10;
+
+      // Confidence-based leverage: higher confidence + tighter SL = more leverage
+      let leverage: number;
+      if (signal.confidence >= 95) {
+        leverage = slDistance < 0.05 ? 10 : slDistance < 0.10 ? 7 : 5;
+      } else if (signal.confidence >= 90) {
+        leverage = slDistance < 0.05 ? 7 : slDistance < 0.10 ? 5 : 3;
+      } else if (signal.confidence >= 85) {
+        leverage = slDistance < 0.05 ? 5 : slDistance < 0.10 ? 3 : 2;
+      } else {
+        leverage = slDistance < 0.05 ? 3 : 2;
+      }
+
+      const sizeUsd = MARGIN_PER_TRADE * leverage; // $100 margin × leverage = notional
 
       const trade: ExecutedTrade = {
         symbol: signal.symbol,
@@ -283,13 +294,20 @@ export class SignalWatcherService extends Service {
 
   private async postTradeAlert(trade: ExecutedTrade): Promise<void> {
     try {
-      const emoji = trade.direction === "LONG" ? "📈" : "📉";
-      const tweet = `🐔 ${trade.symbol} ${trade.direction} @ ${trade.leverage}x | ${trade.confidence}% confidence
+      const emoji = trade.direction === "LONG" ? "🟢" : "🔴";
+      const slPct = trade.entryPrice && trade.sizeUsd
+        ? ((trade.sizeUsd / trade.leverage) / trade.entryPrice * 100).toFixed(1)
+        : "?";
+      
+      const tweet = `${emoji} NEW TRADE: $${trade.symbol} ${trade.direction}
 
-${trade.entryPrice ? `Entry: $${trade.entryPrice}` : "Market order"}
-Size: $${trade.sizeUsd}
+Entry: $${trade.entryPrice || "market"}
+Margin: $${MARGIN_PER_TRADE} @ ${trade.leverage}x
+Confidence: ${trade.confidence}%
 
-When the Macro Oracle speaks, this chicken listens. ${emoji}🐔`;
+🧠 Macro Oracle gave me a ${trade.confidence}% signal. ${trade.direction === "LONG" ? "Going long" : "Shorting"} with conviction.
+
+Testnet | #crypto #${trade.symbol}`;
 
       // Store tweet for the social poster to pick up
       await (this.runtime as any).cacheManager?.set(
@@ -310,13 +328,31 @@ When the Macro Oracle speaks, this chicken listens. ${emoji}🐔`;
   private async postTradeClose(trade: ExecutedTrade): Promise<void> {
     try {
       const won = (trade.pnlPercent ?? 0) >= 0;
-      const emoji = won ? "✅💰" : "❌";
+      const emoji = won ? "✅" : "❌";
       const pnl = trade.pnlPercent ?? 0;
 
-      const tweet = `🐔 CLOSED: ${trade.symbol} ${trade.direction}
+      const lessons = won
+        ? [
+            "Patience pays. Let the thesis play out.",
+            "Confluence of indicators = edge.",
+            "Trust the data, not the noise.",
+            "Risk management kept me in the game.",
+          ]
+        : [
+            "Market had other plans. SL saved me from worse.",
+            "Need to factor in more context next time.",
+            "Small loss, lesson learned. Moving on.",
+            "The setup was right but timing was off.",
+          ];
+      const lesson = lessons[Math.floor(Math.random() * lessons.length)];
 
-P&L: ${pnl > 0 ? "+" : ""}${pnl.toFixed(2)}% ${emoji}
-${won ? "Another golden egg for the portfolio." : "Small scratch. Risk was managed. Moving on."} 🐔`;
+      const tweet = `${emoji} CLOSED: $${trade.symbol} ${trade.direction}
+
+P&L: ${pnl > 0 ? "+" : ""}${pnl.toFixed(2)}%
+
+📝 What I learned: ${lesson}
+
+Testnet | #crypto #trading`;
 
       await (this.runtime as any).cacheManager?.set(
         `pending_tweet:trade_close:${Date.now()}`,
