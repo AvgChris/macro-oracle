@@ -1,8 +1,6 @@
 import { Service, type IAgentRuntime } from "@elizaos/core";
 import axios from "axios";
 import { getApiUrl, type ScannerResult } from "../provider.ts";
-import { getDriftClient } from "../../../plugins/drift-perps/client.ts";
-import { PerpMarkets } from "@drift-labs/sdk";
 
 // ─── Constants ───────────────────────────────────────────────────────
 
@@ -11,10 +9,31 @@ const POSITION_CHECK_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 const MIN_CONFIDENCE_THRESHOLD = 80;
 const MARGIN_PER_TRADE = 100; // Fixed $100 margin per trade
 
+// Lazy import Drift SDK to avoid crashing the agent if SDK has issues
+let _getDriftClient: typeof import("../../../plugins/drift-perps/client.ts").getDriftClient | null = null;
+async function loadDriftClient() {
+  if (!_getDriftClient) {
+    try {
+      const mod = await import("../../../plugins/drift-perps/client.ts");
+      _getDriftClient = mod.getDriftClient;
+    } catch (e) {
+      console.error("[SignalWatcher] 🐔 Failed to load Drift SDK:", (e as Error).message);
+    }
+  }
+  return _getDriftClient;
+}
+
 // Build set of tradeable symbols for the active Drift environment
-function getDriftTradeableSymbols(env: "devnet" | "mainnet-beta"): Set<string> {
-  const markets = PerpMarkets[env] || [];
-  return new Set(markets.map((m) => m.baseAssetSymbol.toUpperCase()));
+async function getDriftTradeableSymbols(env: "devnet" | "mainnet-beta"): Promise<Set<string>> {
+  try {
+    const { PerpMarkets } = await import("@drift-labs/sdk");
+    const markets = PerpMarkets[env] || [];
+    return new Set(markets.map((m: any) => m.baseAssetSymbol.toUpperCase()));
+  } catch (e) {
+    console.error("[SignalWatcher] 🐔 Failed to load Drift PerpMarkets:", (e as Error).message);
+    // Fallback: common devnet symbols
+    return new Set(["SOL", "BTC", "ETH", "DOGE", "SUI", "BONK", "ARB", "OP", "AVAX", "BNB", "XRP", "LINK", "PEPE"]);
+  }
 }
 
 // ─── Types ───────────────────────────────────────────────────────────
@@ -149,7 +168,7 @@ export class SignalWatcherService extends Service {
 
         // Skip if token not available on current Drift environment
         const driftEnv = String(this.runtime.getSetting("DRIFT_DEVNET") ?? process.env.DRIFT_DEVNET ?? "true") !== "false" ? "devnet" : "mainnet-beta";
-        const tradeableSymbols = getDriftTradeableSymbols(driftEnv);
+        const tradeableSymbols = await getDriftTradeableSymbols(driftEnv);
         if (!tradeableSymbols.has(signal.symbol.toUpperCase())) {
           console.log(
             `[SignalWatcher] 🐔 ${signal.symbol} not available on Drift ${driftEnv}, skipping`
@@ -226,7 +245,8 @@ export class SignalWatcherService extends Service {
       };
 
       // Execute via Drift Protocol perps client
-      const driftClient = getDriftClient(this.runtime);
+      const getDrift = await loadDriftClient();
+      const driftClient = getDrift ? getDrift(this.runtime) : null;
       if (driftClient) {
         const slPercent = signal.stopLoss && signal.price
           ? Math.abs((signal.price - signal.stopLoss) / signal.price * 100)
@@ -283,7 +303,8 @@ export class SignalWatcherService extends Service {
     if (this.openTrades.size === 0) return;
 
     try {
-      const driftClient = getDriftClient(this.runtime);
+      const getDrift = await loadDriftClient();
+      const driftClient = getDrift ? getDrift(this.runtime) : null;
       if (!driftClient) return;
 
       const positions = await driftClient.getPositions();
