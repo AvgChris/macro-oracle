@@ -194,6 +194,20 @@ const trades: TradeCall[] = [
     reasoning: '95% confidence. MACD bullish cross + Extreme Fear (F&G 9) + RSI bullish divergence + MACD bullish divergence. 1D timeframe.',
     indicators: ['MACD Bullish', 'Extreme Fear (F&G 9)', 'RSI Bullish Divergence', 'MACD Bullish Divergence'],
     status: 'open'
+  },
+  {
+    id: 'trade-010',
+    timestamp: '2026-02-20T13:13:45Z',
+    symbol: 'BTC',
+    direction: 'LONG',
+    entry: 67147,
+    stopLoss: 60701,
+    takeProfit1: 76812,
+    takeProfit2: 83262,
+    confidence: 95,
+    reasoning: '95% confidence. RSI oversold + MACD bullish cross + RSI bullish divergence + MACD bullish divergence + Extreme Fear (F&G 7). Manual entry by Chris.',
+    indicators: ['RSI Oversold', 'MACD Bullish', 'RSI Bullish Div', 'MACD Bullish Div', 'Extreme Fear (F&G 7)'],
+    status: 'open'
   }
 ];
 
